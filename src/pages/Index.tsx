@@ -99,7 +99,7 @@ const Index = () => {
           className="bg-primary hover:bg-primary/90"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isLoading ? "Dreaming..." : "Generate Image"}
+          {isLoading ? "Dreaming..." : "Dream Image"}
         </Button>
       </div>
 
@@ -127,6 +127,9 @@ const Index = () => {
         <ImageDisplay
           currentImage={currentImage}
           isLoading={isLoading}
+          onNavigate={navigateImages}
+          canNavigatePrev={currentImageIndex > 0}
+          canNavigateNext={currentImageIndex < generatedImages.length - 1}
         />
       </div>
     </div>

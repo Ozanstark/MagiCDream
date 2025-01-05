@@ -1,13 +1,22 @@
-import { useState } from "react";
-import { X, Download } from "lucide-react";
+import { useState, useEffect } from "react";
+import { X, Download, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ImageDisplayProps {
   currentImage: string | null;
   isLoading: boolean;
+  onNavigate?: (direction: 'prev' | 'next') => void;
+  canNavigatePrev?: boolean;
+  canNavigateNext?: boolean;
 }
 
-const ImageDisplay = ({ currentImage, isLoading }: ImageDisplayProps) => {
+const ImageDisplay = ({ 
+  currentImage, 
+  isLoading, 
+  onNavigate,
+  canNavigatePrev = false,
+  canNavigateNext = false 
+}: ImageDisplayProps) => {
   const [isZoomed, setIsZoomed] = useState(false);
 
   const handleDownload = () => {
@@ -24,13 +33,19 @@ const ImageDisplay = ({ currentImage, isLoading }: ImageDisplayProps) => {
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === "Escape") {
       setIsZoomed(false);
+    } else if (onNavigate) {
+      if (e.key === "ArrowLeft" && canNavigatePrev) {
+        onNavigate('prev');
+      } else if (e.key === "ArrowRight" && canNavigateNext) {
+        onNavigate('next');
+      }
     }
   };
 
-  useState(() => {
+  useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  });
+  }, [canNavigatePrev, canNavigateNext]);
 
   if (!currentImage && !isLoading) {
     return (
@@ -73,6 +88,32 @@ const ImageDisplay = ({ currentImage, isLoading }: ImageDisplayProps) => {
           >
             <X className="h-4 w-4" />
           </Button>
+          {onNavigate && (
+            <>
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onNavigate('prev');
+                }}
+                disabled={!canNavigatePrev}
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-primary/80 hover:bg-primary"
+                size="icon"
+              >
+                <ChevronLeft className="h-6 w-6" />
+              </Button>
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onNavigate('next');
+                }}
+                disabled={!canNavigateNext}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-primary/80 hover:bg-primary"
+                size="icon"
+              >
+                <ChevronRight className="h-6 w-6" />
+              </Button>
+            </>
+          )}
           <img
             src={currentImage!}
             alt="Generated"

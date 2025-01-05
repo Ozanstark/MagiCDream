@@ -29,7 +29,7 @@
 
 @layer base {
   body {
-    @apply bg-[#FEF7CD] text-foreground;
+    @apply bg-[#FFDEE2] text-foreground;
   }
 }
 

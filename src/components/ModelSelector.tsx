@@ -14,7 +14,7 @@ interface ModelSelectorProps {
 
 const ModelSelector = ({ selectedModel, onModelChange }: ModelSelectorProps) => {
   return (
-    <div className="w-full space-y-2">
+    <div className="flex-1">
       <Select
         value={selectedModel.name}
         onValueChange={(value) => {

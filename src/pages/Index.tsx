@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
+import ModeSwitcher from "@/components/ModeSwitcher";
+import TextGenerator from "@/components/TextGenerator";
 import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Wand2, ChevronLeft, ChevronRight, Settings, Minus, Plus } from "lucide-react";
+import { Wand2, Settings } from "lucide-react";
 import ImageDisplay from "@/components/ImageDisplay";
 import { Slider } from "@/components/ui/slider";
 import {
@@ -33,6 +35,7 @@ interface ModelGenerationTime {
 }
 
 const Index = () => {
+  const [mode, setMode] = useState<'image' | 'text'>('image');
   const [prompt, setPrompt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
@@ -201,8 +204,18 @@ const Index = () => {
     }));
   };
 
+  if (mode === 'text') {
+    return (
+      <div className="min-h-screen p-4 md:p-8 flex flex-col items-center gap-4 relative">
+        <ModeSwitcher mode={mode} onModeChange={setMode} />
+        <TextGenerator />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen p-4 md:p-8 flex flex-col items-center gap-4">
+    <div className="min-h-screen p-4 md:p-8 flex flex-col items-center gap-4 relative">
+      <ModeSwitcher mode={mode} onModeChange={setMode} />
       <div className="text-center space-y-4">
         <h1 className="text-4xl md:text-5xl font-bold rainbow-text">
           AI Dream Text to Image
@@ -243,16 +256,7 @@ const Index = () => {
               Advanced
             </Button>
           </SheetTrigger>
-          <SheetContent 
-            className="sm:max-w-[500px] mt-4 h-[75vh]" 
-            side="right"
-          >
-            <SheetHeader>
-              <SheetTitle>Advanced Settings</SheetTitle>
-              <SheetDescription>
-                Configure advanced parameters for image generation
-              </SheetDescription>
-            </SheetHeader>
+          <SheetContent className="sm:max-w-[500px] mt-4 h-[75vh]" side="right">
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="guidance_scale" className="text-right">
@@ -381,26 +385,6 @@ const Index = () => {
       </div>
 
       <div className="relative w-full max-w-2xl flex items-center justify-center">
-        {generatedImages.length > 1 && (
-          <>
-            <Button
-              onClick={() => navigateImages('prev')}
-              disabled={currentImageIndex === 0 || isLoading}
-              className="absolute left-[-60px] top-1/2 transform -translate-y-1/2 bg-primary/80 hover:bg-primary"
-              size="icon"
-            >
-              <ChevronLeft className="h-6 w-6" />
-            </Button>
-            <Button
-              onClick={() => navigateImages('next')}
-              disabled={currentImageIndex === generatedImages.length - 1 || isLoading}
-              className="absolute right-[-60px] top-1/2 transform -translate-y-1/2 bg-primary/80 hover:bg-primary"
-              size="icon"
-            >
-              <ChevronRight className="h-6 w-6" />
-            </Button>
-          </>
-        )}
         <ImageDisplay
           currentImage={currentImage}
           isLoading={isLoading}

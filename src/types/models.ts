@@ -35,5 +35,11 @@ export const AVAILABLE_MODELS: ModelType[] = [
     name: "Realistic Style 5",
     apiUrl: "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
     description: "Censored realistic style model"
+  },
+  {
+    id: "realistic-six",
+    name: "Realistic Style 6",
+    apiUrl: "https://api-inference.huggingface.co/models/prashanth970/flux-lora-uncensored",
+    description: "Uncensored realistic style model"
   }
 ];

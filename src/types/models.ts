@@ -26,8 +26,8 @@ export const AVAILABLE_MODELS: ModelType[] = [
   },
   {
     id: "townley-hawnley",
-    name: "Townley Hawnley Style",
-    apiUrl: "https://api-inference.huggingface.co/models/lustlyai/Flux_Lustly.ai_Uncensored_nsfw_v1",
-    description: "Uncensored realistic style model"
+    name: "Realistic Style 4",
+    apiUrl: "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
+    description: "Censored realistic style model"
   }
 ];

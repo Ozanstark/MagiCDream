@@ -220,7 +220,7 @@ const Index = () => {
         
         <div className="flex flex-col md:flex-row gap-2">
           <Input
-            placeholder="Describe the image you want to dream."
+            placeholder="Describe in detail what image you want to dream"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyPress={handleKeyPress}

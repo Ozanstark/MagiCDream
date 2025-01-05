@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -38,7 +38,18 @@ const Index = () => {
     width: 512,
     height: 512
   });
+  const [lastGenerationTime, setLastGenerationTime] = useState<Date[]>([]);
   const { toast } = useToast();
+
+  // Clean up old timestamps every minute
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const oneMinuteAgo = new Date(Date.now() - 60000);
+      setLastGenerationTime(prev => prev.filter(time => time > oneMinuteAgo));
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleAdvancedSettingChange = (key: keyof AdvancedSettings, value: string | number) => {
     setAdvancedSettings(prev => ({
@@ -57,7 +68,11 @@ const Index = () => {
       return;
     }
 
-    if (generatedImages.length >= 3) {
+    // Clean up timestamps older than 1 minute
+    const oneMinuteAgo = new Date(Date.now() - 60000);
+    const recentGenerations = lastGenerationTime.filter(time => time > oneMinuteAgo);
+
+    if (recentGenerations.length >= 3) {
       toast({
         title: "Rate Limit",
         description: "You can only generate 3 images per minute. Please wait.",
@@ -119,6 +134,7 @@ const Index = () => {
       setGeneratedImages(prev => [...prev, imageUrl]);
       setCurrentImage(imageUrl);
       setCurrentImageIndex(generatedImages.length);
+      setLastGenerationTime(prev => [...prev, new Date()]);
     } catch (error) {
       console.error('API Error:', error);
       toast({

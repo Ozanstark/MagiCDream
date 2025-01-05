@@ -57,27 +57,35 @@ const Index = () => {
 
     setIsLoading(true);
     try {
-      const payload: any = {
-        inputs: prompt,
-      };
-
-      // Add advanced settings if they are set
+      // Construct the prompt with parameters included
+      let fullPrompt = prompt;
+      
       if (Object.keys(advancedSettings).length > 0) {
-        payload.parameters = {};
-        if (advancedSettings.guidance_scale) payload.parameters.guidance_scale = advancedSettings.guidance_scale;
-        if (advancedSettings.negative_prompt) payload.parameters.negative_prompt = [advancedSettings.negative_prompt]; // Now properly wrapped in an array
-        if (advancedSettings.num_inference_steps) payload.parameters.num_inference_steps = advancedSettings.num_inference_steps;
-        if (advancedSettings.width && advancedSettings.height) {
-          payload.parameters.target_size = {
-            width: advancedSettings.width,
-            height: advancedSettings.height,
-          };
+        if (advancedSettings.guidance_scale) {
+          fullPrompt += ` --guidance_scale ${advancedSettings.guidance_scale}`;
         }
-        if (advancedSettings.scheduler) payload.parameters.scheduler = advancedSettings.scheduler;
-        if (advancedSettings.seed) payload.parameters.seed = advancedSettings.seed;
+        if (advancedSettings.negative_prompt) {
+          fullPrompt += ` --negative_prompt ${advancedSettings.negative_prompt}`;
+        }
+        if (advancedSettings.num_inference_steps) {
+          fullPrompt += ` --steps ${advancedSettings.num_inference_steps}`;
+        }
+        if (advancedSettings.width && advancedSettings.height) {
+          fullPrompt += ` --width ${advancedSettings.width} --height ${advancedSettings.height}`;
+        }
+        if (advancedSettings.scheduler) {
+          fullPrompt += ` --scheduler ${advancedSettings.scheduler}`;
+        }
+        if (advancedSettings.seed) {
+          fullPrompt += ` --seed ${advancedSettings.seed}`;
+        }
       }
 
-      console.log('Sending payload:', payload); // Add this for debugging
+      const payload = {
+        inputs: fullPrompt,
+      };
+
+      console.log('Sending payload:', payload);
 
       const response = await fetch(
         "https://api-inference.huggingface.co/models/ZB-Tech/Text-to-Image",

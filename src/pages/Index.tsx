@@ -13,7 +13,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Slider } from "@/components/ui/slider";
 
 interface AdvancedSettings {
   guidance_scale?: number;
@@ -133,8 +133,15 @@ const Index = () => {
     }));
   };
 
-  const handleSizeChange = (value: string) => {
-    const [width, height] = value.split('x').map(Number);
+  const handleSizeChange = (value: number[]) => {
+    const sizes = [
+      { width: 512, height: 512 },
+      { width: 768, height: 768 },
+      { width: 1024, height: 1024 }
+    ];
+    const index = Math.round(value[0]);
+    const { width, height } = sizes[index];
+    
     setAdvancedSettings(prev => ({
       ...prev,
       width,
@@ -143,7 +150,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen p-4 md:p-8 flex flex-col items-center gap-8">
+    <div className="min-h-screen p-4 md:p-8 flex flex-col items-center gap-6">
       <div className="text-center space-y-4">
         <h1 className="text-4xl md:text-5xl font-bold rainbow-text">
           AI Dream Image Generator
@@ -226,27 +233,21 @@ const Index = () => {
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label className="text-right">
-                  Image Size
-                </Label>
-                <RadioGroup
-                  className="col-span-3"
-                  onValueChange={handleSizeChange}
-                  value={`${advancedSettings.width || '512'}x${advancedSettings.height || '512'}`}
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="512x512" id="size-1" />
-                    <Label htmlFor="size-1">512x512</Label>
+                <Label className="text-right">Image Size</Label>
+                <div className="col-span-3 space-y-4">
+                  <Slider
+                    defaultValue={[0]}
+                    max={2}
+                    step={1}
+                    onValueChange={handleSizeChange}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-sm text-gray-500">
+                    <span>512x512</span>
+                    <span>768x768</span>
+                    <span>1024x1024</span>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="768x768" id="size-2" />
-                    <Label htmlFor="size-2">768x768</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="1024x1024" id="size-3" />
-                    <Label htmlFor="size-3">1024x1024</Label>
-                  </div>
-                </RadioGroup>
+                </div>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="scheduler" className="text-right">
@@ -278,7 +279,7 @@ const Index = () => {
         </Sheet>
       </div>
 
-      <div className="relative w-full max-w-2xl flex items-center justify-center">
+      <div className="relative w-full max-w-2xl flex items-center justify-center mt-2">
         {generatedImages.length > 1 && (
           <>
             <Button

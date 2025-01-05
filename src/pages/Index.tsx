@@ -65,7 +65,7 @@ const Index = () => {
       if (Object.keys(advancedSettings).length > 0) {
         payload.parameters = {};
         if (advancedSettings.guidance_scale) payload.parameters.guidance_scale = advancedSettings.guidance_scale;
-        if (advancedSettings.negative_prompt) payload.parameters.negative_prompt = [advancedSettings.negative_prompt];
+        if (advancedSettings.negative_prompt) payload.parameters.negative_prompt = [advancedSettings.negative_prompt]; // Now properly wrapped in an array
         if (advancedSettings.num_inference_steps) payload.parameters.num_inference_steps = advancedSettings.num_inference_steps;
         if (advancedSettings.width && advancedSettings.height) {
           payload.parameters.target_size = {
@@ -76,6 +76,8 @@ const Index = () => {
         if (advancedSettings.scheduler) payload.parameters.scheduler = advancedSettings.scheduler;
         if (advancedSettings.seed) payload.parameters.seed = advancedSettings.seed;
       }
+
+      console.log('Sending payload:', payload); // Add this for debugging
 
       const response = await fetch(
         "https://api-inference.huggingface.co/models/ZB-Tech/Text-to-Image",
@@ -90,7 +92,8 @@ const Index = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to generate image");
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to generate image');
       }
 
       const blob = await response.blob();
@@ -99,9 +102,10 @@ const Index = () => {
       setCurrentImage(imageUrl);
       setCurrentImageIndex(generatedImages.length);
     } catch (error) {
+      console.error('API Error:', error);
       toast({
         title: "Error",
-        description: "Error generating image. Please try again.",
+        description: error instanceof Error ? error.message : "Error generating image. Please try again.",
         variant: "destructive",
       });
     } finally {

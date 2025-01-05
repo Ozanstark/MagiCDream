@@ -44,7 +44,7 @@ export const AVAILABLE_MODELS: ModelType[] = [
   },
   {
     id: "realistic-seven",
-    name: "Flux-Midjourney-Mix2-LoRA",
+    name: "FLUX-Midjourney-Mix2-LoRA",
     apiUrl: "https://api-inference.huggingface.co/models/strangerzonehf/Flux-Midjourney-Mix2-LoRA",
     description: "Uncensored realistic style model"
   }

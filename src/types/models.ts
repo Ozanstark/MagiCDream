@@ -14,9 +14,9 @@ export const AVAILABLE_MODELS: ModelType[] = [
   },
   {
     id: "berrys-taylor",
-    name: "Berry's Taylor Style",
-    apiUrl: "https://api-inference.huggingface.co/models/prashanth970/flux-lora-uncensored",
-    description: "Uncensored artistic style model"
+    name: "Realistic Style 2",
+    apiUrl: "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-3.5-large",
+    description: "Uncensored realistic style model"
   },
   {
     id: "harrys-torrance",

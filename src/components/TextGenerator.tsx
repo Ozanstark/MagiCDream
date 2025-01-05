@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { MessageSquare } from "lucide-react";
+import { Wand2 } from "lucide-react";
 import { useToast } from "./ui/use-toast";
 import { HfInference } from "@huggingface/inference";
 import TextModelSelector from "./TextModelSelector";
@@ -65,7 +65,7 @@ const TextGenerator = () => {
           AI Dream Text to Text
         </h1>
         <p className="text-lg md:text-xl text-gray-700 max-w-2xl">
-          Transform your ideas into engaging conversations with AI.
+          Materialize your ideas, doubts and questions through text to transform them into text answers and solutions. Start dreaming.
         </p>
       </div>
 
@@ -87,7 +87,7 @@ const TextGenerator = () => {
           disabled={isLoading}
           className="bg-primary hover:bg-primary/90 h-10"
         >
-          <MessageSquare className="mr-2 h-4 w-4" />
+          <Wand2 className="mr-2 h-4 w-4" />
           {isLoading ? "Generating..." : "Generate"}
         </Button>
       </div>

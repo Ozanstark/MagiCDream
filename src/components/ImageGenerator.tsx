@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Wand2, ChevronLeft, ChevronRight, Settings } from "lucide-react";
+import { Wand2, ChevronLeft, ChevronRight, Settings, Plus, Minus } from "lucide-react";
 import ImageDisplay from "@/components/ImageDisplay";
 import { Slider } from "@/components/ui/slider";
 import {

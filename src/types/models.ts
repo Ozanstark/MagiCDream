@@ -16,8 +16,8 @@ export const AVAILABLE_MODELS: ModelType[] = [
     description: "Photorealistic images"
   },
   {
-    name: "Anime Style",
-    apiUrl: "https://api-inference.huggingface.co/models/Lykon/AAM_XL_AnimeMix",
-    description: "Anime and manga style"
+    name: "Berry's Taylor (Uncensored)",
+    apiUrl: "https://api-inference.huggingface.co/models/prashanth970/flux-lora-uncensored",
+    description: "Uncensored artistic style"
   }
 ];

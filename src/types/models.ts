@@ -32,8 +32,8 @@ export const AVAILABLE_MODELS: ModelType[] = [
   },
   {
     id: "realistic-five",
-    name: "Tiny 1.0",
-    apiUrl: "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
+    name: "Stable-Diffusion-3.5-Large-Turbo",
+    apiUrl: "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-3.5-large-turbo",
     description: "Censored realistic style model"
   },
   {

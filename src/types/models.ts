@@ -8,9 +8,9 @@ export type ModelType = {
 export const AVAILABLE_MODELS: ModelType[] = [
   {
     id: "larrys-cake",
-    name: "Larry's Cake Style",
-    apiUrl: "https://api-inference.huggingface.co/models/ZB-Tech/Text-to-Image",
-    description: "Uncensored creative style model"
+    name: "Realistic Style",
+    apiUrl: "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-dev",
+    description: "Censored realistic style model"
   },
   {
     id: "berrys-taylor",

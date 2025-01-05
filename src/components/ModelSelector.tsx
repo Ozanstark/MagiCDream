@@ -10,9 +10,10 @@ import { AVAILABLE_MODELS, ModelType } from "@/types/models";
 interface ModelSelectorProps {
   selectedModel: ModelType;
   onModelChange: (model: ModelType) => void;
+  disabled?: boolean;
 }
 
-const ModelSelector = ({ selectedModel, onModelChange }: ModelSelectorProps) => {
+const ModelSelector = ({ selectedModel, onModelChange, disabled }: ModelSelectorProps) => {
   return (
     <div className="w-full space-y-2">
       <Select
@@ -21,6 +22,7 @@ const ModelSelector = ({ selectedModel, onModelChange }: ModelSelectorProps) => 
           const model = AVAILABLE_MODELS.find((m) => m.name === value);
           if (model) onModelChange(model);
         }}
+        disabled={disabled}
       >
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Select a model" />

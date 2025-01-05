@@ -216,6 +216,7 @@ const Index = () => {
         <ModelSelector 
           selectedModel={selectedModel}
           onModelChange={setSelectedModel}
+          disabled={isLoading}
         />
         
         <div className="flex flex-col md:flex-row gap-2">
@@ -385,7 +386,7 @@ const Index = () => {
           <>
             <Button
               onClick={() => navigateImages('prev')}
-              disabled={currentImageIndex === 0}
+              disabled={currentImageIndex === 0 || isLoading}
               className="absolute left-[-60px] top-1/2 transform -translate-y-1/2 bg-primary/80 hover:bg-primary"
               size="icon"
             >
@@ -393,7 +394,7 @@ const Index = () => {
             </Button>
             <Button
               onClick={() => navigateImages('next')}
-              disabled={currentImageIndex === generatedImages.length - 1}
+              disabled={currentImageIndex === generatedImages.length - 1 || isLoading}
               className="absolute right-[-60px] top-1/2 transform -translate-y-1/2 bg-primary/80 hover:bg-primary"
               size="icon"
             >
@@ -405,8 +406,8 @@ const Index = () => {
           currentImage={currentImage}
           isLoading={isLoading}
           onNavigate={navigateImages}
-          canNavigatePrev={currentImageIndex > 0}
-          canNavigateNext={currentImageIndex < generatedImages.length - 1}
+          canNavigatePrev={currentImageIndex > 0 && !isLoading}
+          canNavigateNext={currentImageIndex < generatedImages.length - 1 && !isLoading}
         />
       </div>
     </div>

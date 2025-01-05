@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import { Settings } from "lucide-react";
+import { Settings, Plus, Minus } from "lucide-react";
 import ImageDisplay from "@/components/ImageDisplay";
 import { Slider } from "@/components/ui/slider";
 import {

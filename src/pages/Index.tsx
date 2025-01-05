@@ -2,8 +2,9 @@ import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Wand2, ChevronLeft, ChevronRight, Settings } from "lucide-react";
+import { Wand2, ChevronLeft, ChevronRight, Settings, Minus, Plus } from "lucide-react";
 import ImageDisplay from "@/components/ImageDisplay";
+import { Slider } from "@/components/ui/slider";
 import {
   Sheet,
   SheetContent,
@@ -137,13 +138,17 @@ const Index = () => {
     }
   };
 
-  const handleAdvancedSettingChange = (key: keyof AdvancedSettings, value: string) => {
+  const adjustDimension = (dimension: 'width' | 'height', adjustment: number) => {
     setAdvancedSettings(prev => ({
       ...prev,
-      [key]: value === "" ? undefined : 
-        (key === "guidance_scale" || key === "num_inference_steps" || key === "width" || key === "height" || key === "seed") 
-          ? Number(value) 
-          : value
+      [dimension]: Math.min(Math.max((prev[dimension] || 512) + adjustment, 256), 1024)
+    }));
+  };
+
+  const handleSliderChange = (dimension: 'width' | 'height', value: number[]) => {
+    setAdvancedSettings(prev => ({
+      ...prev,
+      [dimension]: value[0]
     }));
   };
 
@@ -154,7 +159,7 @@ const Index = () => {
           AI Dream Image Generator
         </h1>
         <p className="text-lg md:text-xl text-gray-700 max-w-2xl">
-          Create unlimited images in any style without any censorship, quickly, privately and securely.
+          Create quickly unlimited images in any style without any censorship and privately.
         </p>
       </div>
 
@@ -233,33 +238,63 @@ const Index = () => {
                   onChange={(e) => handleAdvancedSettingChange("num_inference_steps", e.target.value)}
                 />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="width" className="text-right">Width</Label>
-                <Input
-                  id="width"
-                  type="number"
-                  min="256"
-                  max="1024"
-                  step="64"
-                  className="col-span-3"
-                  placeholder="Image width (256-1024)"
-                  value={advancedSettings.width || ""}
-                  onChange={(e) => handleAdvancedSettingChange("width", e.target.value)}
-                />
+              <div className="space-y-2">
+                <Label className="text-right">Width ({advancedSettings.width}px)</Label>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => adjustDimension('width', -64)}
+                    disabled={advancedSettings.width === 256}
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <Slider
+                    value={[advancedSettings.width || 512]}
+                    min={256}
+                    max={1024}
+                    step={64}
+                    className="flex-1"
+                    onValueChange={(value) => handleSliderChange('width', value)}
+                  />
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => adjustDimension('width', 64)}
+                    disabled={advancedSettings.width === 1024}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="height" className="text-right">Height</Label>
-                <Input
-                  id="height"
-                  type="number"
-                  min="256"
-                  max="1024"
-                  step="64"
-                  className="col-span-3"
-                  placeholder="Image height (256-1024)"
-                  value={advancedSettings.height || ""}
-                  onChange={(e) => handleAdvancedSettingChange("height", e.target.value)}
-                />
+              <div className="space-y-2">
+                <Label className="text-right">Height ({advancedSettings.height}px)</Label>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => adjustDimension('height', -64)}
+                    disabled={advancedSettings.height === 256}
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <Slider
+                    value={[advancedSettings.height || 512]}
+                    min={256}
+                    max={1024}
+                    step={64}
+                    className="flex-1"
+                    onValueChange={(value) => handleSliderChange('height', value)}
+                  />
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => adjustDimension('height', 64)}
+                    disabled={advancedSettings.height === 1024}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="scheduler" className="text-right">

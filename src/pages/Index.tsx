@@ -205,10 +205,10 @@ const Index = () => {
     <div className="min-h-screen p-4 md:p-8 flex flex-col items-center gap-4">
       <div className="text-center space-y-4">
         <h1 className="text-4xl md:text-5xl font-bold rainbow-text">
-          AI Dream Image Generator
+          AI Dream Text to Image
         </h1>
         <p className="text-lg md:text-xl text-gray-700 max-w-2xl">
-          Create quickly unlimited images in any style and without censorship.
+          Start dreaming. Materialize your ideas through text to turn them into images.
         </p>
       </div>
 
@@ -220,7 +220,7 @@ const Index = () => {
         
         <div className="flex flex-col md:flex-row gap-2">
           <Input
-            placeholder="An old tape 80s style ultra-realistic nude aesthetic man posing in a lake"
+            placeholder="Describe the image you want to dream."
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyPress={handleKeyPress}

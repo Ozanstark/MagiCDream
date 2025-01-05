@@ -1,28 +1,33 @@
-export type ModelType = {
+export interface ModelType {
+  id: string;
   name: string;
-  apiUrl: string;
   description?: string;
-};
+  apiUrl: string;
+}
 
 export const AVAILABLE_MODELS: ModelType[] = [
   {
-    name: "Larry's Cake Style",
-    apiUrl: "https://api-inference.huggingface.co/models/ZB-Tech/Text-to-Image",
-    description: "Uncensored creative style model"
+    id: "sd-turbo",
+    name: "Stable Diffusion Turbo",
+    description: "Fast image generation",
+    apiUrl: "https://api-inference.huggingface.co/models/stabilityai/sd-turbo",
   },
   {
-    name: "Berry's Taylor Style",
-    apiUrl: "https://api-inference.huggingface.co/models/prashanth970/flux-lora-uncensored",
-    description: "Uncensored artistic style model"
+    id: "sdxl",
+    name: "Stable Diffusion XL",
+    description: "High quality image generation",
+    apiUrl: "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
   },
   {
-    name: "Harry's Torrance Style",
-    apiUrl: "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell",
-    description: "Uncensored fantasy style model"
+    id: "anything",
+    name: "Anything V5",
+    description: "Anime style images",
+    apiUrl: "https://api-inference.huggingface.co/models/stablediffusionapi/anything-v5",
   },
   {
-    name: "Townley Hawnley Style",
-    apiUrl: "https://api-inference.huggingface.co/models/lustlyai/Flux_Lustly.ai_Uncensored_nsfw_v1",
-    description: "Uncensored realistic style model"
-  }
+    id: "realistic",
+    name: "Realistic Vision V5.1",
+    description: "Photorealistic images",
+    apiUrl: "https://api-inference.huggingface.co/models/stablediffusionapi/realistic-vision-v51",
+  },
 ];

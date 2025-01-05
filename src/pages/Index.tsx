@@ -27,6 +27,11 @@ interface AdvancedSettings {
   seed?: number;
 }
 
+interface ModelGenerationTime {
+  modelId: string;
+  timestamps: Date[];
+}
+
 const Index = () => {
   const [prompt, setPrompt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -38,14 +43,21 @@ const Index = () => {
     width: 512,
     height: 512
   });
-  const [lastGenerationTime, setLastGenerationTime] = useState<Date[]>([]);
+  const [modelGenerationTimes, setModelGenerationTimes] = useState<ModelGenerationTime[]>(
+    AVAILABLE_MODELS.map(model => ({ modelId: model.id, timestamps: [] }))
+  );
   const { toast } = useToast();
 
-  // Clean up old timestamps every minute
+  // Limpiar timestamps antiguos cada minuto
   useEffect(() => {
     const interval = setInterval(() => {
       const oneMinuteAgo = new Date(Date.now() - 60000);
-      setLastGenerationTime(prev => prev.filter(time => time > oneMinuteAgo));
+      setModelGenerationTimes(prev => 
+        prev.map(model => ({
+          ...model,
+          timestamps: model.timestamps.filter(time => time > oneMinuteAgo)
+        }))
+      );
     }, 60000);
 
     return () => clearInterval(interval);
@@ -68,14 +80,15 @@ const Index = () => {
       return;
     }
 
-    // Clean up timestamps older than 1 minute
+    // Verificar límite de generación para el modelo seleccionado
     const oneMinuteAgo = new Date(Date.now() - 60000);
-    const recentGenerations = lastGenerationTime.filter(time => time > oneMinuteAgo);
+    const modelTimes = modelGenerationTimes.find(m => m.modelId === selectedModel.id);
+    const recentGenerations = modelTimes?.timestamps.filter(time => time > oneMinuteAgo) || [];
 
     if (recentGenerations.length >= 3) {
       toast({
         title: "Rate Limit",
-        description: "You can only generate 3 images per minute. Please wait.",
+        description: `You can only generate 3 images per minute with ${selectedModel.name}. Please try another model or wait.`,
         variant: "destructive",
       });
       return;
@@ -134,7 +147,15 @@ const Index = () => {
       setGeneratedImages(prev => [...prev, imageUrl]);
       setCurrentImage(imageUrl);
       setCurrentImageIndex(generatedImages.length);
-      setLastGenerationTime(prev => [...prev, new Date()]);
+
+      // Actualizar timestamps para el modelo actual
+      setModelGenerationTimes(prev => 
+        prev.map(model => 
+          model.modelId === selectedModel.id
+            ? { ...model, timestamps: [...model.timestamps, new Date()] }
+            : model
+        )
+      );
     } catch (error) {
       console.error('API Error:', error);
       toast({

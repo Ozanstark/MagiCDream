@@ -14,6 +14,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
+import ModelSelector from "@/components/ModelSelector";
+import { AVAILABLE_MODELS, ModelType } from "@/types/models";
 
 interface AdvancedSettings {
   guidance_scale?: number;
@@ -31,6 +33,7 @@ const Index = () => {
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [generatedImages, setGeneratedImages] = useState<string[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [selectedModel, setSelectedModel] = useState<ModelType>(AVAILABLE_MODELS[0]);
   const [advancedSettings, setAdvancedSettings] = useState<AdvancedSettings>({
     width: 512,
     height: 512
@@ -65,7 +68,6 @@ const Index = () => {
 
     setIsLoading(true);
     try {
-      // Construct the prompt with parameters included
       let fullPrompt = prompt;
       
       if (Object.keys(advancedSettings).length > 0) {
@@ -96,7 +98,7 @@ const Index = () => {
       console.log('Sending payload:', payload);
 
       const response = await fetch(
-        "https://api-inference.huggingface.co/models/ZB-Tech/Text-to-Image",
+        selectedModel.apiUrl,
         {
           headers: {
             Authorization: "Bearer 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",
@@ -171,6 +173,11 @@ const Index = () => {
       </div>
 
       <div className="w-full max-w-2xl flex flex-col gap-4">
+        <ModelSelector 
+          selectedModel={selectedModel}
+          onModelChange={setSelectedModel}
+        />
+        
         <div className="flex flex-col md:flex-row gap-4">
           <Input
             placeholder="An old tape 80s style ultra-realistic nude aesthetic man posing in a lake"
@@ -367,4 +374,3 @@ const Index = () => {
 };
 
 export default Index;
-

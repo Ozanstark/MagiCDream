@@ -17,7 +17,16 @@ const Index = () => {
     if (!prompt.trim()) {
       toast({
         title: "Error",
-        description: "Por favor, introduce un prompt primero",
+        description: "Please enter a prompt first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (generatedImages.length >= 3) {
+      toast({
+        title: "Rate Limit",
+        description: "You can only generate 3 images per minute. Please wait.",
         variant: "destructive",
       });
       return;
@@ -49,7 +58,7 @@ const Index = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Error al generar la imagen. Por favor, inténtalo de nuevo.",
+        description: "Error generating image. Please try again.",
         variant: "destructive",
       });
     } finally {

@@ -13,7 +13,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
 
 interface AdvancedSettings {
   guidance_scale?: number;
@@ -31,7 +30,10 @@ const Index = () => {
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [generatedImages, setGeneratedImages] = useState<string[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [advancedSettings, setAdvancedSettings] = useState<AdvancedSettings>({});
+  const [advancedSettings, setAdvancedSettings] = useState<AdvancedSettings>({
+    width: 512,
+    height: 512
+  });
   const { toast } = useToast();
 
   const generateImage = async () => {
@@ -133,22 +135,6 @@ const Index = () => {
     }));
   };
 
-  const handleSizeChange = (value: number[]) => {
-    const sizes = [
-      { width: 512, height: 512 },
-      { width: 768, height: 768 },
-      { width: 1024, height: 1024 }
-    ];
-    const index = Math.round(value[0]);
-    const { width, height } = sizes[index];
-    
-    setAdvancedSettings(prev => ({
-      ...prev,
-      width,
-      height
-    }));
-  };
-
   return (
     <div className="min-h-screen p-4 md:p-8 flex flex-col items-center gap-6">
       <div className="text-center space-y-4">
@@ -186,7 +172,7 @@ const Index = () => {
               Advanced
             </Button>
           </SheetTrigger>
-          <SheetContent className="sm:max-w-[500px]" side="right">
+          <SheetContent className="sm:max-w-[500px] overflow-y-auto max-h-[80vh]" side="right">
             <SheetHeader>
               <SheetTitle>Advanced Settings</SheetTitle>
               <SheetDescription>
@@ -233,21 +219,32 @@ const Index = () => {
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label className="text-right">Image Size</Label>
-                <div className="col-span-3 space-y-4">
-                  <Slider
-                    defaultValue={[0]}
-                    max={2}
-                    step={1}
-                    onValueChange={handleSizeChange}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-sm text-gray-500">
-                    <span>512x512</span>
-                    <span>768x768</span>
-                    <span>1024x1024</span>
-                  </div>
-                </div>
+                <Label htmlFor="width" className="text-right">Width</Label>
+                <Input
+                  id="width"
+                  type="number"
+                  min="256"
+                  max="1024"
+                  step="64"
+                  className="col-span-3"
+                  placeholder="Image width (256-1024)"
+                  value={advancedSettings.width || ""}
+                  onChange={(e) => handleAdvancedSettingChange("width", e.target.value)}
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="height" className="text-right">Height</Label>
+                <Input
+                  id="height"
+                  type="number"
+                  min="256"
+                  max="1024"
+                  step="64"
+                  className="col-span-3"
+                  placeholder="Image height (256-1024)"
+                  value={advancedSettings.height || ""}
+                  onChange={(e) => handleAdvancedSettingChange("height", e.target.value)}
+                />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="scheduler" className="text-right">

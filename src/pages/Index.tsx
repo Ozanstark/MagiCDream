@@ -197,7 +197,7 @@ const Index = () => {
             </Button>
           </SheetTrigger>
           <SheetContent 
-            className="sm:max-w-[500px] overflow-y-auto max-h-[70vh] mt-20" 
+            className="sm:max-w-[500px] mt-20 h-[85vh]" 
             side="right"
           >
             <SheetHeader>

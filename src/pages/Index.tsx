@@ -184,7 +184,7 @@ const Index = () => {
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyPress={handleKeyPress}
-            className="flex-1 bg-white border-primary focus-visible:ring-0 focus:border-primary h-10"
+            className="flex-1 bg-white border-gray-200 focus:border-primary focus:ring-primary h-10"
           />
           <Button
             onClick={generateImage}
@@ -374,3 +374,4 @@ const Index = () => {
 };
 
 export default Index;
+

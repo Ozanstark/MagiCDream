@@ -197,7 +197,7 @@ const Index = () => {
             </Button>
           </SheetTrigger>
           <SheetContent 
-            className="sm:max-w-[500px] mt-20 h-[85vh]" 
+            className="sm:max-w-[500px] mt-16 h-[90vh]" 
             side="right"
           >
             <SheetHeader>
@@ -245,9 +245,9 @@ const Index = () => {
                   onChange={(e) => handleAdvancedSettingChange("num_inference_steps", e.target.value)}
                 />
               </div>
-              <div className="space-y-2">
+              <div className="grid grid-cols-4 items-center gap-4">
                 <Label className="text-right">Width ({advancedSettings.width}px)</Label>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 col-span-3">
                   <Button
                     variant="outline"
                     size="icon"
@@ -274,9 +274,9 @@ const Index = () => {
                   </Button>
                 </div>
               </div>
-              <div className="space-y-2">
+              <div className="grid grid-cols-4 items-center gap-4">
                 <Label className="text-right">Height ({advancedSettings.height}px)</Label>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 col-span-3">
                   <Button
                     variant="outline"
                     size="icon"
@@ -367,3 +367,4 @@ const Index = () => {
 };
 
 export default Index;
+

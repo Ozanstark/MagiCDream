@@ -216,7 +216,6 @@ const Index = () => {
         <ModelSelector 
           selectedModel={selectedModel}
           onModelChange={setSelectedModel}
-          disabled={isLoading}
         />
         
         <div className="flex flex-col md:flex-row gap-2">

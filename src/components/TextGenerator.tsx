@@ -3,11 +3,17 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { MessageSquare } from "lucide-react";
 import { useToast } from "./ui/use-toast";
+import { HfInference } from "@huggingface/inference";
+import TextModelSelector from "./TextModelSelector";
+import { AVAILABLE_TEXT_MODELS, TextModelType } from "@/types/text-models";
+
+const client = new HfInference("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");
 
 const TextGenerator = () => {
   const [prompt, setPrompt] = useState("");
   const [response, setResponse] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<TextModelType>(AVAILABLE_TEXT_MODELS[0]);
   const { toast } = useToast();
 
   const generateText = async () => {
@@ -22,9 +28,25 @@ const TextGenerator = () => {
 
     setIsLoading(true);
     try {
-      // Placeholder for API call - to be implemented
-      const result = "This is a placeholder response. The actual API integration will be implemented later.";
-      setResponse(result);
+      let output = "";
+      const stream = client.chatCompletionStream({
+        model: selectedModel.id,
+        messages: [
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        max_tokens: 500
+      });
+
+      for await (const chunk of stream) {
+        if (chunk.choices && chunk.choices.length > 0) {
+          const newContent = chunk.choices[0].delta.content;
+          output += newContent;
+          setResponse(output);
+        }
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -46,6 +68,12 @@ const TextGenerator = () => {
           Transform your ideas into engaging conversations with AI.
         </p>
       </div>
+
+      <TextModelSelector
+        selectedModel={selectedModel}
+        onModelChange={setSelectedModel}
+        disabled={isLoading}
+      />
 
       <div className="flex flex-col md:flex-row gap-2">
         <Input

@@ -14,7 +14,7 @@ interface ModelSelectorProps {
 
 const ModelSelector = ({ selectedModel, onModelChange }: ModelSelectorProps) => {
   return (
-    <div className="w-full space-y-2">
+    <div className="w-full">
       <Select
         value={selectedModel.name}
         onValueChange={(value) => {
@@ -22,7 +22,7 @@ const ModelSelector = ({ selectedModel, onModelChange }: ModelSelectorProps) => 
           if (model) onModelChange(model);
         }}
       >
-        <SelectTrigger className="w-full">
+        <SelectTrigger className="w-full h-9">
           <SelectValue placeholder="Select a model" />
         </SelectTrigger>
         <SelectContent>

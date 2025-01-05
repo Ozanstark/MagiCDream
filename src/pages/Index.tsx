@@ -204,7 +204,7 @@ const Index = () => {
             </Button>
           </SheetTrigger>
           <SheetContent 
-            className="sm:max-w-[500px] mt-4 h-[75vh]" 
+            className="sm:max-w-[500px] top-[50%] translate-y-[-50%] h-auto" 
             side="right"
           >
             <SheetHeader>
@@ -213,7 +213,7 @@ const Index = () => {
                 Configure advanced parameters for image generation
               </SheetDescription>
             </SheetHeader>
-            <div className="grid gap-4 py-4">
+            <div className="grid gap-4 py-6">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="guidance_scale" className="text-right">
                   Guidance Scale
@@ -374,3 +374,4 @@ const Index = () => {
 };
 
 export default Index;
+

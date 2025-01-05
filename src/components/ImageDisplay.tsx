@@ -49,55 +49,23 @@ const ImageDisplay = ({
 
   if (!currentImage && !isLoading) {
     return (
-      <div className="image-container flex items-center justify-center relative">
+      <div className="image-container flex items-center justify-center">
         <p className="text-gray-500">Your generated image will appear here</p>
-        <Button
-          onClick={() => onNavigate?.('prev')}
-          disabled={true}
-          className="absolute left-[-60px] top-1/2 transform -translate-y-1/2 bg-primary/80 hover:bg-primary"
-          size="icon"
-        >
-          <ChevronLeft className="h-6 w-6" />
-        </Button>
-        <Button
-          onClick={() => onNavigate?.('next')}
-          disabled={true}
-          className="absolute right-[-60px] top-1/2 transform -translate-y-1/2 bg-primary/80 hover:bg-primary"
-          size="icon"
-        >
-          <ChevronRight className="h-6 w-6" />
-        </Button>
       </div>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="image-container flex items-center justify-center relative">
+      <div className="image-container flex items-center justify-center">
         <div className="loading-spinner" />
-        <Button
-          onClick={() => onNavigate?.('prev')}
-          disabled={true}
-          className="absolute left-[-60px] top-1/2 transform -translate-y-1/2 bg-primary/80 hover:bg-primary"
-          size="icon"
-        >
-          <ChevronLeft className="h-6 w-6" />
-        </Button>
-        <Button
-          onClick={() => onNavigate?.('next')}
-          disabled={true}
-          className="absolute right-[-60px] top-1/2 transform -translate-y-1/2 bg-primary/80 hover:bg-primary"
-          size="icon"
-        >
-          <ChevronRight className="h-6 w-6" />
-        </Button>
       </div>
     );
   }
 
   return (
     <>
-      <div className="image-container group relative">
+      <div className="image-container group">
         <img
           src={currentImage!}
           alt="Generated"
@@ -109,22 +77,6 @@ const ImageDisplay = ({
           className="absolute top-4 right-4 bg-primary hover:bg-primary/90"
         >
           <Download className="h-4 w-4" />
-        </Button>
-        <Button
-          onClick={() => onNavigate?.('prev')}
-          disabled={!canNavigatePrev}
-          className="absolute left-[-60px] top-1/2 transform -translate-y-1/2 bg-primary/80 hover:bg-primary"
-          size="icon"
-        >
-          <ChevronLeft className="h-6 w-6" />
-        </Button>
-        <Button
-          onClick={() => onNavigate?.('next')}
-          disabled={!canNavigateNext}
-          className="absolute right-[-60px] top-1/2 transform -translate-y-1/2 bg-primary/80 hover:bg-primary"
-          size="icon"
-        >
-          <ChevronRight className="h-6 w-6" />
         </Button>
       </div>
 

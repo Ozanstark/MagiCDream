@@ -21,7 +21,7 @@ export const AVAILABLE_MODELS: ModelType[] = [
     description: "Uncensored fantasy style model"
   },
   {
-    name: "Townley Hawnley Style",
+    name: "Townley's Hawnley Style",
     apiUrl: "https://api-inference.huggingface.co/models/lustlyai/Flux_Lustly.ai_Uncensored_nsfw_v1",
     description: "Uncensored realistic style model"
   }

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Settings, Plus, Minus } from "lucide-react";
+import { Wand2, ChevronLeft, ChevronRight, Settings, Minus, Plus } from "lucide-react";
 import ImageDisplay from "@/components/ImageDisplay";
 import { Slider } from "@/components/ui/slider";
 import {
@@ -13,10 +14,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import ModelSelector from "@/components/ModelSelector";
 import { AVAILABLE_MODELS, ModelType } from "@/types/models";
-import Header from "@/components/Header";
-import ImageControls from "@/components/ImageControls";
 
 interface AdvancedSettings {
   guidance_scale?: number;
@@ -164,39 +163,59 @@ const Index = () => {
 
   return (
     <div className="min-h-screen p-4 md:p-8 flex flex-col items-center gap-6">
-      <Header 
-        title="AI Dream Image Generator"
-        description="Create quickly unlimited images in any style without any censorship."
-      />
+      <div className="text-center space-y-4">
+        <h1 className="text-4xl md:text-5xl font-bold rainbow-text">
+          AI Dream Image Generator
+        </h1>
+        <p className="text-lg md:text-xl text-gray-700 max-w-2xl">
+          Create quickly unlimited images in any style without any censorship and privately.
+        </p>
+      </div>
 
-      <ImageControls
-        prompt={prompt}
-        setPrompt={setPrompt}
-        handleKeyPress={handleKeyPress}
-        generateImage={generateImage}
-        isLoading={isLoading}
-        selectedModel={selectedModel}
-        onModelChange={setSelectedModel}
-      />
+      <div className="w-full max-w-2xl flex flex-col gap-4">
+        <div className="flex flex-col gap-4">
+          <ModelSelector 
+            selectedModel={selectedModel}
+            onModelChange={setSelectedModel}
+          />
+          
+          <div className="flex flex-col md:flex-row gap-4">
+            <Input
+              placeholder="An old tape 80s style ultra-realistic nude aesthetic man posing in a lake"
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              onKeyPress={handleKeyPress}
+              className="flex-1 bg-white border-primary focus:ring-primary"
+            />
+            <Button
+              onClick={generateImage}
+              disabled={isLoading}
+              className="bg-primary hover:bg-primary/90"
+            >
+              <Wand2 className="mr-2 h-4 w-4" />
+              {isLoading ? "Dreaming..." : "Dream Image"}
+            </Button>
+          </div>
+        </div>
 
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button variant="outline" className="w-full md:w-auto">
-            <Settings className="h-4 w-4 mr-2" />
-            Advanced
-          </Button>
-        </SheetTrigger>
-        <SheetContent 
-          className="sm:max-w-[500px] mt-4 h-[80vh]" 
-          side="right"
-        >
-          <SheetHeader>
-            <SheetTitle>Advanced Settings</SheetTitle>
-            <SheetDescription>
-              Configure advanced parameters for image generation
-            </SheetDescription>
-          </SheetHeader>
-          <div className="grid gap-4 py-4">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="outline" className="w-full md:w-auto">
+              <Settings className="h-4 w-4 mr-2" />
+              Advanced
+            </Button>
+          </SheetTrigger>
+          <SheetContent 
+            className="sm:max-w-[500px] mt-8 h-[85vh]" 
+            side="right"
+          >
+            <SheetHeader>
+              <SheetTitle>Advanced Settings</SheetTitle>
+              <SheetDescription>
+                Configure advanced parameters for image generation
+              </SheetDescription>
+            </SheetHeader>
+            <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="guidance_scale" className="text-right">
                   Guidance Scale
@@ -318,11 +337,32 @@ const Index = () => {
                   onChange={(e) => handleAdvancedSettingChange("seed", e.target.value)}
                 />
               </div>
-          </div>
-        </SheetContent>
-      </Sheet>
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
 
       <div className="relative w-full max-w-2xl flex items-center justify-center mt-2">
+        {generatedImages.length > 1 && (
+          <>
+            <Button
+              onClick={() => navigateImages('prev')}
+              disabled={currentImageIndex === 0}
+              className="absolute left-[-60px] top-1/2 transform -translate-y-1/2 bg-primary/80 hover:bg-primary"
+              size="icon"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </Button>
+            <Button
+              onClick={() => navigateImages('next')}
+              disabled={currentImageIndex === generatedImages.length - 1}
+              className="absolute right-[-60px] top-1/2 transform -translate-y-1/2 bg-primary/80 hover:bg-primary"
+              size="icon"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </Button>
+          </>
+        )}
         <ImageDisplay
           currentImage={currentImage}
           isLoading={isLoading}

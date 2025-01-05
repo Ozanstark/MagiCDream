@@ -213,27 +213,28 @@ const Index = () => {
       </div>
 
       <div className="w-full max-w-2xl flex flex-col gap-2">
-        <ModelSelector 
-          selectedModel={selectedModel}
-          onModelChange={setSelectedModel}
-        />
-        
         <div className="flex flex-col md:flex-row gap-2">
-          <Input
-            placeholder="An old tape 80s style ultra-realistic nude aesthetic man posing in a lake"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            onKeyPress={handleKeyPress}
-            className="flex-1 bg-white h-10"
+          <ModelSelector 
+            selectedModel={selectedModel}
+            onModelChange={setSelectedModel}
           />
-          <Button
-            onClick={generateImage}
-            disabled={isLoading}
-            className="bg-primary hover:bg-primary/90 h-10"
-          >
-            <Wand2 className="mr-2 h-4 w-4" />
-            {isLoading ? "Dreaming..." : "Dream Image"}
-          </Button>
+          <div className="flex-1 flex gap-2">
+            <Input
+              placeholder="An old tape 80s style ultra-realistic nude aesthetic man posing in a lake"
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              onKeyPress={handleKeyPress}
+              className="flex-1 bg-white h-10"
+            />
+            <Button
+              onClick={generateImage}
+              disabled={isLoading}
+              className="bg-primary hover:bg-primary/90 h-10 whitespace-nowrap"
+            >
+              <Wand2 className="mr-2 h-4 w-4" />
+              {isLoading ? "Dreaming..." : "Dream Image"}
+            </Button>
+          </div>
         </div>
 
         <Sheet>

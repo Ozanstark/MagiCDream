@@ -34,12 +34,18 @@ export const AVAILABLE_MODELS: ModelType[] = [
     id: "realistic-five",
     name: "Stable-Diffusion-3.5-Large-Turbo",
     apiUrl: "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-3.5-large-turbo",
-    description: "Censored realistic style model"
+    description: "Uncensored realistic style model"
   },
   {
     id: "realistic-six",
-    name: "Flux-LORA-Uncensored",
+    name: "FLUX-LoRA-Uncensored",
     apiUrl: "https://api-inference.huggingface.co/models/prashanth970/flux-lora-uncensored",
+    description: "Uncensored realistic style model"
+  },
+  {
+    id: "realistic-seven",
+    name: "Flux-Midjourney-Mix2-LoRA",
+    apiUrl: "https://api-inference.huggingface.co/models/strangerzonehf/Flux-Midjourney-Mix2-LoRA",
     description: "Uncensored realistic style model"
   }
 ];

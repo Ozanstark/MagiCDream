@@ -204,7 +204,7 @@ const Index = () => {
             </Button>
           </SheetTrigger>
           <SheetContent 
-            className="sm:max-w-[500px] mt-4 pb-6 h-[75vh]" 
+            className="sm:max-w-[500px] mt-4 h-[75vh]" 
             side="right"
           >
             <SheetHeader>

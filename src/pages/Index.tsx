@@ -154,7 +154,7 @@ const Index = () => {
           AI Dream Image Generator
         </h1>
         <p className="text-lg md:text-xl text-gray-700 max-w-2xl">
-          Create images of all styles in an unlimited way, without censorship and privately.
+          Create unlimited images in any style without any censorship, quickly, privately and securely.
         </p>
       </div>
 
@@ -184,7 +184,10 @@ const Index = () => {
               Advanced
             </Button>
           </SheetTrigger>
-          <SheetContent className="sm:max-w-[500px] overflow-y-auto max-h-[80vh]" side="right">
+          <SheetContent 
+            className="sm:max-w-[500px] overflow-y-auto max-h-[70vh] mt-20" 
+            side="right"
+          >
             <SheetHeader>
               <SheetTitle>Advanced Settings</SheetTitle>
               <SheetDescription>

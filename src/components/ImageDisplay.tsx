@@ -82,12 +82,20 @@ const ImageDisplay = ({
 
       {isZoomed && (
         <div className="zoom-overlay" onClick={() => setIsZoomed(false)}>
-          <Button
-            className="absolute top-4 right-4 bg-primary hover:bg-primary/90"
-            onClick={() => setIsZoomed(false)}
-          >
-            <X className="h-4 w-4" />
-          </Button>
+          <div className="absolute top-4 right-4 flex gap-2">
+            <Button
+              onClick={handleDownload}
+              className="bg-primary hover:bg-primary/90"
+            >
+              <Download className="h-4 w-4" />
+            </Button>
+            <Button
+              className="bg-primary hover:bg-primary/90"
+              onClick={() => setIsZoomed(false)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
           {onNavigate && (
             <>
               <Button

@@ -14,7 +14,7 @@ interface ModelSelectorProps {
 
 const ModelSelector = ({ selectedModel, onModelChange }: ModelSelectorProps) => {
   return (
-    <div className="w-full md:flex-1">
+    <div className="w-full space-y-2">
       <Select
         value={selectedModel.name}
         onValueChange={(value) => {
@@ -27,7 +27,7 @@ const ModelSelector = ({ selectedModel, onModelChange }: ModelSelectorProps) => 
         </SelectTrigger>
         <SelectContent>
           {AVAILABLE_MODELS.map((model) => (
-            <SelectItem key={model.id} value={model.name}>
+            <SelectItem key={model.name} value={model.name}>
               <div className="flex flex-col">
                 <span>{model.name}</span>
                 {model.description && (

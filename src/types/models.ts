@@ -1,28 +1,27 @@
-export type ModelType = {
+export interface ModelType {
+  id: string;
   name: string;
-  apiUrl: string;
   description?: string;
-};
+  apiUrl: string;
+}
 
 export const AVAILABLE_MODELS: ModelType[] = [
   {
-    name: "Larry's Cake Style",
-    apiUrl: "https://api-inference.huggingface.co/models/ZB-Tech/Text-to-Image",
-    description: "Uncensored creative style model"
+    id: "stabilityai/stable-diffusion-2-1",
+    name: "Stable Diffusion 2.1",
+    description: "Stable Diffusion 2.1 base model",
+    apiUrl: "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1"
   },
   {
-    name: "Berry's Taylor Style",
-    apiUrl: "https://api-inference.huggingface.co/models/prashanth970/flux-lora-uncensored",
-    description: "Uncensored artistic style model"
+    id: "runwayml/stable-diffusion-v1-5",
+    name: "Stable Diffusion 1.5",
+    description: "Stable Diffusion 1.5 base model",
+    apiUrl: "https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5"
   },
   {
-    name: "Harry's Torrance Style",
-    apiUrl: "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell",
-    description: "Uncensored fantasy style model"
-  },
-  {
-    name: "Townley Hawnley Style",
-    apiUrl: "https://api-inference.huggingface.co/models/lustlyai/Flux_Lustly.ai_Uncensored_nsfw_v1",
-    description: "Uncensored realistic style model"
+    id: "prompthero/openjourney",
+    name: "Openjourney",
+    description: "Midjourney v4 style model",
+    apiUrl: "https://api-inference.huggingface.co/models/prompthero/openjourney"
   }
 ];

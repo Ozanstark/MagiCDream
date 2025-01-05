@@ -218,14 +218,6 @@ const Index = () => {
             selectedModel={selectedModel}
             onModelChange={setSelectedModel}
           />
-          <Button
-            onClick={generateImage}
-            disabled={isLoading}
-            className="bg-primary hover:bg-primary/90 h-10 whitespace-nowrap"
-          >
-            <Wand2 className="mr-2 h-4 w-4" />
-            {isLoading ? "Dreaming..." : "Dream Image"}
-          </Button>
         </div>
         
         <div className="flex flex-col md:flex-row gap-2">
@@ -236,6 +228,14 @@ const Index = () => {
             onKeyPress={handleKeyPress}
             className="flex-1 bg-white h-10"
           />
+          <Button
+            onClick={generateImage}
+            disabled={isLoading}
+            className="bg-primary hover:bg-primary/90 h-10 whitespace-nowrap"
+          >
+            <Wand2 className="mr-2 h-4 w-4" />
+            {isLoading ? "Dreaming..." : "Dream Image"}
+          </Button>
         </div>
 
         <Sheet>

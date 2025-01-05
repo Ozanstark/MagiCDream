@@ -168,11 +168,11 @@ const Index = () => {
           AI Dream Image Generator
         </h1>
         <p className="text-lg md:text-xl text-gray-700 max-w-2xl">
-          Create quickly unlimited images in any style without any censorship.
+          Create quickly unlimited images in any style and without any censorship.
         </p>
       </div>
 
-      <div className="w-full max-w-2xl flex flex-col gap-4">
+      <div className="w-full max-w-2xl flex flex-col gap-3">
         <ModelSelector 
           selectedModel={selectedModel}
           onModelChange={setSelectedModel}
@@ -199,7 +199,7 @@ const Index = () => {
 
       <Sheet>
         <SheetTrigger asChild>
-          <Button variant="outline" className="w-full md:w-auto">
+          <Button variant="outline" className="w-full md:w-auto mt-1">
             <Settings className="h-4 w-4 mr-2" />
             Advanced
           </Button>

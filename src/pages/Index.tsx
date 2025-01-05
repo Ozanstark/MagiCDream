@@ -382,26 +382,22 @@ const Index = () => {
       </div>
 
       <div className="relative w-full max-w-2xl flex items-center justify-center">
-        {generatedImages.length > 1 && (
-          <>
-            <Button
-              onClick={() => navigateImages('prev')}
-              disabled={currentImageIndex === 0 || isLoading}
-              className="absolute left-[-60px] top-1/2 transform -translate-y-1/2 bg-primary/80 hover:bg-primary"
-              size="icon"
-            >
-              <ChevronLeft className="h-6 w-6" />
-            </Button>
-            <Button
-              onClick={() => navigateImages('next')}
-              disabled={currentImageIndex === generatedImages.length - 1 || isLoading}
-              className="absolute right-[-60px] top-1/2 transform -translate-y-1/2 bg-primary/80 hover:bg-primary"
-              size="icon"
-            >
-              <ChevronRight className="h-6 w-6" />
-            </Button>
-          </>
-        )}
+        <Button
+          onClick={() => navigateImages('prev')}
+          disabled={currentImageIndex === 0 || isLoading}
+          className="absolute left-[-60px] top-1/2 transform -translate-y-1/2 bg-primary/80 hover:bg-primary"
+          size="icon"
+        >
+          <ChevronLeft className="h-6 w-6" />
+        </Button>
+        <Button
+          onClick={() => navigateImages('next')}
+          disabled={currentImageIndex === generatedImages.length - 1 || isLoading}
+          className="absolute right-[-60px] top-1/2 transform -translate-y-1/2 bg-primary/80 hover:bg-primary"
+          size="icon"
+        >
+          <ChevronRight className="h-6 w-6" />
+        </Button>
         <ImageDisplay
           currentImage={currentImage}
           isLoading={isLoading}

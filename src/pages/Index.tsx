@@ -208,7 +208,7 @@ const Index = () => {
           AI Dream Text to Image
         </h1>
         <p className="text-lg md:text-xl text-gray-700 max-w-2xl">
-          Start dreaming. Materialize your ideas through text to turn them into images.
+          Materialize your ideas through text to transform them into images. Start dreaming.
         </p>
       </div>
 

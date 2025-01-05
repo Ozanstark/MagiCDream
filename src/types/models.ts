@@ -20,9 +20,9 @@ export const AVAILABLE_MODELS: ModelType[] = [
   },
   {
     id: "harrys-torrance",
-    name: "Harry's Torrance Style",
+    name: "Realistic Style 3",
     apiUrl: "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell",
-    description: "Uncensored fantasy style model"
+    description: "Uncensored realistic style model"
   },
   {
     id: "townley-hawnley",

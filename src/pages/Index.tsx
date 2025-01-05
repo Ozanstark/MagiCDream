@@ -80,8 +80,7 @@ const Index = () => {
           AI Dream Image Generator
         </h1>
         <p className="text-lg md:text-xl text-gray-700 max-w-2xl">
-          Create images of all styles in an unlimited way, without censorship,
-          privately without an internet connection.
+          Create images of all styles in an unlimited way, without censorship and privately.
         </p>
       </div>
 

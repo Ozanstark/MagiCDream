@@ -37,6 +37,13 @@ const Index = () => {
   });
   const { toast } = useToast();
 
+  const handleAdvancedSettingChange = (key: keyof AdvancedSettings, value: string | number) => {
+    setAdvancedSettings(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+
   const generateImage = async () => {
     if (!prompt.trim()) {
       toast({

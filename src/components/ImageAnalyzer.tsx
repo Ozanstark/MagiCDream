@@ -3,7 +3,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Loader2, Upload } from "lucide-react";
-import { pipeline } from "@huggingface/transformers";
+import { AutoProcessor, AutoModel } from "@huggingface/transformers";
 
 const ImageAnalyzer = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -34,18 +34,35 @@ const ImageAnalyzer = () => {
 
     setIsAnalyzing(true);
     try {
-      const extractor = await pipeline(
-        "feature-extraction",
-        "facebook/dinov2-base",
-        { device: "webgpu" }
-      );
-
-      const features = await extractor(imageUrl, {
-        pooling: "mean",
-        normalize: true,
+      // Load the processor and model directly
+      const processor = await AutoProcessor.from_pretrained("facebook/dinov2-base", {
+        device: "webgpu"
+      });
+      
+      const model = await AutoModel.from_pretrained("facebook/dinov2-base", {
+        device: "webgpu"
       });
 
-      setFeatures(features.tolist()[0]);
+      // Create an image element and wait for it to load
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = imageUrl;
+      });
+
+      // Process the image
+      const processedImage = await processor(img);
+      
+      // Get features from the model
+      const output = await model(processedImage);
+      
+      // Extract and process the features
+      const pooledFeatures = output.last_hidden_state.mean(1);
+      const normalizedFeatures = pooledFeatures.div(pooledFeatures.norm(2, -1, true));
+      
+      setFeatures(normalizedFeatures.tolist()[0]);
       
       toast({
         title: "Success",

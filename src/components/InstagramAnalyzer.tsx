@@ -1,16 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { X, Loader2, Languages } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { ImageUploader } from "./instagram/ImageUploader";
+import { AnalysisResults } from "./instagram/AnalysisResults";
+import { PremiumUpgrade } from "./instagram/PremiumUpgrade";
 
 interface AnalysisResult {
   score: number;
@@ -23,42 +18,20 @@ const InstagramAnalyzer = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [results, setResults] = useState<AnalysisResult[]>([]);
   const [language, setLanguage] = useState<"tr" | "en">("tr");
+  const [hasUsedFreeAnalysis, setHasUsedFreeAnalysis] = useState(false);
   const { toast } = useToast();
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (!files) return;
-
-    const newImages = Array.from(files).map(file => URL.createObjectURL(file));
-    setSelectedImages(prev => {
-      if (prev.length + newImages.length > 2) {
-        toast({
-          title: "Hata",
-          description: "En fazla 2 fotoğraf seçebilirsiniz.",
-          variant: "destructive",
-        });
-        return prev;
-      }
-      return [...prev, ...newImages];
-    });
-    setResults([]);
-  };
-
-  const removeImage = (indexToRemove: number) => {
-    setSelectedImages(prev => prev.filter((_, index) => index !== indexToRemove));
-    setResults([]);
-  };
+  useEffect(() => {
+    const hasUsed = localStorage.getItem("hasUsedFreeAnalysis") === "true";
+    setHasUsedFreeAnalysis(hasUsed);
+  }, []);
 
   const uploadImageToStorage = async (blobUrl: string): Promise<string> => {
     try {
-      // Convert blob URL to actual blob
       const response = await fetch(blobUrl);
       const blob = await response.blob();
-
-      // Generate a unique filename
       const filename = `${crypto.randomUUID()}.${blob.type.split('/')[1] || 'png'}`;
-
-      // Upload to Supabase Storage
+      
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('generated-images')
         .upload(filename, blob, {
@@ -68,7 +41,6 @@ const InstagramAnalyzer = () => {
 
       if (uploadError) throw uploadError;
 
-      // Get the public URL
       const { data: { publicUrl } } = supabase.storage
         .from('generated-images')
         .getPublicUrl(filename);
@@ -81,6 +53,15 @@ const InstagramAnalyzer = () => {
   };
 
   const analyzeImages = async () => {
+    if (hasUsedFreeAnalysis) {
+      toast({
+        title: "Premium Özellik",
+        description: "Ücretsiz denemenizi kullandınız. Daha fazla analiz için premium üyeliğe geçin.",
+        variant: "default",
+      });
+      return;
+    }
+
     if (selectedImages.length !== 2) {
       toast({
         title: "Hata",
@@ -92,7 +73,6 @@ const InstagramAnalyzer = () => {
 
     setIsAnalyzing(true);
     try {
-      // Convert blob URLs to public URLs
       const publicUrls = await Promise.all(
         selectedImages.map(url => uploadImageToStorage(url))
       );
@@ -101,11 +81,11 @@ const InstagramAnalyzer = () => {
         body: { imageUrls: publicUrls, language }
       });
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       setResults(data);
+      setHasUsedFreeAnalysis(true);
+      localStorage.setItem("hasUsedFreeAnalysis", "true");
       
       toast({
         title: "Başarılı",
@@ -123,6 +103,10 @@ const InstagramAnalyzer = () => {
     }
   };
 
+  if (hasUsedFreeAnalysis && results.length === 0) {
+    return <PremiumUpgrade />;
+  }
+
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6">
       <div className="space-y-4">
@@ -132,60 +116,22 @@ const InstagramAnalyzer = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {selectedImages.map((image, index) => (
-          <div key={index} className="relative">
-            <img
-              src={image}
-              alt={`Selected ${index + 1}`}
-              className="w-full aspect-square object-cover rounded-lg"
-            />
-            <Button
-              variant="destructive"
-              size="icon"
-              className="absolute top-2 right-2"
-              onClick={() => removeImage(index)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-            {results[index] && (
-              <div className="mt-2 space-y-2 p-4 bg-background/80 backdrop-blur-sm rounded-lg">
-                <div className="flex items-center justify-between">
-                  <p className="font-semibold">Skor: {results[index].score}/100</p>
-                  <Select value={language} onValueChange={(value: "tr" | "en") => setLanguage(value)}>
-                    <SelectTrigger className="w-[100px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="tr">Türkçe</SelectItem>
-                      <SelectItem value="en">English</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <p className="text-sm text-muted-foreground">{results[index].caption}</p>
-                <p className="text-sm">{results[index].feedback}</p>
-              </div>
-            )}
-          </div>
-        ))}
-        {selectedImages.length < 2 && (
-          <div className="aspect-square flex items-center justify-center border-2 border-dashed rounded-lg">
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="hidden"
-              id="image-upload"
-            />
-            <label
-              htmlFor="image-upload"
-              className="cursor-pointer text-center p-4 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Fotoğraf Seç
-            </label>
-          </div>
-        )}
-      </div>
+      <ImageUploader
+        selectedImages={selectedImages}
+        onImageUpload={setSelectedImages}
+        onImageRemove={(index) => {
+          setSelectedImages(prev => prev.filter((_, i) => i !== index));
+          setResults([]);
+        }}
+      />
+
+      {results.length > 0 && (
+        <AnalysisResults
+          results={results}
+          language={language}
+          onLanguageChange={setLanguage}
+        />
+      )}
 
       <Button
         className="w-full"

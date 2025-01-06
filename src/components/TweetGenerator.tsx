@@ -128,7 +128,7 @@ const TweetGenerator = () => {
           </Button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-4">
           <Textarea
             value={tweet}
             onChange={(e) => setTweet(e.target.value)}
@@ -149,7 +149,7 @@ const TweetGenerator = () => {
               Tweeti Kopyala
             </Button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

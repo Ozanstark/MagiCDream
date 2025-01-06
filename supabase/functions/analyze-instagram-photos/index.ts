@@ -24,93 +24,79 @@ serve(async (req) => {
       try {
         console.log(`Analyzing image ${index + 1}...`);
         
-        // Fetch the image
+        // Fetch image metadata
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error('Failed to fetch image');
         }
 
-        // Get image data for analysis
-        const imageBlob = await response.blob();
-        const base64Image = await blobToBase64(imageBlob);
-
-        // Analyze image using BLIP
-        console.log(`Analyzing image ${index + 1} with BLIP...`);
-        const blipResponse = await fetch("https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-large", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            inputs: base64Image,
-          })
-        });
-
-        if (!blipResponse.ok) {
-          throw new Error(`BLIP API error: ${blipResponse.statusText}`);
-        }
-
-        const blipData = await blipResponse.json();
-        console.log(`BLIP analysis result:`, blipData);
-
-        const imageDescription = Array.isArray(blipData) ? blipData[0] : blipData.generated_text;
-
         const contentType = response.headers.get('content-type');
         const contentLength = response.headers.get('content-length');
         const sizeInMB = parseInt(contentLength || '0') / (1024 * 1024);
 
-        // Base score calculation using BLIP description
-        let score = 75;
-        let feedback = `Image Description: ${imageDescription}\n\nAnalysis:\n`;
+        // Analyze image with OpenAI
+        console.log(`Analyzing image ${index + 1} with OpenAI...`);
+        const openaiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
+          },
+          body: JSON.stringify({
+            model: "gpt-4o",
+            messages: [
+              {
+                role: "system",
+                content: "You are an Instagram expert who analyzes photos for their potential success on the platform. Provide detailed feedback about composition, lighting, subject matter, and overall appeal."
+              },
+              {
+                role: "user",
+                content: [
+                  {
+                    type: "text",
+                    text: "Analyze this image for Instagram. Consider factors like composition, lighting, subject matter, and overall appeal. Provide a score out of 100 and detailed feedback."
+                  },
+                  {
+                    type: "image_url",
+                    image_url: url
+                  }
+                ]
+              }
+            ],
+            max_tokens: 500
+          })
+        });
 
-        // Add feedback based on the image description
-        if (imageDescription.toLowerCase().includes('person') || 
-            imageDescription.toLowerCase().includes('people')) {
-          score += 5;
-          feedback += "✅ Including people in photos typically performs well on Instagram.\n";
+        if (!openaiResponse.ok) {
+          throw new Error(`OpenAI API error: ${openaiResponse.statusText}`);
         }
 
-        if (imageDescription.toLowerCase().includes('outdoor') || 
-            imageDescription.toLowerCase().includes('nature')) {
-          score += 5;
-          feedback += "✅ Outdoor/nature content tends to engage well with audiences.\n";
-        }
+        const openaiData = await openaiResponse.json();
+        const analysis = openaiData.choices[0].message.content;
+        
+        // Extract score using regex
+        const scoreMatch = analysis.match(/(\d+)\/100/);
+        let score = scoreMatch ? parseInt(scoreMatch[1]) : 75; // Default score if not found
 
-        // Technical scoring
+        // Adjust score based on technical factors
         if (sizeInMB <= 0.5) {
-          score += 10;
-          feedback += "\n✅ Perfect file size for Instagram.";
-        } else if (sizeInMB <= 1) {
-          score += 7;
-          feedback += "\n✅ Good file size.";
-        } else if (sizeInMB <= 2) {
-          score += 3;
-          feedback += "\n⚠️ File size could be optimized.";
-        } else {
-          score -= 5;
-          feedback += "\n❌ File is too large for optimal performance.";
-        }
-
-        // Format scoring
-        if (contentType === 'image/webp') {
           score += 5;
-          feedback += "\n✅ Optimal WebP format.";
-        } else if (contentType === 'image/jpeg' || contentType === 'image/jpg') {
-          score += 3;
-          feedback += "\n✅ Good JPEG format.";
-        } else if (contentType === 'image/png') {
-          score += 1;
-          feedback += "\n⚠️ Consider converting to JPEG/WebP.";
+        } else if (sizeInMB > 2) {
+          score -= 5;
         }
 
-        // Add some controlled randomization
-        score += (Math.random() * 6 - 3);
-        score = Math.min(100, Math.max(0, Math.round(score)));
+        if (contentType === 'image/webp') {
+          score += 3;
+        }
 
-        // Technical details
-        feedback += `\n\nTechnical Details:`;
-        feedback += `\n• File Size: ${sizeInMB.toFixed(2)}MB`;
-        feedback += `\n• Format: ${contentType}`;
+        // Ensure score stays within bounds
+        score = Math.min(100, Math.max(0, score));
+
+        let feedback = analysis + "\n\nTechnical Analysis:\n";
+        feedback += `• File Size: ${sizeInMB.toFixed(2)}MB `;
+        feedback += sizeInMB <= 0.5 ? "(Optimal) ✅" : sizeInMB > 2 ? "(Too large) ❌" : "(Acceptable) ✓";
+        feedback += `\n• Format: ${contentType} `;
+        feedback += contentType === 'image/webp' ? "(Optimal) ✅" : "(Consider converting to WebP) ⚠️";
 
         return {
           score: Math.round(score),
@@ -139,14 +125,3 @@ serve(async (req) => {
     )
   }
 });
-
-// Helper function to convert Blob to base64
-async function blobToBase64(blob: Blob): Promise<string> {
-  const buffer = await blob.arrayBuffer();
-  const bytes = new Uint8Array(buffer);
-  let binary = '';
-  for (let i = 0; i < bytes.byteLength; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return btoa(binary);
-}

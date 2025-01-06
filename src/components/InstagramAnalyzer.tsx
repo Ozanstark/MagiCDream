@@ -31,6 +31,8 @@ const InstagramAnalyzer = () => {
     setSelectedImages(prev => prev.filter((_, index) => index !== indexToRemove));
   };
 
+  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
   const analyzeImages = async () => {
     if (selectedImages.length !== 2) {
       toast({
@@ -42,38 +44,64 @@ const InstagramAnalyzer = () => {
     }
 
     setIsAnalyzing(true);
-    try {
-      const response = await fetch("https://api-inference.huggingface.co/models/nlpconnect/vit-gpt2-image-captioning", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          inputs: selectedImages,
-        }),
-      });
+    let retries = 0;
+    const maxRetries = 5;
 
-      if (!response.ok) {
-        throw new Error("Analiz sırasında bir hata oluştu");
+    while (retries < maxRetries) {
+      try {
+        const response = await fetch("https://api-inference.huggingface.co/models/nlpconnect/vit-gpt2-image-captioning", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            inputs: selectedImages,
+          }),
+        });
+
+        const responseText = await response.text();
+        
+        // Check if the model is still loading
+        if (responseText.includes("Model") && responseText.includes("is currently loading")) {
+          console.log(`Model is loading, retry ${retries + 1}/${maxRetries}`);
+          toast({
+            title: "Bilgi",
+            description: `Model yükleniyor, tekrar deneniyor (${retries + 1}/${maxRetries})...`,
+          });
+          await sleep(5000); // Wait 5 seconds before retrying
+          retries++;
+          continue;
+        }
+
+        if (!response.ok) {
+          throw new Error("Analiz sırasında bir hata oluştu");
+        }
+
+        const result = JSON.parse(responseText);
+        console.log("Analysis result:", result);
+
+        toast({
+          title: "Başarılı",
+          description: "Fotoğraflar başarıyla analiz edildi!",
+        });
+        break; // Success, exit the loop
+
+      } catch (error) {
+        console.error("Analysis error:", error);
+        if (retries === maxRetries - 1) {
+          toast({
+            title: "Hata",
+            description: "Fotoğrafları analiz ederken bir hata oluştu. Lütfen daha sonra tekrar deneyin.",
+            variant: "destructive",
+          });
+        }
+        retries++;
+        if (retries < maxRetries) {
+          await sleep(5000); // Wait 5 seconds before retrying
+        }
       }
-
-      const result = await response.json();
-      console.log("Analysis result:", result);
-
-      toast({
-        title: "Başarılı",
-        description: "Fotoğraflar başarıyla analiz edildi!",
-      });
-    } catch (error) {
-      console.error("Analysis error:", error);
-      toast({
-        title: "Hata",
-        description: "Fotoğrafları analiz ederken bir hata oluştu.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsAnalyzing(false);
     }
+    setIsAnalyzing(false);
   };
 
   return (

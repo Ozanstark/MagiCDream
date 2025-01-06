@@ -47,5 +47,11 @@ export const AVAILABLE_MODELS: ModelType[] = [
     name: "FLUX-Midjourney-Mix2-LoRA",
     apiUrl: "https://api-inference.huggingface.co/models/strangerzonehf/Flux-Midjourney-Mix2-LoRA",
     description: "Uncensored realistic style model"
+  },
+  {
+    id: "stable-diffusion-v1-5",
+    name: "Stable Diffusion v1.5",
+    apiUrl: "https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5",
+    description: "Classic Stable Diffusion model, good for general purpose image generation"
   }
 ];

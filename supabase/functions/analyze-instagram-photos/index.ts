@@ -9,7 +9,7 @@ const corsHeaders = {
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
@@ -34,50 +34,62 @@ serve(async (req) => {
         const imageBlob = await response.blob();
         const base64Image = await blobToBase64(imageBlob);
 
-        // Analyze image using LLaVA
-        console.log(`Analyzing image ${index + 1} with LLaVA...`);
-        const llavaResponse = await fetch("https://api-inference.huggingface.co/models/xtuner/llava-llama-3-8b-v1_1-gguf", {
+        // Analyze image using BLIP
+        console.log(`Analyzing image ${index + 1} with BLIP...`);
+        const blipResponse = await fetch("https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-large", {
           method: "POST",
           headers: {
             "Authorization": `Bearer ${Deno.env.get('HUGGINGFACE_API_KEY')}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            inputs: {
-              image: base64Image,
-              prompt: "Analyze this image for Instagram. Consider composition, lighting, subject matter, and overall appeal. Provide detailed feedback."
-            }
+            inputs: base64Image,
           })
         });
 
-        if (!llavaResponse.ok) {
-          throw new Error(`LLaVA API error: ${llavaResponse.statusText}`);
+        if (!blipResponse.ok) {
+          throw new Error(`BLIP API error: ${blipResponse.statusText}`);
         }
 
-        const llavaData = await llavaResponse.json();
-        console.log(`LLaVA analysis result:`, llavaData);
+        const blipData = await blipResponse.json();
+        console.log(`BLIP analysis result:`, blipData);
+
+        const imageDescription = Array.isArray(blipData) ? blipData[0] : blipData.generated_text;
 
         const contentType = response.headers.get('content-type');
         const contentLength = response.headers.get('content-length');
         const sizeInMB = parseInt(contentLength || '0') / (1024 * 1024);
 
-        // Base score calculation using LLaVA feedback
+        // Base score calculation using BLIP description
         let score = 75;
-        let feedback = llavaData[0]?.generated_text || '';
+        let feedback = `Image Description: ${imageDescription}\n\nAnalysis:\n`;
+
+        // Add feedback based on the image description
+        if (imageDescription.toLowerCase().includes('person') || 
+            imageDescription.toLowerCase().includes('people')) {
+          score += 5;
+          feedback += "✅ Including people in photos typically performs well on Instagram.\n";
+        }
+
+        if (imageDescription.toLowerCase().includes('outdoor') || 
+            imageDescription.toLowerCase().includes('nature')) {
+          score += 5;
+          feedback += "✅ Outdoor/nature content tends to engage well with audiences.\n";
+        }
 
         // Technical scoring
         if (sizeInMB <= 0.5) {
           score += 10;
-          feedback += "\n\n✅ Perfect file size for Instagram.";
+          feedback += "\n✅ Perfect file size for Instagram.";
         } else if (sizeInMB <= 1) {
           score += 7;
-          feedback += "\n\n✅ Good file size.";
+          feedback += "\n✅ Good file size.";
         } else if (sizeInMB <= 2) {
           score += 3;
-          feedback += "\n\n⚠️ File size could be optimized.";
+          feedback += "\n⚠️ File size could be optimized.";
         } else {
           score -= 5;
-          feedback += "\n\n❌ File is too large for optimal performance.";
+          feedback += "\n❌ File is too large for optimal performance.";
         }
 
         // Format scoring

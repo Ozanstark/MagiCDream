@@ -53,5 +53,11 @@ export const AVAILABLE_MODELS: ModelType[] = [
     name: "Stable Diffusion v1.5",
     apiUrl: "https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5",
     description: "Classic Stable Diffusion model, good for general purpose image generation"
+  },
+  {
+    id: "stable-diffusion-v1-4",
+    name: "Stable Diffusion v1.4",
+    apiUrl: "https://api-inference.huggingface.co/models/CompVis/stable-diffusion-v1-4",
+    description: "Classic Stable Diffusion model, predecessor to v1.5"
   }
 ];

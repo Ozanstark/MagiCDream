@@ -37,7 +37,7 @@ const ImageGenerator = () => {
   const { checkImageGenerationLimit, recordImageGeneration } = useApiLimits();
 
   const isUncensoredModel = (modelId: string) => {
-    return ['berrys-taylor', 'harrys-torrance', 'realistic-five', 'realistic-six', 'realistic-seven'].includes(modelId);
+    return ['berrys-taylor', 'harrys-torrance', 'realistic-five', 'realistic-six', 'realistic-seven', 'flux-lustly-uncensored'].includes(modelId);
   };
 
   useEffect(() => {
@@ -54,8 +54,8 @@ const ImageGenerator = () => {
     } catch (error) {
       console.error('Error loading images:', error);
       toast({
-        title: "Hata",
-        description: "Görüntüler yüklenirken bir hata oluştu",
+        title: "Error",
+        description: "An error occurred while loading images",
         variant: "destructive",
       });
     }
@@ -64,8 +64,8 @@ const ImageGenerator = () => {
   const generateImage = async () => {
     if (!prompt.trim()) {
       toast({
-        title: "Hata",
-        description: "Lütfen önce bir prompt girin",
+        title: "Error",
+        description: "Please enter a prompt first",
         variant: "destructive",
       });
       return;
@@ -74,7 +74,7 @@ const ImageGenerator = () => {
     if (!checkImageGenerationLimit(selectedModel.id)) {
       toast({
         title: "Rate Limit",
-        description: `${selectedModel.name} ile dakikada en fazla 3 görsel oluşturabilirsiniz. Lütfen biraz bekleyin veya başka bir model deneyin.`,
+        description: `You can only generate 3 images per minute with ${selectedModel.name}. Please wait or try another model.`,
         variant: "destructive",
       });
       return;
@@ -110,9 +110,12 @@ const ImageGenerator = () => {
         "Content-Type": "application/json",
       };
 
-      // Add special header for NSFW models
+      // Add special headers for NSFW models
       if (isUncensoredModel(selectedModel.id)) {
         headers["Cookie"] = "token_acceptance=true";
+        headers["X-Use-Cache"] = "false";  // Disable caching for NSFW models
+        headers["X-Wait-For-Model"] = "true";  // Wait for model to load if needed
+        headers["X-Show-Adult-Content"] = "true";  // Explicitly allow adult content
       }
 
       const response = await fetch(
@@ -126,7 +129,7 @@ const ImageGenerator = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Görsel oluşturulamadı');
+        throw new Error(errorData.error || 'Failed to generate image');
       }
 
       const blob = await response.blob();
@@ -147,8 +150,8 @@ const ImageGenerator = () => {
     } catch (error) {
       console.error('API Error:', error);
       toast({
-        title: "Hata",
-        description: error instanceof Error ? error.message : "Görsel oluşturulurken bir hata oluştu",
+        title: "Error",
+        description: error instanceof Error ? error.message : "An error occurred while generating the image",
         variant: "destructive",
       });
     } finally {

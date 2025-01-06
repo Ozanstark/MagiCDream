@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { Wand2 } from "lucide-react";
 import ImageDisplay from "./ImageDisplay";
 import ImageGallery from "./ImageGallery";
-import ModelSelector from "./ModelSelector";
 import { AVAILABLE_MODELS, ModelType } from "@/types/models";
 import { useApiLimits } from "@/hooks/useApiLimits";
-import AdvancedSettings from "./AdvancedSettings";
 import { uploadImageToStorage, fetchGeneratedImages } from "@/utils/imageStorage";
+import GeneratorHeader from "./generator/GeneratorHeader";
+import GeneratorControls from "./generator/GeneratorControls";
+import ReferenceImageUpload from "./generator/ReferenceImageUpload";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface AdvancedSettingsConfig {
   guidance_scale?: number;
@@ -32,33 +31,30 @@ const ImageGenerator = () => {
     width: 512,
     height: 512
   });
+  const [referenceImages, setReferenceImages] = useState<File[]>([]);
+  const [activeTab, setActiveTab] = useState("dream");
   
   const { toast } = useToast();
   const { checkImageGenerationLimit, recordImageGeneration } = useApiLimits();
-
-  const isUncensoredModel = (modelId: string) => {
-    return ['berrys-taylor', 'harrys-torrance', 'realistic-five', 'realistic-six', 'realistic-seven'].includes(modelId);
-  };
 
   useEffect(() => {
     loadGeneratedImages();
   }, []);
 
-  const loadGeneratedImages = async () => {
-    try {
-      const images = await fetchGeneratedImages();
-      setGeneratedImages(images.map(img => ({
-        url: img.url,
-        isNSFW: img.is_nsfw
-      })));
-    } catch (error) {
-      console.error('Error loading images:', error);
+  const handleReferenceImagesSelected = (files: File[]) => {
+    if (files.length + referenceImages.length > 2) {
       toast({
-        title: "Error",
-        description: "An error occurred while loading images",
+        title: "Maximum 2 reference images",
+        description: "Please select up to 2 reference images",
         variant: "destructive",
       });
+      return;
     }
+    setReferenceImages([...referenceImages, ...files]);
+  };
+
+  const handleRemoveReferenceImage = (index: number) => {
+    setReferenceImages(referenceImages.filter((_, i) => i !== index));
   };
 
   const generateImage = async () => {
@@ -84,27 +80,11 @@ const ImageGenerator = () => {
     try {
       let fullPrompt = prompt;
       
-      if (Object.keys(advancedSettings).length > 0) {
-        if (advancedSettings.guidance_scale) {
-          fullPrompt += ` --guidance_scale ${advancedSettings.guidance_scale}`;
-        }
-        if (advancedSettings.negative_prompt) {
-          fullPrompt += ` --negative_prompt ${advancedSettings.negative_prompt}`;
-        }
-        if (advancedSettings.num_inference_steps) {
-          fullPrompt += ` --steps ${advancedSettings.num_inference_steps}`;
-        }
-        if (advancedSettings.width && advancedSettings.height) {
-          fullPrompt += ` --width ${advancedSettings.width} --height ${advancedSettings.height}`;
-        }
-        if (advancedSettings.scheduler) {
-          fullPrompt += ` --scheduler ${advancedSettings.scheduler}`;
-        }
-        if (advancedSettings.seed) {
-          fullPrompt += ` --seed ${advancedSettings.seed}`;
-        }
+      // Add reference images to the prompt if in Instagram mode
+      if (activeTab === "instagram" && referenceImages.length > 0) {
+        fullPrompt += ` Style reference: ${referenceImages.length} uploaded images. Please create an image that matches their style and composition.`;
       }
-
+      
       const headers: Record<string, string> = {
         Authorization: "Bearer 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",
         "Content-Type": "application/json",
@@ -213,41 +193,48 @@ const ImageGenerator = () => {
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-4 px-4 sm:px-6 sm:space-y-8">
-      <div className="text-center space-y-4 sm:space-y-6">
-        <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold rainbow-text tracking-tight leading-tight">
-          Unleash Your Imagination
-        </h1>
-        <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-3 sm:px-4 border border-primary/20 py-2 sm:py-3 rounded-lg bg-card/50 backdrop-blur-sm">
-          Transform your wildest dreams into stunning visuals. Where words become reality, and imagination knows no bounds.
-        </p>
-      </div>
-
-      <ModelSelector 
-        selectedModel={selectedModel}
-        onModelChange={setSelectedModel}
+      <GeneratorHeader
+        title="Unleash Your Imagination"
+        description="Transform your wildest dreams into stunning visuals. Where words become reality, and imagination knows no bounds."
       />
-      
-      <div className="flex flex-col gap-3">
-        <Input
-          placeholder="Describe in detail what image you want to dream"
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          className="flex-1 input-premium"
-        />
-        <Button
-          onClick={generateImage}
-          disabled={isLoading}
-          className="button-primary w-full sm:w-auto"
-        >
-          <Wand2 className="mr-2 h-4 w-4" />
-          {isLoading ? "Dreaming..." : "Dream Image"}
-        </Button>
-      </div>
 
-      <AdvancedSettings
-        settings={advancedSettings}
-        onSettingsChange={setAdvancedSettings}
-      />
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="dream">Dream AI</TabsTrigger>
+          <TabsTrigger value="instagram">Instagram Style</TabsTrigger>
+        </TabsList>
+        <TabsContent value="dream">
+          <GeneratorControls
+            prompt={prompt}
+            onPromptChange={setPrompt}
+            selectedModel={selectedModel}
+            onModelChange={setSelectedModel}
+            isLoading={isLoading}
+            onGenerate={generateImage}
+            advancedSettings={advancedSettings}
+            onAdvancedSettingsChange={setAdvancedSettings}
+          />
+        </TabsContent>
+        <TabsContent value="instagram">
+          <div className="space-y-4">
+            <ReferenceImageUpload
+              onImagesSelected={handleReferenceImagesSelected}
+              selectedImages={referenceImages}
+              onRemoveImage={handleRemoveReferenceImage}
+            />
+            <GeneratorControls
+              prompt={prompt}
+              onPromptChange={setPrompt}
+              selectedModel={selectedModel}
+              onModelChange={setSelectedModel}
+              isLoading={isLoading}
+              onGenerate={generateImage}
+              advancedSettings={advancedSettings}
+              onAdvancedSettingsChange={setAdvancedSettings}
+            />
+          </div>
+        </TabsContent>
+      </Tabs>
 
       <div className="relative w-full flex items-center justify-center">
         <ImageDisplay

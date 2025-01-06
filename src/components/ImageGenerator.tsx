@@ -38,6 +38,21 @@ const ImageGenerator = () => {
     loadGeneratedImages();
   }, []);
 
+  const handleImageDelete = (index: number) => {
+    setGeneratedImages(prev => {
+      const newImages = [...prev];
+      newImages.splice(index, 1);
+      return newImages;
+    });
+
+    if (currentImageIndex === index) {
+      setCurrentImage(null);
+      setCurrentImageIndex(0);
+    } else if (currentImageIndex > index) {
+      setCurrentImageIndex(prev => prev - 1);
+    }
+  };
+
   const generateImage = async () => {
     if (!prompt.trim()) {
       toast({
@@ -162,6 +177,7 @@ const ImageGenerator = () => {
       <ImageGallery 
         images={generatedImages}
         onImageSelect={handleImageSelect}
+        onImageDelete={handleImageDelete}
       />
     </div>
   );

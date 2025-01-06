@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
-import { ChevronLeft, ChevronRight, ExpandIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight, ExpandIcon, Trash2 } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/carousel";
 import { ScrollArea } from "./ui/scroll-area";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface ImageGalleryProps {
   images: Array<{
@@ -17,12 +19,54 @@ interface ImageGalleryProps {
     isNSFW: boolean;
   }>;
   onImageSelect: (image: string, index: number) => void;
+  onImageDelete?: (index: number) => void;
 }
 
-const ImageGallery = ({ images, onImageSelect }: ImageGalleryProps) => {
+const ImageGallery = ({ images, onImageSelect, onImageDelete }: ImageGalleryProps) => {
   const [showAll, setShowAll] = useState(false);
+  const { toast } = useToast();
 
   if (images.length === 0) return null;
+
+  const handleDelete = async (imageUrl: string, index: number) => {
+    try {
+      // Extract the file name from the URL
+      const fileName = imageUrl.split('/').pop();
+      if (!fileName) throw new Error('Invalid image URL');
+
+      // Delete from Supabase Storage
+      const { error: storageError } = await supabase.storage
+        .from('generated-images')
+        .remove([fileName]);
+
+      if (storageError) throw storageError;
+
+      // Delete from database
+      const { error: dbError } = await supabase
+        .from('generated_images')
+        .delete()
+        .eq('url', imageUrl);
+
+      if (dbError) throw dbError;
+
+      // Update UI
+      if (onImageDelete) {
+        onImageDelete(index);
+      }
+
+      toast({
+        title: "Success",
+        description: "Image deleted successfully",
+      });
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete image",
+        variant: "destructive",
+      });
+    }
+  };
 
   const renderImage = (image: { url: string; isNSFW: boolean }, index: number) => {
     return (
@@ -35,24 +79,34 @@ const ImageGallery = ({ images, onImageSelect }: ImageGalleryProps) => {
             onClick={() => onImageSelect(image.url, index)}
           />
         </div>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 hover:bg-black/70"
-            >
-              <ExpandIcon className="h-4 w-4" />
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-4xl">
-            <img
-              src={image.url}
-              alt={`Generated ${index + 1}`}
-              className="w-full h-full object-contain"
-            />
-          </DialogContent>
-        </Dialog>
+        <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-black/50 hover:bg-black/70"
+              >
+                <ExpandIcon className="h-4 w-4" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl">
+              <img
+                src={image.url}
+                alt={`Generated ${index + 1}`}
+                className="w-full h-full object-contain"
+              />
+            </DialogContent>
+          </Dialog>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="bg-black/50 hover:bg-red-500/70"
+            onClick={() => handleDelete(image.url, index)}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     );
   };

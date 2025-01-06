@@ -33,7 +33,7 @@ const TweetGenerator = () => {
       if (description.trim()) {
         prompt += `\nAçıklama: ${description}`;
       }
-      prompt += "\nBu konu hakkında 280 karakteri geçmeyen, ilgi çekici ve profesyonel bir tweet oluştur.";
+      prompt += "\nBu konu hakkında Twitter'a özgü, eğlenceli ve günlük konuşma dilinde, emoji kullanarak, hashtag ekleyerek, 280 karakteri geçmeyen bir tweet oluştur. Tweet samimi, esprili ve ilgi çekici olmalı. Resmi dil kullanma, günlük konuşma dilini tercih et.";
 
       let output = "";
       const stream = client.chatCompletionStream({

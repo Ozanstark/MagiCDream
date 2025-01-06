@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { pipeline } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -19,11 +18,6 @@ serve(async (req) => {
       throw new Error('Exactly 2 image URLs are required')
     }
 
-    console.log("Initializing image-to-text pipeline...")
-    const imageToText = await pipeline("image-to-text", "Salesforce/blip-image-captioning-base", {
-      revision: "main"
-    });
-
     // Analyze both images
     const results = await Promise.all(imageUrls.map(async (url, index) => {
       try {
@@ -39,13 +33,8 @@ serve(async (req) => {
         const contentLength = response.headers.get('content-length');
         const sizeInMB = parseInt(contentLength || '0') / (1024 * 1024);
 
-        // Generate image description
-        console.log(`Generating description for image ${index + 1}...`);
-        const description = await imageToText(url);
-        console.log(`Description generated: ${description[0].generated_text}`);
-
         // Base score calculation
-        let score = 75;
+        let score = 75; // Start with a base score
         let feedback = '';
 
         // Size scoring (0-10 points)
@@ -75,28 +64,22 @@ serve(async (req) => {
           feedback += "⚠️ Consider converting to JPEG/WebP. ";
         }
 
-        // Content analysis based on description (0-10 points)
-        const positiveKeywords = ['beautiful', 'colorful', 'vibrant', 'stunning', 'amazing', 'perfect', 'professional'];
-        const description_text = description[0].generated_text.toLowerCase();
-        const keywordsFound = positiveKeywords.filter(keyword => description_text.includes(keyword)).length;
-        const contentScore = Math.min(10, keywordsFound * 2);
-        score += contentScore;
-
-        if (contentScore > 5) {
-          feedback += "✅ Strong visual content. ";
-        } else {
-          feedback += "⚠️ Content could be more engaging. ";
-        }
-
-        // Add controlled randomization (±3 points)
-        score += (Math.random() * 6 - 3);
+        // Add some randomization for variety (±5 points)
+        score += (Math.random() * 10 - 5);
 
         // Ensure score stays within bounds and round to nearest integer
-        score = Math.min(100, Math.max(70, Math.round(score)));
+        score = Math.min(100, Math.max(0, Math.round(score)));
 
-        feedback += `\n\nImage Description: ${description[0].generated_text}`;
-        feedback += `\nFile Size: ${sizeInMB.toFixed(2)}MB`;
-        feedback += `\nFormat: ${contentType}`;
+        feedback += `\n\nTechnical Details:\n`;
+        feedback += `• File Size: ${sizeInMB.toFixed(2)}MB\n`;
+        feedback += `• Format: ${contentType}\n`;
+        feedback += `\nRecommendations:\n`;
+        if (sizeInMB > 1) {
+          feedback += "• Consider compressing the image\n";
+        }
+        if (contentType === 'image/png') {
+          feedback += "• Consider converting to JPEG for better compression\n";
+        }
 
         return {
           score: Math.round(score),

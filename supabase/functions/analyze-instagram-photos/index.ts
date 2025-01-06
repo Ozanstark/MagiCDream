@@ -1,81 +1,60 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { HfInference } from 'https://esm.sh/@huggingface/inference@2.3.2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+}
+
+const analyzeImage = async (imageUrl: string) => {
+  const hf = new HfInference(Deno.env.get('HUGGINGFACE_API_KEY'))
+  
+  try {
+    // Use image-classification model to analyze the image
+    const result = await hf.imageClassification({
+      model: 'microsoft/resnet-50',
+      data: imageUrl,
+    })
+
+    // Calculate Instagram score based on classification confidence
+    const score = Math.round(result[0].score * 100)
+    
+    // Generate feedback based on classification
+    const feedback = `This image appears to be of ${result[0].label} with ${score}% confidence. ` +
+      (score > 75 ? 'This type of content typically performs well on Instagram!' :
+       score > 50 ? 'This image could perform moderately well on Instagram.' :
+       'This image might need improvement for better Instagram performance.')
+
+    return { score, feedback }
+  } catch (error) {
+    console.error('Analysis error:', error)
+    return { score: 0, feedback: 'Failed to analyze image' }
+  }
+}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders })
   }
 
   try {
-    const { imageUrls } = await req.json();
+    const { imageUrls } = await req.json()
 
     if (!Array.isArray(imageUrls) || imageUrls.length !== 2) {
-      throw new Error('Exactly 2 image URLs are required');
+      throw new Error('Exactly 2 image URLs are required')
     }
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: "You are an expert Instagram content analyzer. Analyze the two images provided and score them based on their potential performance on Instagram. Consider factors like composition, lighting, color harmony, and overall aesthetic appeal."
-          },
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: "Compare these two images and rate them for Instagram. For each image, provide a score out of 100 and specific feedback about why it would or wouldn't perform well on Instagram."
-              },
-              ...imageUrls.map(url => ({
-                type: "image_url",
-                image_url: url,
-              }))
-            ]
-          }
-        ],
-        max_tokens: 1000,
-      }),
-    });
-
-    const data = await response.json();
-    const analysis = data.choices[0].message.content;
-
-    // Parse the response to extract scores and feedback for each image
-    const results = imageUrls.map((_, index) => {
-      const scoreMatch = analysis.match(new RegExp(`Image ${index + 1}.*?(\\d+)/100`));
-      const score = scoreMatch ? parseInt(scoreMatch[1]) : null;
-      
-      const feedbackMatch = analysis.match(new RegExp(`Image ${index + 1}[^]*?(?=Image ${index + 2}|$)`));
-      const feedback = feedbackMatch ? feedbackMatch[0].trim() : null;
-
-      return { score, feedback };
-    });
+    // Analyze both images
+    const results = await Promise.all(imageUrls.map(url => analyzeImage(url)))
 
     return new Response(
       JSON.stringify(results),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-
+    )
   } catch (error) {
-    console.error('Error:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
-      { 
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
-    );
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+    )
   }
-});
+})

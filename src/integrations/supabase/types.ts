@@ -78,6 +78,27 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          created_at: string
+          id: string
+          subscription_status: Database["public"]["Enums"]["subscription_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          subscription_status?: Database["public"]["Enums"]["subscription_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          subscription_status?: Database["public"]["Enums"]["subscription_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       reference_images: {
         Row: {
           created_at: string
@@ -158,7 +179,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      subscription_status: "free" | "premium"
     }
     CompositeTypes: {
       [_ in never]: never

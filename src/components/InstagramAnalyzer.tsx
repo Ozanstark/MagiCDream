@@ -2,11 +2,19 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+
+interface AnalysisResult {
+  score: number;
+  caption: string;
+  feedback: string;
+}
 
 const InstagramAnalyzer = () => {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [results, setResults] = useState<AnalysisResult[]>([]);
   const { toast } = useToast();
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,13 +33,13 @@ const InstagramAnalyzer = () => {
       }
       return [...prev, ...newImages];
     });
+    setResults([]);
   };
 
   const removeImage = (indexToRemove: number) => {
     setSelectedImages(prev => prev.filter((_, index) => index !== indexToRemove));
+    setResults([]);
   };
-
-  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
   const analyzeImages = async () => {
     if (selectedImages.length !== 2) {
@@ -44,64 +52,31 @@ const InstagramAnalyzer = () => {
     }
 
     setIsAnalyzing(true);
-    let retries = 0;
-    const maxRetries = 5;
+    try {
+      const { data, error } = await supabase.functions.invoke('analyze-instagram-photos', {
+        body: { imageUrls: selectedImages }
+      });
 
-    while (retries < maxRetries) {
-      try {
-        const response = await fetch("https://api-inference.huggingface.co/models/nlpconnect/vit-gpt2-image-captioning", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            inputs: selectedImages,
-          }),
-        });
-
-        const responseText = await response.text();
-        
-        // Check if the model is still loading
-        if (responseText.includes("Model") && responseText.includes("is currently loading")) {
-          console.log(`Model is loading, retry ${retries + 1}/${maxRetries}`);
-          toast({
-            title: "Bilgi",
-            description: `Model yükleniyor, tekrar deneniyor (${retries + 1}/${maxRetries})...`,
-          });
-          await sleep(5000); // Wait 5 seconds before retrying
-          retries++;
-          continue;
-        }
-
-        if (!response.ok) {
-          throw new Error("Analiz sırasında bir hata oluştu");
-        }
-
-        const result = JSON.parse(responseText);
-        console.log("Analysis result:", result);
-
-        toast({
-          title: "Başarılı",
-          description: "Fotoğraflar başarıyla analiz edildi!",
-        });
-        break; // Success, exit the loop
-
-      } catch (error) {
-        console.error("Analysis error:", error);
-        if (retries === maxRetries - 1) {
-          toast({
-            title: "Hata",
-            description: "Fotoğrafları analiz ederken bir hata oluştu. Lütfen daha sonra tekrar deneyin.",
-            variant: "destructive",
-          });
-        }
-        retries++;
-        if (retries < maxRetries) {
-          await sleep(5000); // Wait 5 seconds before retrying
-        }
+      if (error) {
+        throw error;
       }
+
+      setResults(data);
+      
+      toast({
+        title: "Başarılı",
+        description: "Fotoğraflar başarıyla analiz edildi!",
+      });
+    } catch (error) {
+      console.error("Analysis error:", error);
+      toast({
+        title: "Hata",
+        description: "Fotoğrafları analiz ederken bir hata oluştu. Lütfen daha sonra tekrar deneyin.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzing(false);
     }
-    setIsAnalyzing(false);
   };
 
   return (
@@ -129,6 +104,13 @@ const InstagramAnalyzer = () => {
             >
               <X className="h-4 w-4" />
             </Button>
+            {results[index] && (
+              <div className="mt-2 space-y-2 p-4 bg-background/80 backdrop-blur-sm rounded-lg">
+                <p className="font-semibold">Skor: {results[index].score}/100</p>
+                <p className="text-sm text-muted-foreground">{results[index].caption}</p>
+                <p className="text-sm">{results[index].feedback}</p>
+              </div>
+            )}
           </div>
         ))}
         {selectedImages.length < 2 && (
@@ -155,7 +137,14 @@ const InstagramAnalyzer = () => {
         onClick={analyzeImages}
         disabled={selectedImages.length !== 2 || isAnalyzing}
       >
-        {isAnalyzing ? "Analiz Ediliyor..." : "Analiz Et"}
+        {isAnalyzing ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Analiz Ediliyor...
+          </>
+        ) : (
+          "Analiz Et"
+        )}
       </Button>
     </div>
   );

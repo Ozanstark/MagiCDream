@@ -19,7 +19,7 @@ serve(async (req) => {
       throw new Error('Exactly 2 image URLs are required')
     }
 
-    const hf = new HfInference("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")
+    const hf = new HfInference(Deno.env.get('HUGGING_FACE_ACCESS_TOKEN'))
     
     // Analyze both images
     const results = await Promise.all(imageUrls.map(async (url) => {
@@ -53,26 +53,17 @@ serve(async (req) => {
         const baseScore = 70 + (keywordMatches * 2);
         const finalScore = Math.min(100, Math.max(70, baseScore));
 
-        // Generate feedback based on the caption and score
-        let feedback = `AI Caption: ${result.generated_text}. `;
-        
-        if (finalScore > 85) {
-          feedback += "This image has excellent visual elements that should perform very well on Instagram!"
-        } else if (finalScore > 75) {
-          feedback += "This image has good potential for Instagram with its appealing characteristics."
-        } else {
-          feedback += "This image could perform well on Instagram with some minor adjustments to enhance its appeal."
-        }
-
         return {
           score: Math.round(finalScore),
-          feedback
+          caption: result.generated_text,
+          feedback: `Bu fotoğraf Instagram için ${finalScore > 85 ? 'mükemmel' : finalScore > 75 ? 'iyi' : 'uygun'} görünüyor.`
         }
       } catch (error) {
         console.error('Error analyzing image:', error);
         return {
           score: 0,
-          feedback: 'Failed to analyze image'
+          caption: '',
+          feedback: 'Fotoğraf analiz edilemedi'
         }
       }
     }));

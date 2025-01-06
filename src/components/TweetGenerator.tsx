@@ -1,12 +1,10 @@
 import { useState } from "react";
-import { Button } from "./ui/button";
-import { Textarea } from "./ui/textarea";
-import { Input } from "./ui/input";
-import { Copy, Wand2 } from "lucide-react";
 import { useToast } from "./ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { HfInference } from "@huggingface/inference";
 import { AVAILABLE_TEXT_MODELS } from "@/types/text-models";
+import TweetHeader from "./tweet/TweetHeader";
+import TweetInput from "./tweet/TweetInput";
+import TweetOutput from "./tweet/TweetOutput";
 
 const client = new HfInference("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");
 
@@ -14,7 +12,6 @@ const TweetGenerator = () => {
   const [topic, setTopic] = useState("");
   const [description, setDescription] = useState("");
   const [tweet, setTweet] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
 
@@ -91,65 +88,21 @@ const TweetGenerator = () => {
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6">
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold rainbow-text">Tweet Generator</h1>
-        <p className="text-muted-foreground">
-          Konuyu girin, yapay zeka sizin için tweet oluştursun
-        </p>
-      </div>
-
+      <TweetHeader />
       <div className="space-y-4">
-        <div className="space-y-4">
-          <Input
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            placeholder="Tweet konusunu girin..."
-            className="input-premium"
-          />
-          <Input
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="İsteğe bağlı kısa açıklama..."
-            className="input-premium"
-          />
-          <Button
-            onClick={generateTweet}
-            disabled={isGenerating || !topic.trim()}
-            className="w-full button-primary"
-          >
-            {isGenerating ? (
-              "Tweet Oluşturuluyor..."
-            ) : (
-              <>
-                <Wand2 className="w-4 h-4 mr-2" />
-                Tweet Oluştur
-              </>
-            )}
-          </Button>
-        </div>
-
-        <div className="space-y-4">
-          <Textarea
-            value={tweet}
-            onChange={(e) => setTweet(e.target.value)}
-            placeholder="Oluşturulan tweet burada görünecek..."
-            className="min-h-[100px] input-premium"
-            maxLength={280}
-          />
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">
-              {tweet.length}/280 karakter
-            </span>
-            <Button
-              onClick={copyTweet}
-              disabled={!tweet.trim()}
-              className="button-primary"
-            >
-              <Copy className="w-4 h-4 mr-2" />
-              Tweeti Kopyala
-            </Button>
-          </div>
-        </div>
+        <TweetInput
+          topic={topic}
+          description={description}
+          isGenerating={isGenerating}
+          onTopicChange={setTopic}
+          onDescriptionChange={setDescription}
+          onGenerate={generateTweet}
+        />
+        <TweetOutput
+          tweet={tweet}
+          onTweetChange={setTweet}
+          onCopy={copyTweet}
+        />
       </div>
     </div>
   );

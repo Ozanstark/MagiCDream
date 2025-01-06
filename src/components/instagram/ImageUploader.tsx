@@ -1,4 +1,4 @@
-import { Input } from "../ui/button";
+import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";

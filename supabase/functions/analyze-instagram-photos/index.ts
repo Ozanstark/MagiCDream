@@ -1,6 +1,8 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
+const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -26,11 +28,18 @@ serve(async (req) => {
       try {
         console.log(`Starting analysis for image ${index + 1}`);
         
+        // Validate URL format
+        try {
+          new URL(url);
+        } catch (e) {
+          throw new Error(`Invalid URL format for image ${index + 1}`);
+        }
+
         const openaiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
           headers: {
+            "Authorization": `Bearer ${openAIApiKey}`,
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
           },
           body: JSON.stringify({
             model: "gpt-4o",
@@ -48,9 +57,7 @@ serve(async (req) => {
                   },
                   {
                     type: "image_url",
-                    image_url: {
-                      url: url
-                    }
+                    image_url: url
                   }
                 ]
               }

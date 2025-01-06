@@ -1,9 +1,9 @@
-import { Image, MessageSquareText } from "lucide-react";
+import { Image, MessageSquareText, Scan } from "lucide-react";
 import { Button } from "./ui/button";
 
 interface ModeSwitcherProps {
-  mode: 'image' | 'text';
-  onModeChange: (mode: 'image' | 'text') => void;
+  mode: 'image' | 'text' | 'analyze';
+  onModeChange: (mode: 'image' | 'text' | 'analyze') => void;
 }
 
 const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
@@ -24,6 +24,15 @@ const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
         className="w-10 h-10"
       >
         <MessageSquareText className="h-5 w-5" />
+      </Button>
+      <Button
+        variant={mode === 'analyze' ? 'default' : 'outline'}
+        size="icon"
+        onClick={() => onModeChange('analyze')}
+        className="w-10 h-10"
+        title="Analyze Image Features"
+      >
+        <Scan className="h-5 w-5" />
       </Button>
     </div>
   );

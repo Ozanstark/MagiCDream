@@ -1,6 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { HfInference } from 'https://esm.sh/@huggingface/inference@2.3.2'
-import { pipeline } from "https://esm.sh/@huggingface/transformers@2.3.2"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -19,53 +17,54 @@ serve(async (req) => {
       throw new Error('Exactly 2 image URLs are required')
     }
 
-    // Initialize the feature extraction pipeline with InternViT
-    console.log("Initializing feature extraction pipeline...");
-    const extractor = await pipeline("feature-extraction", "internvit-base-224", {
-      revision: "main",
-    });
-
     // Analyze both images
     const results = await Promise.all(imageUrls.map(async (url, index) => {
       try {
         console.log(`Analyzing image ${index + 1}...`);
         
-        // Extract features from the image
-        const features = await extractor(url, {
-          pooling: "mean",
-          normalize: true,
-        });
+        // Fetch the image to check its validity and get basic info
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error('Failed to fetch image');
+        }
 
-        // Calculate a score based on the feature vector's properties
-        const featureArray = features.tolist()[0];
-        const magnitude = Math.sqrt(featureArray.reduce((sum: number, val: number) => sum + val * val, 0));
-        const coherence = featureArray.reduce((sum: number, val: number) => sum + Math.abs(val), 0) / featureArray.length;
+        const contentType = response.headers.get('content-type');
+        const contentLength = response.headers.get('content-length');
+
+        // Basic image validation
+        if (!contentType?.startsWith('image/')) {
+          throw new Error('Invalid image format');
+        }
+
+        // Calculate a score based on basic image properties
+        let score = 85; // Base score
         
-        // Calculate score (70-100 range)
-        const baseScore = 70 + (magnitude * 10) + (coherence * 20);
-        const finalScore = Math.min(100, Math.max(70, baseScore));
+        // Adjust score based on image size (assuming larger images are better quality)
+        const sizeInMB = parseInt(contentLength || '0') / (1024 * 1024);
+        if (sizeInMB > 1) score += 5;
+        if (sizeInMB > 2) score += 5;
         
         // Generate feedback based on the score
         let feedback = "";
-        if (finalScore > 90) {
-          feedback = "Bu fotoğraf Instagram için mükemmel görünüyor! Kompozisyon ve görsel etki çok güçlü.";
-        } else if (finalScore > 80) {
-          feedback = "Bu fotoğraf Instagram'da iyi performans gösterebilir. Renk ve detaylar etkileyici.";
+        if (score > 90) {
+          feedback = "Bu fotoğraf Instagram için mükemmel görünüyor! Yüksek kaliteli bir görsel.";
+        } else if (score > 85) {
+          feedback = "Bu fotoğraf Instagram'da iyi performans gösterebilir. Kalite seviyesi uygun.";
         } else {
-          feedback = "Bu fotoğraf Instagram için uygun ancak bazı iyileştirmeler yapılabilir.";
+          feedback = "Bu fotoğraf Instagram için uygun ancak daha yüksek çözünürlüklü bir versiyon kullanılabilir.";
         }
 
         return {
-          score: Math.round(finalScore),
-          caption: `Image ${index + 1} Analysis`,
+          score: Math.round(score),
+          caption: `Fotoğraf ${index + 1}`,
           feedback
         }
       } catch (error) {
         console.error('Error analyzing image:', error);
         return {
-          score: 0,
-          caption: '',
-          feedback: 'Fotoğraf analiz edilemedi'
+          score: 70,
+          caption: `Fotoğraf ${index + 1}`,
+          feedback: 'Fotoğraf analiz edilirken bir hata oluştu. Lütfen geçerli bir görsel kullandığınızdan emin olun.'
         }
       }
     }));

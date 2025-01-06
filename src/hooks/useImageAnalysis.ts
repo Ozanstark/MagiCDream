@@ -31,61 +31,57 @@ export const useImageAnalysis = () => {
 
     setIsAnalyzing(true);
     try {
-      // Try WebGPU first, fall back to WASM if not available
-      const device = 'webgpu';
-      console.log("Initializing feature extraction pipeline with device:", device);
-      
-      const extractor = await pipeline('feature-extraction', 'Xenova/vit-base-patch16-224', {
-        device
+      // Try WebGPU first
+      console.log("Initializing feature extraction pipeline with WebGPU...");
+      const extractor = await pipeline("feature-extraction", "microsoft/resnet-50", {
+        device: "webgpu",
+        revision: "main",
       });
 
-      console.log("Pipeline created successfully, processing image...");
+      console.log("Processing image...");
       const output = await extractor(imageUrl, {
         pooling: "mean",
-        normalize: true
+        normalize: true,
       });
-      
+
       console.log("Features extracted successfully");
       setFeatures(output.tolist()[0]);
-      
+
       toast({
         title: "Success",
         description: "Image features extracted successfully!",
       });
     } catch (error) {
-      console.error('Analysis error:', error);
-      
-      // If WebGPU failed, try WASM
-      if (error instanceof Error && error.message.includes('webgpu')) {
-        try {
-          console.log("WebGPU not available, falling back to WASM...");
-          const extractor = await pipeline('feature-extraction', 'Xenova/vit-base-patch16-224', {
-            device: 'wasm'
-          });
+      console.error("WebGPU error:", error);
 
-          const output = await extractor(imageUrl, {
-            pooling: "mean",
-            normalize: true
-          });
-          
-          console.log("Features extracted successfully using WASM");
-          setFeatures(output.tolist()[0]);
-          
-          toast({
-            title: "Success",
-            description: "Image features extracted successfully!",
-          });
-          return;
-        } catch (wasmError) {
-          console.error('WASM fallback error:', wasmError);
-        }
+      try {
+        // Fallback to WASM
+        console.log("Falling back to WASM...");
+        const extractor = await pipeline("feature-extraction", "microsoft/resnet-50", {
+          device: "cpu",
+          revision: "main",
+        });
+
+        const output = await extractor(imageUrl, {
+          pooling: "mean",
+          normalize: true,
+        });
+
+        console.log("Features extracted successfully using WASM");
+        setFeatures(output.tolist()[0]);
+
+        toast({
+          title: "Success",
+          description: "Image features extracted successfully!",
+        });
+      } catch (wasmError) {
+        console.error("WASM fallback error:", wasmError);
+        toast({
+          title: "Error",
+          description: "Failed to analyze image. Please try again.",
+          variant: "destructive",
+        });
       }
-
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to analyze image",
-        variant: "destructive",
-      });
     } finally {
       setIsAnalyzing(false);
     }

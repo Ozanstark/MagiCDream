@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { HfInference } from 'https://esm.sh/@huggingface/inference@2.3.2'
+import { pipeline } from "https://esm.sh/@huggingface/transformers@2.3.2"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -7,7 +8,6 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -19,44 +19,46 @@ serve(async (req) => {
       throw new Error('Exactly 2 image URLs are required')
     }
 
-    const hf = new HfInference(Deno.env.get('HUGGING_FACE_ACCESS_TOKEN'))
-    
+    // Initialize the feature extraction pipeline with InternViT
+    console.log("Initializing feature extraction pipeline...");
+    const extractor = await pipeline("feature-extraction", "internvit-base-224", {
+      revision: "main",
+    });
+
     // Analyze both images
-    const results = await Promise.all(imageUrls.map(async (url) => {
+    const results = await Promise.all(imageUrls.map(async (url, index) => {
       try {
-        console.log('Analyzing image:', url);
+        console.log(`Analyzing image ${index + 1}...`);
         
-        // Use vit-gpt2-image-captioning to analyze the image
-        const result = await hf.imageToText({
-          model: 'nlpconnect/vit-gpt2-image-captioning',
-          inputs: url,
+        // Extract features from the image
+        const features = await extractor(url, {
+          pooling: "mean",
+          normalize: true,
         });
 
-        console.log('Analysis result:', result);
-
-        // Calculate score based on caption analysis
-        const caption = result.generated_text.toLowerCase();
+        // Calculate a score based on the feature vector's properties
+        const featureArray = features.tolist()[0];
+        const magnitude = Math.sqrt(featureArray.reduce((sum: number, val: number) => sum + val * val, 0));
+        const coherence = featureArray.reduce((sum: number, val: number) => sum + Math.abs(val), 0) / featureArray.length;
         
-        // Define positive keywords that indicate good Instagram content
-        const positiveKeywords = [
-          'beautiful', 'stunning', 'colorful', 'vibrant', 'scenic',
-          'perfect', 'amazing', 'gorgeous', 'lovely', 'aesthetic',
-          'nature', 'landscape', 'portrait', 'style', 'fashion'
-        ];
-
-        // Count how many positive keywords appear in the caption
-        const keywordMatches = positiveKeywords.filter(keyword => 
-          caption.includes(keyword)
-        ).length;
-
-        // Calculate base score (70-100)
-        const baseScore = 70 + (keywordMatches * 2);
+        // Calculate score (70-100 range)
+        const baseScore = 70 + (magnitude * 10) + (coherence * 20);
         const finalScore = Math.min(100, Math.max(70, baseScore));
+        
+        // Generate feedback based on the score
+        let feedback = "";
+        if (finalScore > 90) {
+          feedback = "Bu fotoğraf Instagram için mükemmel görünüyor! Kompozisyon ve görsel etki çok güçlü.";
+        } else if (finalScore > 80) {
+          feedback = "Bu fotoğraf Instagram'da iyi performans gösterebilir. Renk ve detaylar etkileyici.";
+        } else {
+          feedback = "Bu fotoğraf Instagram için uygun ancak bazı iyileştirmeler yapılabilir.";
+        }
 
         return {
           score: Math.round(finalScore),
-          caption: result.generated_text,
-          feedback: `Bu fotoğraf Instagram için ${finalScore > 85 ? 'mükemmel' : finalScore > 75 ? 'iyi' : 'uygun'} görünüyor.`
+          caption: `Image ${index + 1} Analysis`,
+          feedback
         }
       } catch (error) {
         console.error('Error analyzing image:', error);

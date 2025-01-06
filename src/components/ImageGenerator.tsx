@@ -105,13 +105,20 @@ const ImageGenerator = () => {
         }
       }
 
+      const headers: Record<string, string> = {
+        Authorization: "Bearer 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",
+        "Content-Type": "application/json",
+      };
+
+      // Add special header for NSFW models
+      if (isUncensoredModel(selectedModel.id)) {
+        headers["Cookie"] = "token_acceptance=true";
+      }
+
       const response = await fetch(
         selectedModel.apiUrl,
         {
-          headers: {
-            Authorization: "Bearer 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",
-            "Content-Type": "application/json",
-          },
+          headers,
           method: "POST",
           body: JSON.stringify({ inputs: fullPrompt }),
         }

@@ -26,7 +26,6 @@ serve(async (req) => {
       try {
         console.log(`Starting analysis for image ${index + 1}`);
         
-        // Analyze image with OpenAI
         const openaiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
           headers: {
@@ -38,7 +37,7 @@ serve(async (req) => {
             messages: [
               {
                 role: "system",
-                content: "You are an Instagram expert. Analyze the image and provide a score out of 100 along with specific feedback about composition, lighting, subject matter, and overall appeal. Format your response as: 'SCORE: X/100\n\nFEEDBACK: [your detailed feedback]'"
+                content: "You are an Instagram expert. Analyze the provided image and give a score out of 100 based on its potential success on Instagram. Consider factors like composition, lighting, subject matter, color harmony, and overall visual appeal. Format your response exactly like this: 'SCORE: [number]/100\n\nFEEDBACK: [detailed analysis]'"
               },
               {
                 role: "user",
@@ -49,7 +48,9 @@ serve(async (req) => {
                   },
                   {
                     type: "image_url",
-                    image_url: url
+                    image_url: {
+                      url: url
+                    }
                   }
                 ]
               }

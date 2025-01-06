@@ -6,40 +6,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const analyzeImage = async (imageUrl: string) => {
-  const hf = new HfInference(Deno.env.get('HUGGINGFACE_API_KEY'))
-  
-  try {
-    // Use Stable Diffusion XL Refiner for image analysis
-    const result = await hf.imageToImage({
-      model: 'stabilityai/stable-diffusion-xl-refiner-1.0',
-      inputs: imageUrl,
-      parameters: {
-        prompt: "Analyze this image for Instagram quality, considering composition, lighting, and visual appeal",
-        negative_prompt: "low quality, blurry, poor composition",
-        num_inference_steps: 30,
-      }
-    })
-
-    // Calculate score based on the model's confidence and image quality
-    const qualityScore = Math.random() * 30 + 70; // Simulated quality score between 70-100
-    const score = Math.round(qualityScore);
-    
-    // Generate feedback based on the score
-    const feedback = score > 85 
-      ? "This image has excellent composition and visual appeal, perfect for Instagram!" 
-      : score > 75 
-      ? "This image has good potential for Instagram with strong visual elements."
-      : "This image could perform well on Instagram with some minor adjustments.";
-
-    return { score, feedback }
-  } catch (error) {
-    console.error('Analysis error:', error)
-    return { score: 0, feedback: 'Failed to analyze image' }
-  }
-}
-
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -51,16 +19,69 @@ serve(async (req) => {
       throw new Error('Exactly 2 image URLs are required')
     }
 
+    const hf = new HfInference(Deno.env.get('HUGGINGFACE_API_KEY'))
+    
     // Analyze both images
-    const results = await Promise.all(imageUrls.map(url => analyzeImage(url)))
+    const results = await Promise.all(imageUrls.map(async (url) => {
+      try {
+        // Use vit-gpt2-image-captioning to analyze the image
+        const result = await hf.imageToText({
+          model: 'nlpconnect/vit-gpt2-image-captioning',
+          inputs: url,
+        })
+
+        // Calculate score based on caption analysis
+        // We'll analyze the caption for Instagram-friendly characteristics
+        const caption = result.generated_text.toLowerCase()
+        
+        // Define positive keywords that indicate good Instagram content
+        const positiveKeywords = [
+          'beautiful', 'stunning', 'colorful', 'vibrant', 'scenic',
+          'perfect', 'amazing', 'gorgeous', 'lovely', 'aesthetic',
+          'nature', 'landscape', 'portrait', 'style', 'fashion'
+        ]
+
+        // Count how many positive keywords appear in the caption
+        const keywordMatches = positiveKeywords.filter(keyword => 
+          caption.includes(keyword)
+        ).length
+
+        // Calculate base score (70-100)
+        const baseScore = 70 + (keywordMatches * 2)
+        const finalScore = Math.min(100, Math.max(70, baseScore))
+
+        // Generate feedback based on the caption and score
+        let feedback = `Image Analysis: ${result.generated_text}. `
+        
+        if (finalScore > 85) {
+          feedback += "This image has excellent visual elements that should perform very well on Instagram!"
+        } else if (finalScore > 75) {
+          feedback += "This image has good potential for Instagram with its appealing characteristics."
+        } else {
+          feedback += "This image could perform well on Instagram with some minor adjustments to enhance its appeal."
+        }
+
+        return {
+          score: Math.round(finalScore),
+          feedback
+        }
+      } catch (error) {
+        console.error('Error analyzing image:', error)
+        return {
+          score: 0,
+          feedback: 'Failed to analyze image'
+        }
+      }
+    }))
 
     return new Response(
       JSON.stringify(results),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
+    console.error('Error:', error)
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: 'An unexpected error occurred', details: error.message }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     )
   }

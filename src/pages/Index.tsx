@@ -22,7 +22,7 @@ const Index = () => {
       ) : mode === 'tweet' ? (
         <TweetGenerator />
       ) : mode === 'instagram' ? (
-        <InstagramScoreDisplay />
+        <InstagramScoreDisplay score={null} feedback={null} />
       ) : (
         <ImageGenerator />
       )}

@@ -125,12 +125,12 @@ const ImageGenerator = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-6">
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl md:text-5xl font-bold rainbow-text">
+    <div className="w-full max-w-2xl mx-auto space-y-8">
+      <div className="text-center space-y-6">
+        <h1 className="text-5xl md:text-6xl font-extrabold rainbow-text tracking-tight">
           AI Dream Text to Image
         </h1>
-        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl">
+        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-4 border border-primary/20 py-3 rounded-lg bg-card/50 backdrop-blur-sm">
           Materialize your ideas through text to transform them into images. Start dreaming.
         </p>
       </div>
@@ -140,17 +140,17 @@ const ImageGenerator = () => {
         onModelChange={setSelectedModel}
       />
       
-      <div className="flex flex-col md:flex-row gap-2">
+      <div className="flex flex-col md:flex-row gap-3">
         <Input
           placeholder="Describe in detail what image you want to dream"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          className="flex-1 bg-card border-border/20"
+          className="flex-1 input-premium"
         />
         <Button
           onClick={generateImage}
           disabled={isLoading}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground"
+          className="button-primary"
         >
           <Wand2 className="mr-2 h-4 w-4" />
           {isLoading ? "Dreaming..." : "Dream Image"}

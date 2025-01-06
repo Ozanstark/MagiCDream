@@ -7,17 +7,17 @@
     --background: 240 27% 15%;
     --foreground: 0 0% 95%;
     
-    --card: 240 24% 19%;
+    --card: 235 24% 19%;
     --card-foreground: 0 0% 95%;
     
-    --popover: 240 24% 19%;
+    --popover: 235 24% 19%;
     --popover-foreground: 0 0% 95%;
     
-    --primary: 45 100% 50%;
+    --primary: 51 100% 50%;
     --primary-foreground: 240 10% 3.9%;
     
-    --secondary: 240 19% 73%;
-    --secondary-foreground: 240 10% 3.9%;
+    --secondary: 240 19% 31%;
+    --secondary-foreground: 0 0% 98%;
     
     --muted: 240 19% 35%;
     --muted-foreground: 240 5% 84%;
@@ -28,9 +28,9 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 95%;
     
-    --border: 240 19% 35%;
+    --border: 51 100% 50%;
     --input: 240 19% 35%;
-    --ring: 45 100% 50%;
+    --ring: 51 100% 50%;
     
     --radius: 0.5rem;
   }
@@ -38,11 +38,12 @@
 
 @layer base {
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-montserrat;
   }
 }
 
 .rainbow-text {
+  @apply font-montserrat font-extrabold;
   background: linear-gradient(
     to right,
     #FFD700,
@@ -53,12 +54,20 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  background-size: 100%;
+  background-size: 200% auto;
+  animation: gradient 3s linear infinite;
+}
+
+@keyframes gradient {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
 }
 
 .image-container {
-  @apply relative w-full aspect-video bg-card rounded-lg shadow-lg overflow-hidden border border-border/20;
-  max-width: 840px;
+  @apply relative w-full aspect-video bg-card rounded-lg overflow-hidden;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(12px);
 }
 
 .zoom-overlay {
@@ -67,4 +76,27 @@
 
 .loading-spinner {
   @apply w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin;
+}
+
+.button-primary {
+  @apply bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+}
+
+.button-primary:hover {
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+.button-secondary {
+  @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-all duration-300;
+  box-shadow: 0 0 10px rgba(176, 179, 184, 0.1);
+}
+
+.button-secondary:hover {
+  box-shadow: 0 0 20px rgba(176, 179, 184, 0.2);
+}
+
+.input-premium {
+  @apply bg-card border-border/20 focus:border-primary/50 focus:ring-primary/50 transition-all duration-300;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }

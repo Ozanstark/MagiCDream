@@ -7,6 +7,7 @@ import { useApiLimits } from "@/hooks/useApiLimits";
 import { uploadImageToStorage } from "@/utils/imageStorage";
 import GeneratorHeader from "./generator/GeneratorHeader";
 import GeneratorControls from "./generator/GeneratorControls";
+import { useGeneratedImages } from "@/hooks/useGeneratedImages";
 
 interface AdvancedSettingsConfig {
   guidance_scale?: number;

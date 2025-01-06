@@ -1,65 +1,41 @@
 import { useState } from "react";
-import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { Loader2, Upload } from "lucide-react";
+import { Input } from "./ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import InstagramScoreDisplay from "./InstagramScoreDisplay";
-
-interface UploadedImage {
-  url: string;
-  score?: number | null;
-  feedback?: string | null;
-}
+import { X } from "lucide-react";
 
 const InstagramAnalyzer = () => {
-  const [images, setImages] = useState<UploadedImage[]>([]);
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const { toast } = useToast();
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files) return;
 
-    if (images.length >= 2) {
-      toast({
-        title: "Hata",
-        description: "Karşılaştırma için sadece 2 resim yükleyebilirsiniz",
-        variant: "destructive",
-      });
-      return;
-    }
+    const newImages = Array.from(files).map(file => URL.createObjectURL(file));
+    setSelectedImages(prev => {
+      if (prev.length + newImages.length > 2) {
+        toast({
+          title: "Hata",
+          description: "En fazla 2 fotoğraf seçebilirsiniz.",
+          variant: "destructive",
+        });
+        return prev;
+      }
+      return [...prev, ...newImages];
+    });
+  };
 
-    try {
-      const filename = `${crypto.randomUUID()}.${file.name.split('.').pop()}`;
-      
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('generated-images')
-        .upload(filename, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('generated-images')
-        .getPublicUrl(filename);
-
-      setImages(prev => [...prev, { url: publicUrl }]);
-
-    } catch (error) {
-      console.error('Upload error:', error);
-      toast({
-        title: "Hata",
-        description: "Resim yüklenemedi",
-        variant: "destructive",
-      });
-    }
+  const removeImage = (indexToRemove: number) => {
+    setSelectedImages(prev => prev.filter((_, index) => index !== indexToRemove));
   };
 
   const analyzeImages = async () => {
-    if (images.length !== 2) {
+    if (selectedImages.length !== 2) {
       toast({
         title: "Hata",
-        description: "Lütfen karşılaştırma için tam olarak 2 resim yükleyin",
+        description: "Lütfen tam olarak 2 fotoğraf seçin.",
         variant: "destructive",
       });
       return;
@@ -67,29 +43,32 @@ const InstagramAnalyzer = () => {
 
     setIsAnalyzing(true);
     try {
-      const { data, error } = await supabase.functions.invoke('analyze-instagram-photos', {
-        body: {
-          imageUrls: images.map(img => img.url),
+      const response = await fetch("https://api-inference.huggingface.co/models/nlpconnect/vit-gpt2-image-captioning", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          inputs: selectedImages,
+        }),
       });
 
-      if (error) throw error;
-      
-      setImages(prev => prev.map((img, index) => ({
-        ...img,
-        score: data[index].score,
-        feedback: data[index].feedback,
-      })));
+      if (!response.ok) {
+        throw new Error("Analiz sırasında bir hata oluştu");
+      }
+
+      const result = await response.json();
+      console.log("Analysis result:", result);
 
       toast({
         title: "Başarılı",
-        description: "Resimler başarıyla analiz edildi!",
+        description: "Fotoğraflar başarıyla analiz edildi!",
       });
     } catch (error) {
-      console.error('Analysis error:', error);
+      console.error("Analysis error:", error);
       toast({
         title: "Hata",
-        description: "Resimler analiz edilemedi",
+        description: "Fotoğrafları analiz ederken bir hata oluştu.",
         variant: "destructive",
       });
     } finally {
@@ -98,65 +77,58 @@ const InstagramAnalyzer = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-8 px-4">
-      <div className="text-center space-y-2">
-        <h1 className="text-2xl font-bold">Instagram Fotoğraf Analizi</h1>
-        <p className="text-muted-foreground">
-          Instagram için hangi fotoğrafın daha iyi olduğunu öğrenmek için 2 fotoğraf yükleyin
+    <div className="w-full max-w-2xl mx-auto space-y-6">
+      <div className="space-y-4">
+        <h2 className="text-2xl font-bold text-center">Instagram Fotoğraf Analizi</h2>
+        <p className="text-center text-muted-foreground">
+          Karşılaştırmak istediğiniz 2 fotoğraf seçin
         </p>
       </div>
 
-      <div className="space-y-4">
-        <Input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          disabled={images.length >= 2 || isAnalyzing}
-          className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 
-                   file:text-sm file:font-semibold file:bg-primary/10 file:text-primary 
-                   hover:file:bg-primary/20"
-        />
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {images.map((image, index) => (
-            <div key={index} className="space-y-4">
-              <div className="relative aspect-square rounded-lg overflow-hidden border">
-                <img
-                  src={image.url}
-                  alt={`Upload ${index + 1}`}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              {image.score !== undefined && (
-                <InstagramScoreDisplay
-                  score={image.score}
-                  feedback={image.feedback}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-
-        {images.length === 2 && (
-          <Button
-            onClick={analyzeImages}
-            disabled={isAnalyzing}
-            className="w-full"
-          >
-            {isAnalyzing ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Analiz Ediliyor...
-              </>
-            ) : (
-              <>
-                <Upload className="mr-2 h-4 w-4" />
-                Fotoğrafları Analiz Et
-              </>
-            )}
-          </Button>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {selectedImages.map((image, index) => (
+          <div key={index} className="relative">
+            <img
+              src={image}
+              alt={`Selected ${index + 1}`}
+              className="w-full aspect-square object-cover rounded-lg"
+            />
+            <Button
+              variant="destructive"
+              size="icon"
+              className="absolute top-2 right-2"
+              onClick={() => removeImage(index)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        ))}
+        {selectedImages.length < 2 && (
+          <div className="aspect-square flex items-center justify-center border-2 border-dashed rounded-lg">
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+              id="image-upload"
+            />
+            <label
+              htmlFor="image-upload"
+              className="cursor-pointer text-center p-4 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Fotoğraf Seç
+            </label>
+          </div>
         )}
       </div>
+
+      <Button
+        className="w-full"
+        onClick={analyzeImages}
+        disabled={selectedImages.length !== 2 || isAnalyzing}
+      >
+        {isAnalyzing ? "Analiz Ediliyor..." : "Analiz Et"}
+      </Button>
     </div>
   );
 };

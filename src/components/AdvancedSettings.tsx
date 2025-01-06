@@ -5,7 +5,7 @@ import { Label } from "./ui/label";
 import { Slider } from "./ui/slider";
 import { Settings, Minus, Plus } from "lucide-react";
 
-interface AdvancedSettings {
+interface AdvancedSettingsConfig {
   guidance_scale?: number;
   negative_prompt?: string;
   num_inference_steps?: number;
@@ -16,8 +16,8 @@ interface AdvancedSettings {
 }
 
 interface AdvancedSettingsProps {
-  settings: AdvancedSettings;
-  onSettingsChange: (settings: AdvancedSettings) => void;
+  settings: AdvancedSettingsConfig;
+  onSettingsChange: (settings: AdvancedSettingsConfig) => void;
 }
 
 const AdvancedSettings = ({ settings, onSettingsChange }: AdvancedSettingsProps) => {

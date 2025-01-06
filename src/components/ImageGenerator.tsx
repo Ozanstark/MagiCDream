@@ -9,7 +9,7 @@ import { AVAILABLE_MODELS, ModelType } from "@/types/models";
 import { useApiLimits } from "@/hooks/useApiLimits";
 import AdvancedSettings from "./AdvancedSettings";
 
-interface AdvancedSettings {
+interface AdvancedSettingsConfig {
   guidance_scale?: number;
   negative_prompt?: string;
   num_inference_steps?: number;
@@ -26,7 +26,7 @@ const ImageGenerator = () => {
   const [generatedImages, setGeneratedImages] = useState<string[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedModel, setSelectedModel] = useState<ModelType>(AVAILABLE_MODELS[0]);
-  const [advancedSettings, setAdvancedSettings] = useState<AdvancedSettings>({
+  const [advancedSettings, setAdvancedSettings] = useState<AdvancedSettingsConfig>({
     width: 512,
     height: 512
   });

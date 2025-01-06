@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { Input } from "./ui/input";
-import { MessageSquare, Wand2 } from "lucide-react";
+import { Copy, Wand2 } from "lucide-react";
 import { useToast } from "./ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { HfInference } from "@huggingface/inference";
@@ -65,8 +65,7 @@ const TweetGenerator = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const copyTweet = async () => {
     if (!tweet.trim()) {
       toast({
         title: "Tweet metni boş olamaz",
@@ -75,37 +74,18 @@ const TweetGenerator = () => {
       return;
     }
 
-    setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("scheduled_tweets")
-        .insert([
-          {
-            content: tweet,
-            category: topic,
-            scheduled_time: new Date().toISOString(),
-          },
-        ])
-        .select()
-        .single();
-
-      if (error) throw error;
-
+      await navigator.clipboard.writeText(tweet);
       toast({
-        title: "Tweet başarıyla oluşturuldu",
-        description: "Tweet planlandı ve yakında paylaşılacak",
+        title: "Tweet kopyalandı",
+        description: "Tweet panoya kopyalandı",
       });
-      setTweet("");
-      setTopic("");
-      setDescription("");
     } catch (error: any) {
       toast({
-        title: "Hata oluştu",
-        description: error.message,
+        title: "Kopyalama başarısız",
+        description: "Tweet kopyalanırken bir hata oluştu",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -161,18 +141,12 @@ const TweetGenerator = () => {
               {tweet.length}/280 karakter
             </span>
             <Button
-              type="submit"
-              disabled={isLoading || !tweet.trim()}
+              onClick={copyTweet}
+              disabled={!tweet.trim()}
               className="button-primary"
             >
-              {isLoading ? (
-                "Yükleniyor..."
-              ) : (
-                <>
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  Tweeti Planla
-                </>
-              )}
+              <Copy className="w-4 h-4 mr-2" />
+              Tweeti Kopyala
             </Button>
           </div>
         </form>

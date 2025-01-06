@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { X, Download, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, Download, ChevronLeft, ChevronRight, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 
 interface ImageDisplayProps {
   currentImage: string | null;
@@ -27,6 +28,30 @@ const ImageDisplay = ({
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+    }
+  };
+
+  const handleShare = async () => {
+    if (!currentImage) return;
+
+    try {
+      // For X (Twitter), we'll use their Web Intent URL
+      const tweetText = "Check out this AI-generated image! ✨";
+      const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(window.location.href)}`;
+      
+      // Open in a new window
+      window.open(shareUrl, '_blank', 'width=550,height=420');
+      
+      toast({
+        title: "Share Link Opened",
+        description: "A new window has been opened to share on X (Twitter)",
+      });
+    } catch (error) {
+      toast({
+        title: "Share Failed",
+        description: "Unable to open share dialog",
+        variant: "destructive",
+      });
     }
   };
 
@@ -71,18 +96,40 @@ const ImageDisplay = ({
         className="w-full h-full object-cover transition-transform duration-200 cursor-pointer hover:scale-105"
         onClick={() => setIsZoomed(true)}
       />
-      <Button
-        onClick={handleDownload}
-        className="absolute top-4 right-4 bg-primary hover:bg-primary/90"
-      >
-        <Download className="h-4 w-4" />
-      </Button>
+      <div className="absolute top-4 right-4 flex gap-2">
+        <Button
+          onClick={handleShare}
+          className="bg-primary hover:bg-primary/90"
+          size="icon"
+        >
+          <Share2 className="h-4 w-4" />
+        </Button>
+        <Button
+          onClick={handleDownload}
+          className="bg-primary hover:bg-primary/90"
+          size="icon"
+        >
+          <Download className="h-4 w-4" />
+        </Button>
+      </div>
 
       {isZoomed && (
         <div className="zoom-overlay" onClick={() => setIsZoomed(false)}>
           <div className="absolute top-4 right-4 flex gap-2">
             <Button
-              onClick={handleDownload}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleShare();
+              }}
+              className="bg-primary hover:bg-primary/90"
+            >
+              <Share2 className="h-4 w-4" />
+            </Button>
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDownload();
+              }}
               className="bg-primary hover:bg-primary/90"
             >
               <Download className="h-4 w-4" />

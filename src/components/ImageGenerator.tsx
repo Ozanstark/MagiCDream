@@ -7,9 +7,6 @@ import { useApiLimits } from "@/hooks/useApiLimits";
 import { uploadImageToStorage } from "@/utils/imageStorage";
 import GeneratorHeader from "./generator/GeneratorHeader";
 import GeneratorControls from "./generator/GeneratorControls";
-import ReferenceImageUpload from "./generator/ReferenceImageUpload";
-import { analyzeInstagramPotential, updateImageInstagramScore } from "@/utils/instagramScoring";
-import { useGeneratedImages } from "@/hooks/useGeneratedImages";
 
 interface AdvancedSettingsConfig {
   guidance_scale?: number;
@@ -31,7 +28,6 @@ const ImageGenerator = () => {
     width: 512,
     height: 512
   });
-  const [referenceImages, setReferenceImages] = useState<File[]>([]);
   
   const { toast } = useToast();
   const { checkImageGenerationLimit, recordImageGeneration } = useApiLimits();
@@ -40,22 +36,6 @@ const ImageGenerator = () => {
   useEffect(() => {
     loadGeneratedImages();
   }, []);
-
-  const handleReferenceImagesSelected = (files: File[]) => {
-    if (files.length + referenceImages.length > 2) {
-      toast({
-        title: "Maximum 2 reference images",
-        description: "Please select up to 2 reference images",
-        variant: "destructive",
-      });
-      return;
-    }
-    setReferenceImages([...referenceImages, ...files]);
-  };
-
-  const handleRemoveReferenceImage = (index: number) => {
-    setReferenceImages(referenceImages.filter((_, i) => i !== index));
-  };
 
   const generateImage = async () => {
     if (!prompt.trim()) {
@@ -102,33 +82,10 @@ const ImageGenerator = () => {
       const isNSFW = false;
 
       const { publicUrl } = await uploadImageToStorage(blob, prompt, selectedModel.id, isNSFW);
-      
-      let instagramScore = null;
-      let instagramFeedback = null;
-
-      if (referenceImages.length === 2) {
-        const referenceUrls = await Promise.all(
-          referenceImages.map(async (file) => {
-            const { publicUrl } = await uploadImageToStorage(
-              file,
-              "reference",
-              "reference",
-              false
-            );
-            return publicUrl;
-          })
-        );
-
-        const { score, feedback } = await analyzeInstagramPotential(publicUrl, referenceUrls);
-        instagramScore = score;
-        instagramFeedback = feedback;
-      }
 
       const newImage = {
         url: publicUrl,
         isNSFW,
-        instagramScore,
-        instagramFeedback
       };
 
       setGeneratedImages(prev => [...prev, newImage]);
@@ -178,12 +135,6 @@ const ImageGenerator = () => {
       />
 
       <div className="space-y-4">
-        <ReferenceImageUpload
-          onImagesSelected={handleReferenceImagesSelected}
-          selectedImages={referenceImages}
-          onRemoveImage={handleRemoveReferenceImage}
-        />
-
         <GeneratorControls
           prompt={prompt}
           onPromptChange={setPrompt}
@@ -204,8 +155,6 @@ const ImageGenerator = () => {
           canNavigatePrev={currentImageIndex > 0 && !isLoading}
           canNavigateNext={currentImageIndex < generatedImages.length - 1 && !isLoading}
           isNSFW={currentImage ? generatedImages[currentImageIndex]?.isNSFW : false}
-          instagramScore={currentImage ? generatedImages[currentImageIndex]?.instagramScore : null}
-          instagramFeedback={currentImage ? generatedImages[currentImageIndex]?.instagramFeedback : null}
         />
       </div>
 

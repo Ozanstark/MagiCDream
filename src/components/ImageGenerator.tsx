@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -9,6 +9,7 @@ import ModelSelector from "./ModelSelector";
 import { AVAILABLE_MODELS, ModelType } from "@/types/models";
 import { useApiLimits } from "@/hooks/useApiLimits";
 import AdvancedSettings from "./AdvancedSettings";
+import { uploadImageToStorage, fetchGeneratedImages } from "@/utils/imageStorage";
 
 interface AdvancedSettingsConfig {
   guidance_scale?: number;
@@ -37,6 +38,27 @@ const ImageGenerator = () => {
 
   const isUncensoredModel = (modelId: string) => {
     return ['berrys-taylor', 'harrys-torrance', 'realistic-five', 'realistic-six', 'realistic-seven'].includes(modelId);
+  };
+
+  useEffect(() => {
+    loadGeneratedImages();
+  }, []);
+
+  const loadGeneratedImages = async () => {
+    try {
+      const images = await fetchGeneratedImages();
+      setGeneratedImages(images.map(img => ({
+        url: img.url,
+        isNSFW: img.is_nsfw
+      })));
+    } catch (error) {
+      console.error('Error loading images:', error);
+      toast({
+        title: "Hata",
+        description: "Görüntüler yüklenirken bir hata oluştu",
+        variant: "destructive",
+      });
+    }
   };
 
   const generateImage = async () => {
@@ -101,13 +123,17 @@ const ImageGenerator = () => {
       }
 
       const blob = await response.blob();
-      const imageUrl = URL.createObjectURL(blob);
+      const isNSFW = isUncensoredModel(selectedModel.id);
+
+      const { publicUrl } = await uploadImageToStorage(blob, prompt, selectedModel.id, isNSFW);
+      
       const newImage = {
-        url: imageUrl,
-        isNSFW: isUncensoredModel(selectedModel.id)
+        url: publicUrl,
+        isNSFW
       };
+
       setGeneratedImages(prev => [...prev, newImage]);
-      setCurrentImage(imageUrl);
+      setCurrentImage(publicUrl);
       setCurrentImageIndex(generatedImages.length);
       recordImageGeneration(selectedModel.id);
 

@@ -34,13 +34,10 @@ const ImageAnalyzer = () => {
 
     setIsAnalyzing(true);
     try {
-      // Use the ONNX version of the model specifically designed for web browsers
-      const extractor = await pipeline('feature-extraction', 'Xenova/dinov2-base', {
-        quantized: true,
+      const extractor = await pipeline('feature-extraction', 'microsoft/resnet-50', {
         device: 'webgpu'
       });
 
-      // Extract features using the pipeline directly with the image URL
       const output = await extractor(imageUrl, {
         pooling: "mean",
         normalize: true
@@ -71,7 +68,7 @@ const ImageAnalyzer = () => {
           Analyze Image Features
         </h1>
         <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-3 sm:px-4 border border-primary/20 py-2 sm:py-3 rounded-lg bg-card/50 backdrop-blur-sm">
-          Extract powerful visual features from your images using Facebook's DinoV2 model
+          Extract powerful visual features from your images using Microsoft's ResNet-50 model
         </p>
       </div>
 

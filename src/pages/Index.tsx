@@ -5,7 +5,7 @@ import ImageGenerator from "@/components/ImageGenerator";
 import ImageAnalyzer from "@/components/ImageAnalyzer";
 import MusicGenerator from "@/components/MusicGenerator";
 import TweetGenerator from "@/components/TweetGenerator";
-import InstagramScoreDisplay from "@/components/InstagramScoreDisplay";
+import InstagramAnalyzer from "@/components/InstagramAnalyzer";
 
 const Index = () => {
   const [mode, setMode] = useState<'image' | 'text' | 'analyze' | 'music' | 'tweet' | 'instagram'>('image');
@@ -22,7 +22,7 @@ const Index = () => {
       ) : mode === 'tweet' ? (
         <TweetGenerator />
       ) : mode === 'instagram' ? (
-        <InstagramScoreDisplay score={null} feedback={null} />
+        <InstagramAnalyzer />
       ) : (
         <ImageGenerator />
       )}

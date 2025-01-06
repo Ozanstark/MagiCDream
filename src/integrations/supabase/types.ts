@@ -39,12 +39,52 @@ export type Database = {
         }
         Relationships: []
       }
+      scheduled_tweets: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          error_message: string | null
+          id: string
+          scheduled_time: string
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          category: string
+          content: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          scheduled_time: string
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          scheduled_time?: string
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      distribute_daily_tweets: {
+        Args: {
+          start_hour?: number
+          end_hour?: number
+          num_tweets?: number
+        }
+        Returns: string[]
+      }
     }
     Enums: {
       [_ in never]: never

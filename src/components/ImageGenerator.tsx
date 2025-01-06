@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { Wand2, Settings } from "lucide-react";
+import { Wand2 } from "lucide-react";
 import ImageDisplay from "./ImageDisplay";
 import ModelSelector from "./ModelSelector";
 import { AVAILABLE_MODELS, ModelType } from "@/types/models";
@@ -125,12 +125,12 @@ const ImageGenerator = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-4">
+    <div className="w-full max-w-2xl mx-auto space-y-6">
       <div className="text-center space-y-4">
         <h1 className="text-4xl md:text-5xl font-bold rainbow-text">
           AI Dream Text to Image
         </h1>
-        <p className="text-lg md:text-xl text-gray-700 max-w-2xl">
+        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl">
           Materialize your ideas through text to transform them into images. Start dreaming.
         </p>
       </div>
@@ -145,12 +145,12 @@ const ImageGenerator = () => {
           placeholder="Describe in detail what image you want to dream"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          className="flex-1 bg-white h-10"
+          className="flex-1 bg-card border-border/20"
         />
         <Button
           onClick={generateImage}
           disabled={isLoading}
-          className="bg-primary hover:bg-primary/90 h-10"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
           {isLoading ? "Dreaming..." : "Dream Image"}

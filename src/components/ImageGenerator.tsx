@@ -2,13 +2,13 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { Wand2, Image as ImageIcon } from "lucide-react";
+import { Wand2 } from "lucide-react";
 import ImageDisplay from "./ImageDisplay";
+import ImageGallery from "./ImageGallery";
 import ModelSelector from "./ModelSelector";
 import { AVAILABLE_MODELS, ModelType } from "@/types/models";
 import { useApiLimits } from "@/hooks/useApiLimits";
 import AdvancedSettings from "./AdvancedSettings";
-import { ScrollArea } from "./ui/scroll-area";
 
 interface AdvancedSettingsConfig {
   guidance_scale?: number;
@@ -31,7 +31,6 @@ const ImageGenerator = () => {
     width: 512,
     height: 512
   });
-  const [showGallery, setShowGallery] = useState(false);
   
   const { toast } = useToast();
   const { checkImageGenerationLimit, recordImageGeneration } = useApiLimits();
@@ -116,6 +115,11 @@ const ImageGenerator = () => {
     }
   };
 
+  const handleImageSelect = (image: string, index: number) => {
+    setCurrentImage(image);
+    setCurrentImageIndex(index);
+  };
+
   const navigateImages = (direction: 'prev' | 'next') => {
     if (direction === 'prev' && currentImageIndex > 0) {
       setCurrentImageIndex(prev => prev - 1);
@@ -149,24 +153,14 @@ const ImageGenerator = () => {
           onChange={(e) => setPrompt(e.target.value)}
           className="flex-1 input-premium"
         />
-        <div className="flex gap-2">
-          <Button
-            onClick={generateImage}
-            disabled={isLoading}
-            className="button-primary flex-1 sm:flex-none"
-          >
-            <Wand2 className="mr-2 h-4 w-4" />
-            {isLoading ? "Dreaming..." : "Dream Image"}
-          </Button>
-          <Button
-            onClick={() => setShowGallery(!showGallery)}
-            variant="outline"
-            className="sm:flex-none"
-          >
-            <ImageIcon className="mr-2 h-4 w-4" />
-            Gallery
-          </Button>
-        </div>
+        <Button
+          onClick={generateImage}
+          disabled={isLoading}
+          className="button-primary w-full sm:w-auto"
+        >
+          <Wand2 className="mr-2 h-4 w-4" />
+          {isLoading ? "Dreaming..." : "Dream Image"}
+        </Button>
       </div>
 
       <AdvancedSettings
@@ -174,41 +168,20 @@ const ImageGenerator = () => {
         onSettingsChange={setAdvancedSettings}
       />
 
-      {!showGallery && (
-        <div className="relative w-full flex items-center justify-center">
-          <ImageDisplay
-            currentImage={currentImage}
-            isLoading={isLoading}
-            onNavigate={navigateImages}
-            canNavigatePrev={currentImageIndex > 0 && !isLoading}
-            canNavigateNext={currentImageIndex < generatedImages.length - 1 && !isLoading}
-          />
-        </div>
-      )}
+      <div className="relative w-full flex items-center justify-center">
+        <ImageDisplay
+          currentImage={currentImage}
+          isLoading={isLoading}
+          onNavigate={navigateImages}
+          canNavigatePrev={currentImageIndex > 0 && !isLoading}
+          canNavigateNext={currentImageIndex < generatedImages.length - 1 && !isLoading}
+        />
+      </div>
 
-      {showGallery && generatedImages.length > 0 && (
-        <ScrollArea className="h-[400px] w-full rounded-md border p-4">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {generatedImages.map((image, index) => (
-              <div
-                key={index}
-                className="relative aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
-                onClick={() => {
-                  setCurrentImage(image);
-                  setCurrentImageIndex(index);
-                  setShowGallery(false);
-                }}
-              >
-                <img
-                  src={image}
-                  alt={`Generated ${index + 1}`}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
-      )}
+      <ImageGallery 
+        images={generatedImages}
+        onImageSelect={handleImageSelect}
+      />
     </div>
   );
 };

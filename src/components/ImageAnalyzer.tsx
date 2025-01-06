@@ -34,23 +34,14 @@ const ImageAnalyzer = () => {
 
     setIsAnalyzing(true);
     try {
-      // Use the pipeline API which handles the processor and model setup internally
-      const extractor = await pipeline('feature-extraction', 'facebook/dinov2-base', {
-        revision: 'main',
+      // Use the ONNX version of the model specifically designed for web browsers
+      const extractor = await pipeline('feature-extraction', 'Xenova/dinov2-base', {
+        quantized: true,
         device: 'webgpu'
       });
 
-      // Create an image element and wait for it to load
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = reject;
-        img.src = imageUrl;
-      });
-
-      // Extract features using the pipeline
-      const output = await extractor(img, {
+      // Extract features using the pipeline directly with the image URL
+      const output = await extractor(imageUrl, {
         pooling: "mean",
         normalize: true
       });

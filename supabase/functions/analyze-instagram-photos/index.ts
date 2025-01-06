@@ -15,7 +15,7 @@ serve(async (req) => {
   }
 
   try {
-    const { imageUrls } = await req.json();
+    const { imageUrls, language = "tr" } = await req.json();
 
     if (!Array.isArray(imageUrls) || imageUrls.length !== 2) {
       throw new Error('Exactly 2 image URLs are required');
@@ -37,6 +37,10 @@ serve(async (req) => {
       try {
         console.log(`Starting analysis for image ${index + 1}`);
 
+        const systemPrompt = language === "tr" 
+          ? "Sen bir Instagram uzmanısın. Verilen görseli analiz et ve Instagram'daki potansiyel başarısına göre 100 üzerinden bir puan ver. Kompozisyon, ışık, konu, renk uyumu ve genel görsel çekicilik gibi faktörleri değerlendir. Yanıtını tam olarak bu formatta ver: 'SKOR: [sayı]/100\n\nGERİBİLDİRİM: [detaylı analiz]'"
+          : "You are an Instagram expert. Analyze the provided image and give a score out of 100 based on its potential success on Instagram. Consider factors like composition, lighting, subject matter, color harmony, and overall visual appeal. Format your response exactly like this: 'SCORE: [number]/100\n\nFEEDBACK: [detailed analysis]'";
+
         const openaiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
           headers: {
@@ -44,18 +48,20 @@ serve(async (req) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "gpt-4o",
+            model: "gpt-4-vision-preview",
             messages: [
               {
                 role: "system",
-                content: "You are an Instagram expert. Analyze the provided image and give a score out of 100 based on its potential success on Instagram. Consider factors like composition, lighting, subject matter, color harmony, and overall visual appeal. Format your response exactly like this: 'SCORE: [number]/100\n\nFEEDBACK: [detailed analysis]'"
+                content: systemPrompt
               },
               {
                 role: "user",
                 content: [
                   {
                     type: "text",
-                    text: "Analyze this image for Instagram potential. Consider factors like composition, lighting, subject matter, and overall appeal. Provide a score out of 100 and detailed feedback."
+                    text: language === "tr"
+                      ? "Bu görseli Instagram potansiyeli açısından analiz et. Kompozisyon, ışık, konu ve genel çekicilik gibi faktörleri değerlendir. 100 üzerinden bir puan ve detaylı geri bildirim ver."
+                      : "Analyze this image for Instagram potential. Consider factors like composition, lighting, subject matter, and overall appeal. Provide a score out of 100 and detailed feedback."
                   },
                   {
                     type: "image_url",
@@ -83,17 +89,19 @@ serve(async (req) => {
 
         const analysis = openaiData.choices[0].message.content;
         
-        // Extract score using regex
-        const scoreMatch = analysis.match(/SCORE:\s*(\d+)\/100/i);
+        // Extract score using regex based on language
+        const scoreRegex = language === "tr" ? /SKOR:\s*(\d+)\/100/i : /SCORE:\s*(\d+)\/100/i;
+        const scoreMatch = analysis.match(scoreRegex);
         const score = scoreMatch ? parseInt(scoreMatch[1]) : 75;
 
-        // Extract feedback
-        const feedbackMatch = analysis.match(/FEEDBACK:\s*([\s\S]*)/i);
+        // Extract feedback based on language
+        const feedbackRegex = language === "tr" ? /GERİBİLDİRİM:\s*([\s\S]*)/i : /FEEDBACK:\s*([\s\S]*)/i;
+        const feedbackMatch = analysis.match(feedbackRegex);
         const feedback = feedbackMatch ? feedbackMatch[1].trim() : analysis;
 
         return {
           score,
-          caption: `Photo ${index + 1}`,
+          caption: language === "tr" ? `Fotoğraf ${index + 1}` : `Photo ${index + 1}`,
           feedback
         };
       } catch (error) {

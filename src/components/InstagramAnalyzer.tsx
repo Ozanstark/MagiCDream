@@ -2,8 +2,15 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { X, Loader2 } from "lucide-react";
+import { X, Loader2, Languages } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface AnalysisResult {
   score: number;
@@ -15,6 +22,7 @@ const InstagramAnalyzer = () => {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [results, setResults] = useState<AnalysisResult[]>([]);
+  const [language, setLanguage] = useState<"tr" | "en">("tr");
   const { toast } = useToast();
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,7 +98,7 @@ const InstagramAnalyzer = () => {
       );
 
       const { data, error } = await supabase.functions.invoke('analyze-instagram-photos', {
-        body: { imageUrls: publicUrls }
+        body: { imageUrls: publicUrls, language }
       });
 
       if (error) {
@@ -142,7 +150,18 @@ const InstagramAnalyzer = () => {
             </Button>
             {results[index] && (
               <div className="mt-2 space-y-2 p-4 bg-background/80 backdrop-blur-sm rounded-lg">
-                <p className="font-semibold">Skor: {results[index].score}/100</p>
+                <div className="flex items-center justify-between">
+                  <p className="font-semibold">Skor: {results[index].score}/100</p>
+                  <Select value={language} onValueChange={(value: "tr" | "en") => setLanguage(value)}>
+                    <SelectTrigger className="w-[100px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="tr">Türkçe</SelectItem>
+                      <SelectItem value="en">English</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <p className="text-sm text-muted-foreground">{results[index].caption}</p>
                 <p className="text-sm">{results[index].feedback}</p>
               </div>

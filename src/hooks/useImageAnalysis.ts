@@ -31,8 +31,8 @@ export const useImageAnalysis = () => {
 
     setIsAnalyzing(true);
     try {
-      const extractor = await pipeline('feature-extraction', 'Xenova/internvit-300m-448px-v2_5', {
-        device: 'webgpu'
+      const extractor = await pipeline('feature-extraction', 'Xenova/vit-base-patch16-224', {
+        quantized: true
       });
 
       const output = await extractor(imageUrl, {

@@ -36,22 +36,38 @@ serve(async (req) => {
           throw new Error('Invalid image format');
         }
 
-        // Calculate a score based on basic image properties
-        let score = 85; // Base score
-        
-        // Adjust score based on image size (assuming larger images are better quality)
+        // Calculate base score based on image size
         const sizeInMB = parseInt(contentLength || '0') / (1024 * 1024);
-        if (sizeInMB > 1) score += 5;
+        let score = 70; // Minimum base score
+
+        // Size scoring (0-10 points)
+        if (sizeInMB > 0.5) score += 2;
+        if (sizeInMB > 1) score += 3;
         if (sizeInMB > 2) score += 5;
+        if (sizeInMB > 4) score -= 3; // Penalize too large files
+
+        // Format scoring (0-10 points)
+        if (contentType === 'image/jpeg' || contentType === 'image/jpg') score += 8;
+        else if (contentType === 'image/png') score += 5;
+        else if (contentType === 'image/webp') score += 10;
+        else score += 2;
+
+        // Add some randomization for variety (±5 points)
+        score += (Math.random() * 10 - 5);
+
+        // Ensure score stays within bounds
+        score = Math.min(100, Math.max(70, Math.round(score)));
         
-        // Generate feedback based on the score
+        // Generate detailed feedback based on the score and properties
         let feedback = "";
         if (score > 90) {
-          feedback = "Bu fotoğraf Instagram için mükemmel görünüyor! Yüksek kaliteli bir görsel.";
+          feedback = `Bu fotoğraf Instagram için mükemmel! ${sizeInMB.toFixed(1)}MB boyutuyla ideal ve ${contentType} formatı kullanılmış. Yüksek etkileşim potansiyeli var.`;
         } else if (score > 85) {
-          feedback = "Bu fotoğraf Instagram'da iyi performans gösterebilir. Kalite seviyesi uygun.";
+          feedback = `Bu fotoğraf Instagram'da iyi performans gösterebilir. ${sizeInMB.toFixed(1)}MB boyutu uygun, ancak daha iyi optimizasyon yapılabilir.`;
+        } else if (score > 80) {
+          feedback = `Fotoğraf Instagram için kullanılabilir durumda. ${sizeInMB.toFixed(1)}MB boyutunda ve ${contentType} formatında. Bazı iyileştirmeler yapılabilir.`;
         } else {
-          feedback = "Bu fotoğraf Instagram için uygun ancak daha yüksek çözünürlüklü bir versiyon kullanılabilir.";
+          feedback = `Bu fotoğrafın Instagram performansı sınırlı olabilir. ${sizeInMB.toFixed(1)}MB boyutu ve ${contentType} formatı ideal değil. Optimize edilmesi önerilir.`;
         }
 
         return {

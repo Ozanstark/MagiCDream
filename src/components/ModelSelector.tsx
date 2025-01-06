@@ -24,16 +24,16 @@ const ModelSelector = ({ selectedModel, onModelChange, disabled }: ModelSelector
         }}
         disabled={disabled}
       >
-        <SelectTrigger className="w-full">
+        <SelectTrigger className="w-full input-premium text-sm sm:text-base">
           <SelectValue placeholder="Select a model" />
         </SelectTrigger>
         <SelectContent>
           {AVAILABLE_MODELS.map((model) => (
             <SelectItem key={model.name} value={model.name}>
               <div className="flex flex-col">
-                <span>{model.name}</span>
+                <span className="text-sm sm:text-base">{model.name}</span>
                 {model.description && (
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs sm:text-sm text-muted-foreground">
                     {model.description}
                   </span>
                 )}

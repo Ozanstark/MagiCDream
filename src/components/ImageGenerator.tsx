@@ -125,12 +125,12 @@ const ImageGenerator = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-8">
-      <div className="text-center space-y-6">
-        <h1 className="text-5xl md:text-6xl font-extrabold rainbow-text tracking-tight">
+    <div className="w-full max-w-2xl mx-auto space-y-4 px-4 sm:px-6 sm:space-y-8">
+      <div className="text-center space-y-4 sm:space-y-6">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold rainbow-text tracking-tight leading-tight">
           Unleash Your Imagination
         </h1>
-        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-4 border border-primary/20 py-3 rounded-lg bg-card/50 backdrop-blur-sm">
+        <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-3 sm:px-4 border border-primary/20 py-2 sm:py-3 rounded-lg bg-card/50 backdrop-blur-sm">
           Transform your wildest dreams into stunning visuals. Where words become reality, and imagination knows no bounds.
         </p>
       </div>
@@ -140,7 +140,7 @@ const ImageGenerator = () => {
         onModelChange={setSelectedModel}
       />
       
-      <div className="flex flex-col md:flex-row gap-3">
+      <div className="flex flex-col gap-3">
         <Input
           placeholder="Describe in detail what image you want to dream"
           value={prompt}
@@ -150,7 +150,7 @@ const ImageGenerator = () => {
         <Button
           onClick={generateImage}
           disabled={isLoading}
-          className="button-primary"
+          className="button-primary w-full sm:w-auto"
         >
           <Wand2 className="mr-2 h-4 w-4" />
           {isLoading ? "Dreaming..." : "Dream Image"}

@@ -1,5 +1,6 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
 import InstagramScoreDisplay from "./InstagramScoreDisplay";
 
 interface ImageDisplayProps {

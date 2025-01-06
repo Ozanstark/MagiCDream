@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { GeneratedImage } from "@/types/generated-image";
 
 export const useGeneratedImages = () => {
-  const [generatedImages, setGeneratedImages] = useState<Array<{url: string; isNSFW: boolean}>>([]);
+  const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
 
   const loadGeneratedImages = async () => {
     try {
@@ -19,7 +20,9 @@ export const useGeneratedImages = () => {
       if (data) {
         setGeneratedImages(data.map(img => ({
           url: img.url,
-          isNSFW: img.is_nsfw || false
+          isNSFW: img.is_nsfw || false,
+          instagramScore: img.instagram_score,
+          instagramFeedback: img.instagram_feedback
         })));
       }
     } catch (error) {

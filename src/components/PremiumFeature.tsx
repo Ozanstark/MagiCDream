@@ -21,7 +21,10 @@ const PremiumFeature = ({ children }: PremiumFeatureProps) => {
         <p className="text-center text-muted-foreground">
           Bu özelliği kullanabilmek için premium üye olmanız gerekmektedir.
         </p>
-        <Button variant="premium" className="bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700">
+        <Button 
+          variant="default"
+          className="bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-white"
+        >
           Premium'a Yükselt
         </Button>
       </div>

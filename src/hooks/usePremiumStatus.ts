@@ -11,10 +11,24 @@ export const usePremiumStatus = () => {
         const { data: profile, error } = await supabase
           .from('profiles')
           .select('subscription_status')
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
-        setIsPremium(profile?.subscription_status === 'premium');
+
+        // If no profile exists, create one
+        if (!profile) {
+          const { data: user } = await supabase.auth.getUser();
+          if (user) {
+            const { error: insertError } = await supabase
+              .from('profiles')
+              .insert([{ id: user.user.id }]);
+            
+            if (insertError) throw insertError;
+            setIsPremium(false);
+          }
+        } else {
+          setIsPremium(profile.subscription_status === 'premium');
+        }
       } catch (error) {
         console.error('Error checking premium status:', error);
         setIsPremium(false);

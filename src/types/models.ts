@@ -59,5 +59,11 @@ export const AVAILABLE_MODELS: ModelType[] = [
     name: "Stable Diffusion v1.4",
     apiUrl: "https://api-inference.huggingface.co/models/CompVis/stable-diffusion-v1-4",
     description: "Classic Stable Diffusion model, predecessor to v1.5"
+  },
+  {
+    id: "flux-lustly-uncensored",
+    name: "FLUX Lustly.ai Uncensored",
+    apiUrl: "https://api-inference.huggingface.co/models/lustlyai/Flux_Lustly.ai_Uncensored_nsfw_v1",
+    description: "Uncensored realistic style model"
   }
 ];

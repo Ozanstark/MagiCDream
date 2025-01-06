@@ -64,8 +64,8 @@ const ImageGenerator = () => {
   const generateImage = async () => {
     if (!prompt.trim()) {
       toast({
-        title: "Error",
-        description: "Please enter a prompt first",
+        title: "Hata",
+        description: "Lütfen önce bir prompt girin",
         variant: "destructive",
       });
       return;
@@ -73,8 +73,8 @@ const ImageGenerator = () => {
 
     if (!checkImageGenerationLimit(selectedModel.id)) {
       toast({
-        title: "Rate Limit",
-        description: `You can only generate 3 images per minute with ${selectedModel.name}. Please wait or try another model.`,
+        title: "Hız Limiti",
+        description: `${selectedModel.name} ile dakikada sadece 3 görsel oluşturabilirsiniz. Lütfen bekleyin veya başka bir model deneyin.`,
         variant: "destructive",
       });
       return;
@@ -128,8 +128,38 @@ const ImageGenerator = () => {
       );
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to generate image');
+        const errorData = await response.json().catch(() => ({}));
+        
+        // Model meşgul durumu kontrolü
+        if (response.status === 503 || errorData.error?.includes("model is loading")) {
+          toast({
+            title: "Model Meşgul",
+            description: "Model şu anda meşgul. Lütfen birkaç saniye bekleyip tekrar deneyin.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        // Diğer API hataları için
+        if (response.status === 429) {
+          toast({
+            title: "Hız Limiti Aşıldı",
+            description: "Çok fazla istek gönderildi. Lütfen birkaç dakika bekleyin.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        if (response.status === 413) {
+          toast({
+            title: "Prompt Çok Uzun",
+            description: "Lütfen daha kısa bir prompt girin.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        throw new Error(errorData.error || 'Görsel oluşturulamadı');
       }
 
       const blob = await response.blob();
@@ -147,11 +177,18 @@ const ImageGenerator = () => {
       setCurrentImageIndex(generatedImages.length);
       recordImageGeneration(selectedModel.id);
 
+      toast({
+        title: "Başarılı",
+        description: "Görsel başarıyla oluşturuldu!",
+      });
+
     } catch (error) {
       console.error('API Error:', error);
       toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "An error occurred while generating the image",
+        title: "Hata",
+        description: error instanceof Error 
+          ? error.message 
+          : "Görsel oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.",
         variant: "destructive",
       });
     } finally {

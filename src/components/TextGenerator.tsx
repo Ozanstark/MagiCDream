@@ -2,10 +2,11 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Wand2 } from "lucide-react";
-import { useToast } from "./ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { HfInference } from "@huggingface/inference";
 import TextModelSelector from "./TextModelSelector";
 import { AVAILABLE_TEXT_MODELS, TextModelType } from "@/types/text-models";
+import { useApiLimits } from "@/hooks/useApiLimits";
 
 const client = new HfInference("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");
 
@@ -15,12 +16,22 @@ const TextGenerator = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedModel, setSelectedModel] = useState<TextModelType>(AVAILABLE_TEXT_MODELS[0]);
   const { toast } = useToast();
+  const { checkTextGenerationLimit, recordTextGeneration } = useApiLimits();
 
   const generateText = async () => {
     if (!prompt.trim()) {
       toast({
-        title: "Error",
-        description: "Please enter a prompt first",
+        title: "Hata",
+        description: "Lütfen önce bir prompt girin",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!checkTextGenerationLimit()) {
+      toast({
+        title: "Rate Limit",
+        description: "Dakikada en fazla 5 metin oluşturabilirsiniz. Lütfen biraz bekleyin.",
         variant: "destructive",
       });
       return;
@@ -47,10 +58,11 @@ const TextGenerator = () => {
           setResponse(output);
         }
       }
+      recordTextGeneration();
     } catch (error) {
       toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Error generating text",
+        title: "Hata",
+        description: error instanceof Error ? error.message : "Metin oluşturulurken bir hata oluştu",
         variant: "destructive",
       });
     } finally {

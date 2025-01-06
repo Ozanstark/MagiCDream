@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Upload, X } from "lucide-react";
+import { X } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ReferenceImageUploadProps {
@@ -23,24 +23,14 @@ const ReferenceImageUpload = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          onClick={() => document.getElementById("reference-images")?.click()}
-          className="w-full"
-        >
-          <Upload className="w-4 h-4 mr-2" />
-          Upload Reference Images
-        </Button>
-        <input
-          type="file"
-          id="reference-images"
-          multiple
-          accept="image/*"
-          onChange={handleFileChange}
-          className="hidden"
-        />
-      </div>
+      <input
+        type="file"
+        id="reference-images"
+        multiple
+        accept="image/*"
+        onChange={handleFileChange}
+        className="w-full"
+      />
 
       {selectedImages.length > 0 && (
         <ScrollArea className="h-32">

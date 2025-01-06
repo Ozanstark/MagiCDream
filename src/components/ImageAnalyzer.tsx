@@ -34,7 +34,8 @@ const ImageAnalyzer = () => {
 
     setIsAnalyzing(true);
     try {
-      const extractor = await pipeline('feature-extraction', 'microsoft/resnet-50', {
+      const extractor = await pipeline('feature-extraction', 'Xenova/vit-base-patch16-224', {
+        quantized: true,
         device: 'webgpu'
       });
 
@@ -68,7 +69,7 @@ const ImageAnalyzer = () => {
           Analyze Image Features
         </h1>
         <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-3 sm:px-4 border border-primary/20 py-2 sm:py-3 rounded-lg bg-card/50 backdrop-blur-sm">
-          Extract powerful visual features from your images using Microsoft's ResNet-50 model
+          Extract powerful visual features from your images using Vision Transformer
         </p>
       </div>
 

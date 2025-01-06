@@ -52,22 +52,94 @@ serve(async (req) => {
         else if (contentType === 'image/webp') score += 10;
         else score += 2;
 
-        // Add some randomization for variety (±5 points)
-        score += (Math.random() * 10 - 5);
+        // Fetch image data for additional analysis
+        const imageBlob = await response.blob();
+        const imageData = await createImageBitmap(imageBlob);
+        
+        // Create canvas for image analysis
+        const canvas = new OffscreenCanvas(imageData.width, imageData.height);
+        const ctx = canvas.getContext('2d');
+        if (!ctx) throw new Error('Failed to get canvas context');
+        
+        ctx.drawImage(imageData, 0, 0);
+        const imageDataArray = ctx.getImageData(0, 0, imageData.width, imageData.height).data;
+
+        // Analyze brightness (0-10 points)
+        let totalBrightness = 0;
+        for (let i = 0; i < imageDataArray.length; i += 4) {
+          const r = imageDataArray[i];
+          const g = imageDataArray[i + 1];
+          const b = imageDataArray[i + 2];
+          totalBrightness += (r + g + b) / 3;
+        }
+        const avgBrightness = totalBrightness / (imageDataArray.length / 4);
+        const brightnessScore = Math.min(10, Math.max(0, 
+          avgBrightness > 127 ? (255 - avgBrightness) / 6 : avgBrightness / 6
+        ));
+        score += brightnessScore;
+
+        // Analyze contrast (0-10 points)
+        let minBrightness = 255;
+        let maxBrightness = 0;
+        for (let i = 0; i < imageDataArray.length; i += 4) {
+          const brightness = (imageDataArray[i] + imageDataArray[i + 1] + imageDataArray[i + 2]) / 3;
+          minBrightness = Math.min(minBrightness, brightness);
+          maxBrightness = Math.max(maxBrightness, brightness);
+        }
+        const contrast = maxBrightness - minBrightness;
+        const contrastScore = Math.min(10, contrast / 25);
+        score += contrastScore;
+
+        // Aspect ratio scoring (0-5 points)
+        const aspectRatio = imageData.width / imageData.height;
+        const aspectRatioScore = Math.min(5, 
+          Math.max(0, 5 - Math.abs(aspectRatio - 1) * 3)
+        );
+        score += aspectRatioScore;
+
+        // Add some randomization for variety (±3 points)
+        score += (Math.random() * 6 - 3);
 
         // Ensure score stays within bounds
         score = Math.min(100, Math.max(70, Math.round(score)));
         
         // Generate detailed feedback based on the score and properties
-        let feedback = "";
-        if (score > 90) {
-          feedback = `Bu fotoğraf Instagram için mükemmel! ${sizeInMB.toFixed(1)}MB boyutuyla ideal ve ${contentType} formatı kullanılmış. Yüksek etkileşim potansiyeli var.`;
-        } else if (score > 85) {
-          feedback = `Bu fotoğraf Instagram'da iyi performans gösterebilir. ${sizeInMB.toFixed(1)}MB boyutu uygun, ancak daha iyi optimizasyon yapılabilir.`;
-        } else if (score > 80) {
-          feedback = `Fotoğraf Instagram için kullanılabilir durumda. ${sizeInMB.toFixed(1)}MB boyutunda ve ${contentType} formatında. Bazı iyileştirmeler yapılabilir.`;
+        let feedback = `${sizeInMB.toFixed(1)}MB boyutunda, ${contentType} formatında. `;
+        
+        // Add brightness feedback
+        if (avgBrightness < 85) {
+          feedback += "Fotoğraf biraz karanlık görünüyor. ";
+        } else if (avgBrightness > 170) {
+          feedback += "Fotoğraf biraz fazla parlak olabilir. ";
         } else {
-          feedback = `Bu fotoğrafın Instagram performansı sınırlı olabilir. ${sizeInMB.toFixed(1)}MB boyutu ve ${contentType} formatı ideal değil. Optimize edilmesi önerilir.`;
+          feedback += "Işık seviyesi dengeli. ";
+        }
+
+        // Add contrast feedback
+        if (contrast < 100) {
+          feedback += "Kontrast düşük, daha canlı renkler kullanılabilir. ";
+        } else if (contrast > 200) {
+          feedback += "Kontrast seviyesi çok iyi. ";
+        } else {
+          feedback += "Kontrast seviyesi uygun. ";
+        }
+
+        // Add aspect ratio feedback
+        if (Math.abs(aspectRatio - 1) > 0.2) {
+          feedback += "Instagram için kare format önerilir. ";
+        } else {
+          feedback += "Görsel oranları Instagram için uygun. ";
+        }
+
+        // Final score-based feedback
+        if (score > 90) {
+          feedback = `Mükemmel! ${feedback}Yüksek etkileşim potansiyeli var.`;
+        } else if (score > 85) {
+          feedback = `İyi performans gösterebilir. ${feedback}`;
+        } else if (score > 80) {
+          feedback = `Kullanılabilir durumda. ${feedback}Bazı iyileştirmeler yapılabilir.`;
+        } else {
+          feedback = `Sınırlı performans gösterebilir. ${feedback}Optimize edilmesi önerilir.`;
         }
 
         return {

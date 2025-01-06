@@ -19,39 +19,42 @@ serve(async (req) => {
       throw new Error('Exactly 2 image URLs are required')
     }
 
-    const hf = new HfInference(Deno.env.get('HUGGINGFACE_API_KEY'))
+    const hf = new HfInference("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")
     
     // Analyze both images
     const results = await Promise.all(imageUrls.map(async (url) => {
       try {
+        console.log('Analyzing image:', url);
+        
         // Use vit-gpt2-image-captioning to analyze the image
         const result = await hf.imageToText({
           model: 'nlpconnect/vit-gpt2-image-captioning',
           inputs: url,
-        })
+        });
+
+        console.log('Analysis result:', result);
 
         // Calculate score based on caption analysis
-        // We'll analyze the caption for Instagram-friendly characteristics
-        const caption = result.generated_text.toLowerCase()
+        const caption = result.generated_text.toLowerCase();
         
         // Define positive keywords that indicate good Instagram content
         const positiveKeywords = [
           'beautiful', 'stunning', 'colorful', 'vibrant', 'scenic',
           'perfect', 'amazing', 'gorgeous', 'lovely', 'aesthetic',
           'nature', 'landscape', 'portrait', 'style', 'fashion'
-        ]
+        ];
 
         // Count how many positive keywords appear in the caption
         const keywordMatches = positiveKeywords.filter(keyword => 
           caption.includes(keyword)
-        ).length
+        ).length;
 
         // Calculate base score (70-100)
-        const baseScore = 70 + (keywordMatches * 2)
-        const finalScore = Math.min(100, Math.max(70, baseScore))
+        const baseScore = 70 + (keywordMatches * 2);
+        const finalScore = Math.min(100, Math.max(70, baseScore));
 
         // Generate feedback based on the caption and score
-        let feedback = `Image Analysis: ${result.generated_text}. `
+        let feedback = `AI Caption: ${result.generated_text}. `;
         
         if (finalScore > 85) {
           feedback += "This image has excellent visual elements that should perform very well on Instagram!"
@@ -66,20 +69,20 @@ serve(async (req) => {
           feedback
         }
       } catch (error) {
-        console.error('Error analyzing image:', error)
+        console.error('Error analyzing image:', error);
         return {
           score: 0,
           feedback: 'Failed to analyze image'
         }
       }
-    }))
+    }));
 
     return new Response(
       JSON.stringify(results),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
-    console.error('Error:', error)
+    console.error('Error:', error);
     return new Response(
       JSON.stringify({ error: 'An unexpected error occurred', details: error.message }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }

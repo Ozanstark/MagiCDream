@@ -23,8 +23,8 @@ const InstagramAnalyzer = () => {
 
     if (images.length >= 2) {
       toast({
-        title: "Error",
-        description: "You can only upload 2 images for comparison",
+        title: "Hata",
+        description: "Karşılaştırma için sadece 2 resim yükleyebilirsiniz",
         variant: "destructive",
       });
       return;
@@ -48,8 +48,8 @@ const InstagramAnalyzer = () => {
     } catch (error) {
       console.error('Upload error:', error);
       toast({
-        title: "Error",
-        description: "Failed to upload image",
+        title: "Hata",
+        description: "Resim yüklenemedi",
         variant: "destructive",
       });
     }
@@ -58,8 +58,8 @@ const InstagramAnalyzer = () => {
   const analyzeImages = async () => {
     if (images.length !== 2) {
       toast({
-        title: "Error",
-        description: "Please upload exactly 2 images for comparison",
+        title: "Hata",
+        description: "Lütfen karşılaştırma için tam olarak 2 resim yükleyin",
         variant: "destructive",
       });
       return;
@@ -82,14 +82,14 @@ const InstagramAnalyzer = () => {
       })));
 
       toast({
-        title: "Success",
-        description: "Images analyzed successfully!",
+        title: "Başarılı",
+        description: "Resimler başarıyla analiz edildi!",
       });
     } catch (error) {
       console.error('Analysis error:', error);
       toast({
-        title: "Error",
-        description: "Failed to analyze images",
+        title: "Hata",
+        description: "Resimler analiz edilemedi",
         variant: "destructive",
       });
     } finally {
@@ -100,9 +100,9 @@ const InstagramAnalyzer = () => {
   return (
     <div className="w-full max-w-2xl mx-auto space-y-8 px-4">
       <div className="text-center space-y-2">
-        <h1 className="text-2xl font-bold">Instagram Photo Analyzer</h1>
+        <h1 className="text-2xl font-bold">Instagram Fotoğraf Analizi</h1>
         <p className="text-muted-foreground">
-          Upload 2 photos to compare and find out which one is better for Instagram
+          Instagram için hangi fotoğrafın daha iyi olduğunu öğrenmek için 2 fotoğraf yükleyin
         </p>
       </div>
 
@@ -146,12 +146,12 @@ const InstagramAnalyzer = () => {
             {isAnalyzing ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Analyzing...
+                Analiz Ediliyor...
               </>
             ) : (
               <>
                 <Upload className="mr-2 h-4 w-4" />
-                Analyze Photos
+                Fotoğrafları Analiz Et
               </>
             )}
           </Button>

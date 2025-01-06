@@ -4,11 +4,13 @@ import ImageDisplay from "./ImageDisplay";
 import ImageGallery from "./ImageGallery";
 import { AVAILABLE_MODELS, ModelType } from "@/types/models";
 import { useApiLimits } from "@/hooks/useApiLimits";
-import { uploadImageToStorage, fetchGeneratedImages } from "@/utils/imageStorage";
+import { uploadImageToStorage } from "@/utils/imageStorage";
 import GeneratorHeader from "./generator/GeneratorHeader";
 import GeneratorControls from "./generator/GeneratorControls";
 import ReferenceImageUpload from "./generator/ReferenceImageUpload";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { isUncensoredModel } from "@/utils/modelUtils";
+import { useGeneratedImages } from "@/hooks/useGeneratedImages";
 
 interface AdvancedSettingsConfig {
   guidance_scale?: number;
@@ -24,7 +26,6 @@ const ImageGenerator = () => {
   const [prompt, setPrompt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
-  const [generatedImages, setGeneratedImages] = useState<Array<{url: string; isNSFW: boolean}>>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedModel, setSelectedModel] = useState<ModelType>(AVAILABLE_MODELS[0]);
   const [advancedSettings, setAdvancedSettings] = useState<AdvancedSettingsConfig>({
@@ -36,6 +37,7 @@ const ImageGenerator = () => {
   
   const { toast } = useToast();
   const { checkImageGenerationLimit, recordImageGeneration } = useApiLimits();
+  const { generatedImages, setGeneratedImages, loadGeneratedImages } = useGeneratedImages();
 
   useEffect(() => {
     loadGeneratedImages();
@@ -80,7 +82,6 @@ const ImageGenerator = () => {
     try {
       let fullPrompt = prompt;
       
-      // Add reference images to the prompt if in Instagram mode
       if (activeTab === "instagram" && referenceImages.length > 0) {
         fullPrompt += ` Style reference: ${referenceImages.length} uploaded images. Please create an image that matches their style and composition.`;
       }
@@ -90,12 +91,11 @@ const ImageGenerator = () => {
         "Content-Type": "application/json",
       };
 
-      // Add special headers for NSFW models
       if (isUncensoredModel(selectedModel.id)) {
         headers["Cookie"] = "token_acceptance=true";
-        headers["X-Use-Cache"] = "false";  // Disable caching for NSFW models
-        headers["X-Wait-For-Model"] = "true";  // Wait for model to load if needed
-        headers["X-Show-Adult-Content"] = "true";  // Explicitly allow adult content
+        headers["X-Use-Cache"] = "false";
+        headers["X-Wait-For-Model"] = "true";
+        headers["X-Show-Adult-Content"] = "true";
       }
 
       const response = await fetch(
@@ -110,7 +110,6 @@ const ImageGenerator = () => {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         
-        // Model meşgul durumu kontrolü
         if (response.status === 503 || errorData.error?.includes("model is loading")) {
           toast({
             title: "Model Meşgul",
@@ -120,7 +119,6 @@ const ImageGenerator = () => {
           return;
         }
 
-        // Diğer API hataları için
         if (response.status === 429) {
           toast({
             title: "Hız Limiti Aşıldı",

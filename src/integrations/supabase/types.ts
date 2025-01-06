@@ -46,6 +46,7 @@ export type Database = {
           created_at: string
           error_message: string | null
           id: string
+          image_url: string | null
           scheduled_time: string
           status: string
           user_id: string | null
@@ -56,6 +57,7 @@ export type Database = {
           created_at?: string
           error_message?: string | null
           id?: string
+          image_url?: string | null
           scheduled_time: string
           status?: string
           user_id?: string | null
@@ -66,6 +68,7 @@ export type Database = {
           created_at?: string
           error_message?: string | null
           id?: string
+          image_url?: string | null
           scheduled_time?: string
           status?: string
           user_id?: string | null

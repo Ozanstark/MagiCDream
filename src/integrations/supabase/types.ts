@@ -13,6 +13,8 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          instagram_feedback: string | null
+          instagram_score: number | null
           is_nsfw: boolean | null
           model_id: string
           prompt: string
@@ -22,6 +24,8 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          instagram_feedback?: string | null
+          instagram_score?: number | null
           is_nsfw?: boolean | null
           model_id: string
           prompt: string
@@ -31,6 +35,8 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          instagram_feedback?: string | null
+          instagram_score?: number | null
           is_nsfw?: boolean | null
           model_id?: string
           prompt?: string
@@ -38,6 +44,35 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      reference_images: {
+        Row: {
+          created_at: string
+          generated_image_id: string | null
+          id: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          generated_image_id?: string | null
+          id?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          generated_image_id?: string | null
+          id?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reference_images_generated_image_id_fkey"
+            columns: ["generated_image_id"]
+            isOneToOne: false
+            referencedRelation: "generated_images"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       scheduled_tweets: {
         Row: {

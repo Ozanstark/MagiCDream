@@ -8,8 +8,7 @@ import { uploadImageToStorage } from "@/utils/imageStorage";
 import GeneratorHeader from "./generator/GeneratorHeader";
 import GeneratorControls from "./generator/GeneratorControls";
 import ReferenceImageUpload from "./generator/ReferenceImageUpload";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { isUncensoredModel } from "@/utils/modelUtils";
+import { analyzeInstagramPotential, updateImageInstagramScore } from "@/utils/instagramScoring";
 import { useGeneratedImages } from "@/hooks/useGeneratedImages";
 
 interface AdvancedSettingsConfig {
@@ -33,7 +32,6 @@ const ImageGenerator = () => {
     height: 512
   });
   const [referenceImages, setReferenceImages] = useState<File[]>([]);
-  const [activeTab, setActiveTab] = useState("dream");
   
   const { toast } = useToast();
   const { checkImageGenerationLimit, recordImageGeneration } = useApiLimits();
@@ -62,8 +60,8 @@ const ImageGenerator = () => {
   const generateImage = async () => {
     if (!prompt.trim()) {
       toast({
-        title: "Hata",
-        description: "Lütfen önce bir prompt girin",
+        title: "Error",
+        description: "Please enter a prompt first",
         variant: "destructive",
       });
       return;
@@ -71,8 +69,8 @@ const ImageGenerator = () => {
 
     if (!checkImageGenerationLimit(selectedModel.id)) {
       toast({
-        title: "Hız Limiti",
-        description: `${selectedModel.name} ile dakikada sadece 3 görsel oluşturabilirsiniz. Lütfen bekleyin veya başka bir model deneyin.`,
+        title: "Rate Limit",
+        description: `You can only generate 3 images per minute with ${selectedModel.name}. Please wait or try another model.`,
         variant: "destructive",
       });
       return;
@@ -82,21 +80,10 @@ const ImageGenerator = () => {
     try {
       let fullPrompt = prompt;
       
-      if (activeTab === "instagram" && referenceImages.length > 0) {
-        fullPrompt += ` Style reference: ${referenceImages.length} uploaded images. Please create an image that matches their style and composition.`;
-      }
-      
       const headers: Record<string, string> = {
         Authorization: "Bearer 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",
         "Content-Type": "application/json",
       };
-
-      if (isUncensoredModel(selectedModel.id)) {
-        headers["Cookie"] = "token_acceptance=true";
-        headers["X-Use-Cache"] = "false";
-        headers["X-Wait-For-Model"] = "true";
-        headers["X-Show-Adult-Content"] = "true";
-      }
 
       const response = await fetch(
         selectedModel.apiUrl,
@@ -108,46 +95,40 @@ const ImageGenerator = () => {
       );
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        
-        if (response.status === 503 || errorData.error?.includes("model is loading")) {
-          toast({
-            title: "Model Meşgul",
-            description: "Model şu anda meşgul. Lütfen birkaç saniye bekleyip tekrar deneyin.",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        if (response.status === 429) {
-          toast({
-            title: "Hız Limiti Aşıldı",
-            description: "Çok fazla istek gönderildi. Lütfen birkaç dakika bekleyin.",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        if (response.status === 413) {
-          toast({
-            title: "Prompt Çok Uzun",
-            description: "Lütfen daha kısa bir prompt girin.",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        throw new Error(errorData.error || 'Görsel oluşturulamadı');
+        throw new Error('Failed to generate image');
       }
 
       const blob = await response.blob();
-      const isNSFW = isUncensoredModel(selectedModel.id);
+      const isNSFW = false;
 
       const { publicUrl } = await uploadImageToStorage(blob, prompt, selectedModel.id, isNSFW);
       
+      let instagramScore = null;
+      let instagramFeedback = null;
+
+      if (referenceImages.length === 2) {
+        const referenceUrls = await Promise.all(
+          referenceImages.map(async (file) => {
+            const { publicUrl } = await uploadImageToStorage(
+              file,
+              "reference",
+              "reference",
+              false
+            );
+            return publicUrl;
+          })
+        );
+
+        const { score, feedback } = await analyzeInstagramPotential(publicUrl, referenceUrls);
+        instagramScore = score;
+        instagramFeedback = feedback;
+      }
+
       const newImage = {
         url: publicUrl,
-        isNSFW
+        isNSFW,
+        instagramScore,
+        instagramFeedback
       };
 
       setGeneratedImages(prev => [...prev, newImage]);
@@ -156,17 +137,17 @@ const ImageGenerator = () => {
       recordImageGeneration(selectedModel.id);
 
       toast({
-        title: "Başarılı",
-        description: "Görsel başarıyla oluşturuldu!",
+        title: "Success",
+        description: "Image generated successfully!",
       });
 
     } catch (error) {
       console.error('API Error:', error);
       toast({
-        title: "Hata",
+        title: "Error",
         description: error instanceof Error 
           ? error.message 
-          : "Görsel oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.",
+          : "An error occurred while generating the image. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -196,43 +177,24 @@ const ImageGenerator = () => {
         description="Transform your wildest dreams into stunning visuals. Where words become reality, and imagination knows no bounds."
       />
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="dream">Dream AI</TabsTrigger>
-          <TabsTrigger value="instagram">Instagram Style</TabsTrigger>
-        </TabsList>
-        <TabsContent value="dream">
-          <GeneratorControls
-            prompt={prompt}
-            onPromptChange={setPrompt}
-            selectedModel={selectedModel}
-            onModelChange={setSelectedModel}
-            isLoading={isLoading}
-            onGenerate={generateImage}
-            advancedSettings={advancedSettings}
-            onAdvancedSettingsChange={setAdvancedSettings}
-          />
-        </TabsContent>
-        <TabsContent value="instagram">
-          <div className="space-y-4">
-            <ReferenceImageUpload
-              onImagesSelected={handleReferenceImagesSelected}
-              selectedImages={referenceImages}
-              onRemoveImage={handleRemoveReferenceImage}
-            />
-            <GeneratorControls
-              prompt={prompt}
-              onPromptChange={setPrompt}
-              selectedModel={selectedModel}
-              onModelChange={setSelectedModel}
-              isLoading={isLoading}
-              onGenerate={generateImage}
-              advancedSettings={advancedSettings}
-              onAdvancedSettingsChange={setAdvancedSettings}
-            />
-          </div>
-        </TabsContent>
-      </Tabs>
+      <div className="space-y-4">
+        <ReferenceImageUpload
+          onImagesSelected={handleReferenceImagesSelected}
+          selectedImages={referenceImages}
+          onRemoveImage={handleRemoveReferenceImage}
+        />
+
+        <GeneratorControls
+          prompt={prompt}
+          onPromptChange={setPrompt}
+          selectedModel={selectedModel}
+          onModelChange={setSelectedModel}
+          isLoading={isLoading}
+          onGenerate={generateImage}
+          advancedSettings={advancedSettings}
+          onAdvancedSettingsChange={setAdvancedSettings}
+        />
+      </div>
 
       <div className="relative w-full flex items-center justify-center">
         <ImageDisplay
@@ -242,6 +204,8 @@ const ImageGenerator = () => {
           canNavigatePrev={currentImageIndex > 0 && !isLoading}
           canNavigateNext={currentImageIndex < generatedImages.length - 1 && !isLoading}
           isNSFW={currentImage ? generatedImages[currentImageIndex]?.isNSFW : false}
+          instagramScore={currentImage ? generatedImages[currentImageIndex]?.instagramScore : null}
+          instagramFeedback={currentImage ? generatedImages[currentImageIndex]?.instagramFeedback : null}
         />
       </div>
 

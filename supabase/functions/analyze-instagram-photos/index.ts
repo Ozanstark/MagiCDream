@@ -43,11 +43,11 @@ serve(async (req) => {
             "Authorization": `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
           },
           body: JSON.stringify({
-            model: "gpt-4o",
+            model: "gpt-4-vision-preview",
             messages: [
               {
                 role: "system",
-                content: "You are an Instagram expert who analyzes photos for their potential success on the platform. Provide detailed feedback about composition, lighting, subject matter, and overall appeal."
+                content: "You are an Instagram expert who analyzes photos for their potential success on the platform. Focus on composition, lighting, subject matter, and overall appeal."
               },
               {
                 role: "user",
@@ -68,6 +68,8 @@ serve(async (req) => {
         });
 
         if (!openaiResponse.ok) {
+          const errorData = await openaiResponse.json();
+          console.error('OpenAI API error:', errorData);
           throw new Error(`OpenAI API error: ${openaiResponse.statusText}`);
         }
 

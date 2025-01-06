@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/select";
 import { AVAILABLE_MODELS, ModelType } from "@/types/models";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Wand2 } from "lucide-react";
+import { AlertTriangle, Sparkles, Wand2 } from "lucide-react";
 
 interface ModelSelectorProps {
   selectedModel: ModelType;
@@ -16,6 +16,10 @@ interface ModelSelectorProps {
 }
 
 const ModelSelector = ({ selectedModel, onModelChange, disabled }: ModelSelectorProps) => {
+  const isUncensored = (modelId: string) => {
+    return ['berrys-taylor', 'harrys-torrance', 'realistic-five', 'realistic-six', 'realistic-seven'].includes(modelId);
+  };
+
   return (
     <div className="w-full space-y-4">
       <div className="flex items-center gap-2 mb-2">
@@ -42,11 +46,19 @@ const ModelSelector = ({ selectedModel, onModelChange, disabled }: ModelSelector
                 }`} />
                 <span className="font-medium text-sm">{model.name}</span>
               </div>
-              {selectedModel.id === model.id && (
-                <Badge variant="secondary" className="bg-primary/20 text-primary">
-                  Seçili
-                </Badge>
-              )}
+              <div className="flex gap-2">
+                {isUncensored(model.id) && (
+                  <Badge variant="destructive" className="flex items-center gap-1">
+                    <AlertTriangle className="w-3 h-3" />
+                    18+
+                  </Badge>
+                )}
+                {selectedModel.id === model.id && (
+                  <Badge variant="secondary" className="bg-primary/20 text-primary">
+                    Seçili
+                  </Badge>
+                )}
+              </div>
             </div>
             {model.description && (
               <p className="text-xs text-muted-foreground mt-1">

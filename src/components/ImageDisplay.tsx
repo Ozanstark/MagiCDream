@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { X, Download, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { GoogleGeminiEffectDemo } from "@/components/ui/google-gemini-effect.demo";
 
 interface ImageDisplayProps {
   currentImage: string | null;
@@ -50,44 +49,34 @@ const ImageDisplay = ({
 
   if (!currentImage && !isLoading) {
     return (
-      <>
-        <div className="image-container flex items-center justify-center">
-          <p className="text-gray-500">Your generated image will appear here</p>
-        </div>
-        <GoogleGeminiEffectDemo />
-      </>
+      <div className="image-container flex items-center justify-center">
+        <p className="text-gray-500">Your generated image will appear here</p>
+      </div>
     );
   }
 
   if (isLoading) {
     return (
-      <>
-        <div className="image-container flex items-center justify-center">
-          <div className="loading-spinner" />
-        </div>
-        <GoogleGeminiEffectDemo />
-      </>
+      <div className="image-container flex items-center justify-center">
+        <div className="loading-spinner" />
+      </div>
     );
   }
 
   return (
-    <>
-      <div className="image-container group">
-        <img
-          src={currentImage!}
-          alt="Generated"
-          className="w-full h-full object-cover transition-transform duration-200 cursor-pointer hover:scale-105"
-          onClick={() => setIsZoomed(true)}
-        />
-        <Button
-          onClick={handleDownload}
-          className="absolute top-4 right-4 bg-primary hover:bg-primary/90"
-        >
-          <Download className="h-4 w-4" />
-        </Button>
-      </div>
-
-      <GoogleGeminiEffectDemo />
+    <div className="image-container group">
+      <img
+        src={currentImage!}
+        alt="Generated"
+        className="w-full h-full object-cover transition-transform duration-200 cursor-pointer hover:scale-105"
+        onClick={() => setIsZoomed(true)}
+      />
+      <Button
+        onClick={handleDownload}
+        className="absolute top-4 right-4 bg-primary hover:bg-primary/90"
+      >
+        <Download className="h-4 w-4" />
+      </Button>
 
       {isZoomed && (
         <div className="zoom-overlay" onClick={() => setIsZoomed(false)}>
@@ -139,7 +128,7 @@ const ImageDisplay = ({
           />
         </div>
       )}
-    </>
+    </div>
   );
 };
 

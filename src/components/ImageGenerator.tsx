@@ -128,10 +128,10 @@ const ImageGenerator = () => {
     <div className="w-full max-w-2xl mx-auto space-y-8">
       <div className="text-center space-y-6">
         <h1 className="text-5xl md:text-6xl font-extrabold rainbow-text tracking-tight">
-          AI Dream Text to Image
+          Unleash Your Imagination
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-4 border border-primary/20 py-3 rounded-lg bg-card/50 backdrop-blur-sm">
-          Materialize your ideas through text to transform them into images. Start dreaming.
+          Transform your wildest dreams into stunning visuals. Where words become reality, and imagination knows no bounds.
         </p>
       </div>
 

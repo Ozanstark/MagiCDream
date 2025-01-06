@@ -37,7 +37,7 @@ const ImageGenerator = () => {
   const { checkImageGenerationLimit, recordImageGeneration } = useApiLimits();
 
   const isUncensoredModel = (modelId: string) => {
-    return ['berrys-taylor', 'harrys-torrance', 'realistic-five', 'realistic-six', 'realistic-seven', 'flux-lustly-uncensored'].includes(modelId);
+    return ['berrys-taylor', 'harrys-torrance', 'realistic-five', 'realistic-six', 'realistic-seven'].includes(modelId);
   };
 
   useEffect(() => {

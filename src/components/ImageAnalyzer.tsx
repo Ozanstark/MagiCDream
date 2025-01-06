@@ -1,76 +1,26 @@
-import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 import { Loader2, Upload } from "lucide-react";
-import { pipeline } from "@huggingface/transformers";
+import AnalyzerHeader from "./analyzer/AnalyzerHeader";
+import ImagePreview from "./analyzer/ImagePreview";
+import FeaturesDisplay from "./analyzer/FeaturesDisplay";
+import { useImageAnalysis } from "@/hooks/useImageAnalysis";
 
 const ImageAnalyzer = () => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [features, setFeatures] = useState<number[] | null>(null);
-  const { toast } = useToast();
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-      const url = URL.createObjectURL(file);
-      setImageUrl(url);
-      setFeatures(null);
-    }
-  };
-
-  const analyzeImage = async () => {
-    if (!imageUrl) {
-      toast({
-        title: "Error",
-        description: "Please select an image first",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsAnalyzing(true);
-    try {
-      const extractor = await pipeline('feature-extraction', 'Xenova/internvit-300m-448px-v2_5', {
-        device: 'webgpu'
-      });
-
-      const output = await extractor(imageUrl, {
-        pooling: "mean",
-        normalize: true
-      });
-      
-      setFeatures(output.tolist()[0]);
-      
-      toast({
-        title: "Success",
-        description: "Image features extracted successfully!",
-      });
-    } catch (error) {
-      console.error('Analysis error:', error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to analyze image",
-        variant: "destructive",
-      });
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
+  const {
+    imageUrl,
+    isAnalyzing,
+    features,
+    handleFileChange,
+    analyzeImage,
+  } = useImageAnalysis();
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-4 px-4 sm:px-6 sm:space-y-8">
-      <div className="text-center space-y-4 sm:space-y-6">
-        <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold rainbow-text tracking-tight leading-tight">
-          Analyze Image Features
-        </h1>
-        <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-3 sm:px-4 border border-primary/20 py-2 sm:py-3 rounded-lg bg-card/50 backdrop-blur-sm">
-          Extract powerful visual features from your images using InternViT
-        </p>
-      </div>
+      <AnalyzerHeader
+        title="Analyze Image Features"
+        description="Extract powerful visual features from your images using InternViT"
+      />
 
       <div className="space-y-4">
         <Input
@@ -82,13 +32,7 @@ const ImageAnalyzer = () => {
 
         {imageUrl && (
           <div className="space-y-4">
-            <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-border">
-              <img
-                src={imageUrl}
-                alt="Selected"
-                className="w-full h-full object-contain bg-black/50"
-              />
-            </div>
+            <ImagePreview imageUrl={imageUrl} />
 
             <Button
               onClick={analyzeImage}
@@ -108,16 +52,7 @@ const ImageAnalyzer = () => {
               )}
             </Button>
 
-            {features && (
-              <div className="p-4 rounded-lg border border-border bg-card/50">
-                <h3 className="font-semibold mb-2">Extracted Features:</h3>
-                <div className="max-h-40 overflow-y-auto">
-                  <pre className="text-xs">
-                    {JSON.stringify(features, null, 2)}
-                  </pre>
-                </div>
-              </div>
-            )}
+            <FeaturesDisplay features={features} />
           </div>
         )}
       </div>

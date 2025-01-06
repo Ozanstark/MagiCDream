@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { X, Download, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { GoogleGeminiEffectDemo } from "@/components/ui/google-gemini-effect.demo";
 
 interface ImageDisplayProps {
   currentImage: string | null;
@@ -49,17 +50,23 @@ const ImageDisplay = ({
 
   if (!currentImage && !isLoading) {
     return (
-      <div className="image-container flex items-center justify-center">
-        <p className="text-gray-500">Your generated image will appear here</p>
-      </div>
+      <>
+        <div className="image-container flex items-center justify-center">
+          <p className="text-gray-500">Your generated image will appear here</p>
+        </div>
+        <GoogleGeminiEffectDemo />
+      </>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="image-container flex items-center justify-center">
-        <div className="loading-spinner" />
-      </div>
+      <>
+        <div className="image-container flex items-center justify-center">
+          <div className="loading-spinner" />
+        </div>
+        <GoogleGeminiEffectDemo />
+      </>
     );
   }
 
@@ -79,6 +86,8 @@ const ImageDisplay = ({
           <Download className="h-4 w-4" />
         </Button>
       </div>
+
+      <GoogleGeminiEffectDemo />
 
       {isZoomed && (
         <div className="zoom-overlay" onClick={() => setIsZoomed(false)}>

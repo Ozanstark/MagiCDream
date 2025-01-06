@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { X, Download, ChevronLeft, ChevronRight, Share2 } from "lucide-react";
+import { X, Download, ChevronLeft, ChevronRight, Share2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "./ui/dialog";
 
 interface ImageDisplayProps {
   currentImage: string | null;
@@ -9,6 +10,7 @@ interface ImageDisplayProps {
   onNavigate?: (direction: 'prev' | 'next') => void;
   canNavigatePrev?: boolean;
   canNavigateNext?: boolean;
+  isNSFW?: boolean;
 }
 
 const ImageDisplay = ({ 
@@ -16,9 +18,26 @@ const ImageDisplay = ({
   isLoading, 
   onNavigate,
   canNavigatePrev = false,
-  canNavigateNext = false 
+  canNavigateNext = false,
+  isNSFW = false
 }: ImageDisplayProps) => {
   const [isZoomed, setIsZoomed] = useState(false);
+  const [isUnblurred, setIsUnblurred] = useState(false);
+  const [showAgeVerification, setShowAgeVerification] = useState(false);
+
+  const handleImageClick = () => {
+    if (isNSFW && !isUnblurred) {
+      setShowAgeVerification(true);
+    } else {
+      setIsZoomed(true);
+    }
+  };
+
+  const handleAgeVerification = () => {
+    setIsUnblurred(true);
+    setShowAgeVerification(false);
+    setIsZoomed(true);
+  };
 
   const handleDownload = () => {
     if (currentImage) {
@@ -35,13 +54,9 @@ const ImageDisplay = ({
     if (!currentImage) return;
 
     try {
-      // For X (Twitter), we'll use their Web Intent URL
       const tweetText = "Check out this AI-generated image! ✨";
       const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(window.location.href)}`;
-      
-      // Open in a new window
       window.open(shareUrl, '_blank', 'width=550,height=420');
-      
       toast({
         title: "Share Link Opened",
         description: "A new window has been opened to share on X (Twitter)",
@@ -90,12 +105,24 @@ const ImageDisplay = ({
 
   return (
     <div className="image-container group">
-      <img
-        src={currentImage!}
-        alt="Generated"
-        className="w-full h-full object-cover transition-transform duration-200 cursor-pointer hover:scale-105"
-        onClick={() => setIsZoomed(true)}
-      />
+      <div className="relative">
+        <img
+          src={currentImage!}
+          alt="Generated"
+          className={`w-full h-full object-cover transition-transform duration-200 cursor-pointer hover:scale-105 ${
+            isNSFW && !isUnblurred ? 'blur-xl' : ''
+          }`}
+          onClick={handleImageClick}
+        />
+        {isNSFW && !isUnblurred && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white">
+            <AlertTriangle className="w-8 h-8 mb-2" />
+            <span className="text-sm font-medium">18+ Content</span>
+            <span className="text-xs mt-1">Click to view</span>
+          </div>
+        )}
+      </div>
+
       <div className="absolute top-2 sm:top-4 right-2 sm:right-4 flex gap-1 sm:gap-2">
         <Button
           onClick={handleShare}
@@ -178,6 +205,25 @@ const ImageDisplay = ({
           />
         </div>
       )}
+
+      <Dialog open={showAgeVerification} onOpenChange={setShowAgeVerification}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Age Verification Required</DialogTitle>
+            <DialogDescription>
+              This content is only suitable for adults aged 18 and above. By continuing, you confirm that you are at least 18 years old.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-2 justify-end">
+            <Button variant="outline" onClick={() => setShowAgeVerification(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAgeVerification}>
+              I am 18 or older
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

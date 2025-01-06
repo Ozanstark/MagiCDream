@@ -24,7 +24,7 @@ const ImageGenerator = () => {
   const [prompt, setPrompt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
-  const [generatedImages, setGeneratedImages] = useState<string[]>([]);
+  const [generatedImages, setGeneratedImages] = useState<Array<{url: string; isNSFW: boolean}>>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedModel, setSelectedModel] = useState<ModelType>(AVAILABLE_MODELS[0]);
   const [advancedSettings, setAdvancedSettings] = useState<AdvancedSettingsConfig>({
@@ -34,6 +34,10 @@ const ImageGenerator = () => {
   
   const { toast } = useToast();
   const { checkImageGenerationLimit, recordImageGeneration } = useApiLimits();
+
+  const isUncensoredModel = (modelId: string) => {
+    return ['berrys-taylor', 'harrys-torrance', 'realistic-five', 'realistic-six', 'realistic-seven'].includes(modelId);
+  };
 
   const generateImage = async () => {
     if (!prompt.trim()) {
@@ -98,7 +102,11 @@ const ImageGenerator = () => {
 
       const blob = await response.blob();
       const imageUrl = URL.createObjectURL(blob);
-      setGeneratedImages(prev => [...prev, imageUrl]);
+      const newImage = {
+        url: imageUrl,
+        isNSFW: isUncensoredModel(selectedModel.id)
+      };
+      setGeneratedImages(prev => [...prev, newImage]);
       setCurrentImage(imageUrl);
       setCurrentImageIndex(generatedImages.length);
       recordImageGeneration(selectedModel.id);
@@ -123,10 +131,10 @@ const ImageGenerator = () => {
   const navigateImages = (direction: 'prev' | 'next') => {
     if (direction === 'prev' && currentImageIndex > 0) {
       setCurrentImageIndex(prev => prev - 1);
-      setCurrentImage(generatedImages[currentImageIndex - 1]);
+      setCurrentImage(generatedImages[currentImageIndex - 1].url);
     } else if (direction === 'next' && currentImageIndex < generatedImages.length - 1) {
       setCurrentImageIndex(prev => prev + 1);
-      setCurrentImage(generatedImages[currentImageIndex + 1]);
+      setCurrentImage(generatedImages[currentImageIndex + 1].url);
     }
   };
 
@@ -175,6 +183,7 @@ const ImageGenerator = () => {
           onNavigate={navigateImages}
           canNavigatePrev={currentImageIndex > 0 && !isLoading}
           canNavigateNext={currentImageIndex < generatedImages.length - 1 && !isLoading}
+          isNSFW={currentImage ? generatedImages[currentImageIndex]?.isNSFW : false}
         />
       </div>
 

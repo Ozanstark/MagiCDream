@@ -57,7 +57,9 @@ serve(async (req) => {
                   },
                   {
                     type: "image_url",
-                    image_url: url
+                    image_url: {
+                      url: url
+                    }
                   }
                 ]
               }

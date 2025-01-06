@@ -1,9 +1,9 @@
-import { Image, MessageSquareText, Scan, Music4, Twitter } from "lucide-react";
+import { Image, MessageSquareText, Scan, Music4, Twitter, Instagram } from "lucide-react";
 import { Button } from "./ui/button";
 
 interface ModeSwitcherProps {
-  mode: 'image' | 'text' | 'analyze' | 'music' | 'tweet';
-  onModeChange: (mode: 'image' | 'text' | 'analyze' | 'music' | 'tweet') => void;
+  mode: 'image' | 'text' | 'analyze' | 'music' | 'tweet' | 'instagram';
+  onModeChange: (mode: 'image' | 'text' | 'analyze' | 'music' | 'tweet' | 'instagram') => void;
 }
 
 const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
@@ -51,6 +51,15 @@ const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
         title="Generate Tweet"
       >
         <Twitter className="h-5 w-5" />
+      </Button>
+      <Button
+        variant={mode === 'instagram' ? 'default' : 'outline'}
+        size="icon"
+        onClick={() => onModeChange('instagram')}
+        className="w-10 h-10"
+        title="Instagram Analysis"
+      >
+        <Instagram className="h-5 w-5" />
       </Button>
     </div>
   );

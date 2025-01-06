@@ -32,7 +32,7 @@ export const useImageAnalysis = () => {
     setIsAnalyzing(true);
     try {
       const extractor = await pipeline('feature-extraction', 'Xenova/vit-base-patch16-224', {
-        quantized: true
+        device: 'cpu' // Using CPU since WebGPU might not be available everywhere
       });
 
       const output = await extractor(imageUrl, {

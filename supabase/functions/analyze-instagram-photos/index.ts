@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -29,57 +30,76 @@ serve(async (req) => {
           throw new Error('Failed to fetch image');
         }
 
+        // Get image data for analysis
+        const imageBlob = await response.blob();
+        const base64Image = await blobToBase64(imageBlob);
+
+        // Analyze image using LLaVA
+        console.log(`Analyzing image ${index + 1} with LLaVA...`);
+        const llavaResponse = await fetch("https://api-inference.huggingface.co/models/xtuner/llava-llama-3-8b-v1_1-gguf", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${Deno.env.get('HUGGINGFACE_API_KEY')}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            inputs: {
+              image: base64Image,
+              prompt: "Analyze this image for Instagram. Consider composition, lighting, subject matter, and overall appeal. Provide detailed feedback."
+            }
+          })
+        });
+
+        if (!llavaResponse.ok) {
+          throw new Error(`LLaVA API error: ${llavaResponse.statusText}`);
+        }
+
+        const llavaData = await llavaResponse.json();
+        console.log(`LLaVA analysis result:`, llavaData);
+
         const contentType = response.headers.get('content-type');
         const contentLength = response.headers.get('content-length');
         const sizeInMB = parseInt(contentLength || '0') / (1024 * 1024);
 
-        // Base score calculation
-        let score = 75; // Start with a base score
-        let feedback = '';
+        // Base score calculation using LLaVA feedback
+        let score = 75;
+        let feedback = llavaData[0]?.generated_text || '';
 
-        // Size scoring (0-10 points)
+        // Technical scoring
         if (sizeInMB <= 0.5) {
           score += 10;
-          feedback += "✅ Perfect file size for Instagram. ";
+          feedback += "\n\n✅ Perfect file size for Instagram.";
         } else if (sizeInMB <= 1) {
           score += 7;
-          feedback += "✅ Good file size. ";
+          feedback += "\n\n✅ Good file size.";
         } else if (sizeInMB <= 2) {
           score += 3;
-          feedback += "⚠️ File size could be optimized. ";
+          feedback += "\n\n⚠️ File size could be optimized.";
         } else {
           score -= 5;
-          feedback += "❌ File is too large for optimal performance. ";
+          feedback += "\n\n❌ File is too large for optimal performance.";
         }
 
-        // Format scoring (0-5 points)
+        // Format scoring
         if (contentType === 'image/webp') {
           score += 5;
-          feedback += "✅ Optimal WebP format. ";
+          feedback += "\n✅ Optimal WebP format.";
         } else if (contentType === 'image/jpeg' || contentType === 'image/jpg') {
           score += 3;
-          feedback += "✅ Good JPEG format. ";
+          feedback += "\n✅ Good JPEG format.";
         } else if (contentType === 'image/png') {
           score += 1;
-          feedback += "⚠️ Consider converting to JPEG/WebP. ";
+          feedback += "\n⚠️ Consider converting to JPEG/WebP.";
         }
 
-        // Add some randomization for variety (±5 points)
-        score += (Math.random() * 10 - 5);
-
-        // Ensure score stays within bounds and round to nearest integer
+        // Add some controlled randomization
+        score += (Math.random() * 6 - 3);
         score = Math.min(100, Math.max(0, Math.round(score)));
 
-        feedback += `\n\nTechnical Details:\n`;
-        feedback += `• File Size: ${sizeInMB.toFixed(2)}MB\n`;
-        feedback += `• Format: ${contentType}\n`;
-        feedback += `\nRecommendations:\n`;
-        if (sizeInMB > 1) {
-          feedback += "• Consider compressing the image\n";
-        }
-        if (contentType === 'image/png') {
-          feedback += "• Consider converting to JPEG for better compression\n";
-        }
+        // Technical details
+        feedback += `\n\nTechnical Details:`;
+        feedback += `\n• File Size: ${sizeInMB.toFixed(2)}MB`;
+        feedback += `\n• Format: ${contentType}`;
 
         return {
           score: Math.round(score),
@@ -107,4 +127,15 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     )
   }
-})
+});
+
+// Helper function to convert Blob to base64
+async function blobToBase64(blob: Blob): Promise<string> {
+  const buffer = await blob.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+}

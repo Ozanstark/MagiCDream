@@ -39,7 +39,6 @@ serve(async (req) => {
         const blipResponse = await fetch("https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-large", {
           method: "POST",
           headers: {
-            "Authorization": `Bearer ${Deno.env.get('HUGGINGFACE_API_KEY')}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({

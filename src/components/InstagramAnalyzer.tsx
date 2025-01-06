@@ -67,19 +67,13 @@ const InstagramAnalyzer = () => {
 
     setIsAnalyzing(true);
     try {
-      const response = await fetch('/api/analyze-instagram-photos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const { data, error } = await supabase.functions.invoke('analyze-instagram-photos', {
+        body: {
           imageUrls: images.map(img => img.url),
-        }),
+        },
       });
 
-      if (!response.ok) throw new Error('Analysis failed');
-
-      const data = await response.json();
+      if (error) throw error;
       
       setImages(prev => prev.map((img, index) => ({
         ...img,

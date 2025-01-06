@@ -23,17 +23,19 @@ serve(async (req) => {
 
     console.log('Analyzing images:', imageUrls);
 
+    // Validate URLs
+    imageUrls.forEach((url, index) => {
+      try {
+        new URL(url);
+      } catch (e) {
+        throw new Error(`Invalid URL format for image ${index + 1}`);
+      }
+    });
+
     // Analyze both images
     const results = await Promise.all(imageUrls.map(async (url, index) => {
       try {
         console.log(`Starting analysis for image ${index + 1}`);
-        
-        // Validate URL format
-        try {
-          new URL(url);
-        } catch (e) {
-          throw new Error(`Invalid URL format for image ${index + 1}`);
-        }
 
         const openaiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",

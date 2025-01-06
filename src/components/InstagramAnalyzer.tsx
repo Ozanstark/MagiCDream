@@ -41,6 +41,37 @@ const InstagramAnalyzer = () => {
     setResults([]);
   };
 
+  const uploadImageToStorage = async (blobUrl: string): Promise<string> => {
+    try {
+      // Convert blob URL to actual blob
+      const response = await fetch(blobUrl);
+      const blob = await response.blob();
+
+      // Generate a unique filename
+      const filename = `${crypto.randomUUID()}.${blob.type.split('/')[1] || 'png'}`;
+
+      // Upload to Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('generated-images')
+        .upload(filename, blob, {
+          contentType: blob.type,
+          upsert: false
+        });
+
+      if (uploadError) throw uploadError;
+
+      // Get the public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('generated-images')
+        .getPublicUrl(filename);
+
+      return publicUrl;
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      throw error;
+    }
+  };
+
   const analyzeImages = async () => {
     if (selectedImages.length !== 2) {
       toast({
@@ -53,8 +84,13 @@ const InstagramAnalyzer = () => {
 
     setIsAnalyzing(true);
     try {
+      // Convert blob URLs to public URLs
+      const publicUrls = await Promise.all(
+        selectedImages.map(url => uploadImageToStorage(url))
+      );
+
       const { data, error } = await supabase.functions.invoke('analyze-instagram-photos', {
-        body: { imageUrls: selectedImages }
+        body: { imageUrls: publicUrls }
       });
 
       if (error) {

@@ -31,7 +31,7 @@ const ImageGenerator = () => {
   });
   
   const { toast } = useToast();
-  const { checkImageGenerationLimit, recordImageGeneration } = useApiLimits();
+  const { checkImageGeneration } = useApiLimits();
   const { generatedImages, setGeneratedImages, loadGeneratedImages } = useGeneratedImages();
 
   useEffect(() => {
@@ -63,14 +63,9 @@ const ImageGenerator = () => {
       return;
     }
 
-    if (!checkImageGenerationLimit(selectedModel.id)) {
-      toast({
-        title: "Rate Limit",
-        description: `You can only generate 3 images per minute with ${selectedModel.name}. Please wait or try another model.`,
-        variant: "destructive",
-      });
-      return;
-    }
+    // Check if user has enough credits
+    const canProceed = await checkImageGeneration();
+    if (!canProceed) return;
 
     setIsLoading(true);
     try {
@@ -107,7 +102,6 @@ const ImageGenerator = () => {
       setGeneratedImages(prev => [...prev, newImage]);
       setCurrentImage(publicUrl);
       setCurrentImageIndex(generatedImages.length);
-      recordImageGeneration(selectedModel.id);
 
       toast({
         title: "Success",

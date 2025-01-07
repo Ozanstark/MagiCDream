@@ -1,106 +1,85 @@
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
+import ComponentHeader from "./shared/ComponentHeader";
+import { Button } from "./ui/button";
+import { Textarea } from "./ui/textarea";
+import { useToast } from "./ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import type { Database } from "@/integrations/supabase/types";
-import DietPlanForm from "./diet-plan/DietPlanForm";
-import GeneratedPlan from "./diet-plan/GeneratedPlan";
-
-type ActivityLevel = Database["public"]["Enums"]["activity_level"];
 
 const DietPlanGenerator = () => {
-  const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    age: "",
-    gender: "",
-    height: "",
-    weight: "",
-    activityLevel: "" as ActivityLevel,
-    dietaryRestrictions: "",
-    fitnessGoals: "",
-  });
+  const [dietGoals, setDietGoals] = useState("");
+  const [dietType, setDietType] = useState("");
   const [generatedPlan, setGeneratedPlan] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
-  const handleFormChange = (field: keyof typeof formData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  const generateDietPlan = async () => {
+    if (!dietGoals || !dietType) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all fields to generate a diet plan.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
+    setIsLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not authenticated");
-
-      const response = await supabase.functions.invoke('generate-diet-plan', {
+      const { data, error } = await supabase.functions.invoke("generate-diet-plan", {
         body: {
-          age: parseInt(formData.age),
-          gender: formData.gender,
-          height: parseFloat(formData.height),
-          weight: parseFloat(formData.weight),
-          activityLevel: formData.activityLevel,
-          dietaryRestrictions: formData.dietaryRestrictions.split(",").map(item => item.trim()),
-          fitnessGoals: formData.fitnessGoals.split(",").map(item => item.trim()),
+          goals: dietGoals,
+          type: dietType,
         },
       });
 
-      if (response.error) throw response.error;
-
-      const { data: { plan } } = response;
-
-      const { data, error } = await supabase
-        .from('diet_plans')
-        .insert({
-          user_id: user.id,
-          age: parseInt(formData.age),
-          gender: formData.gender,
-          height: parseFloat(formData.height),
-          weight: parseFloat(formData.weight),
-          activity_level: formData.activityLevel,
-          dietary_restrictions: formData.dietaryRestrictions.split(",").map(item => item.trim()),
-          fitness_goals: formData.fitnessGoals.split(",").map(item => item.trim()),
-          plan_content: plan,
-        })
-        .select()
-        .single();
-
       if (error) throw error;
 
-      setGeneratedPlan(data.plan_content);
+      setGeneratedPlan(data.plan);
       toast({
         title: "Success!",
         description: "Your diet plan has been generated.",
       });
     } catch (error) {
-      console.error("Error:", error);
       toast({
         title: "Error",
         description: "Failed to generate diet plan. Please try again.",
         variant: "destructive",
       });
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 space-y-8">
-      <div className="space-y-2">
-        <h2 className="text-2xl font-bold">Diet Plan Generator</h2>
-        <p className="text-gray-500">
-          Generate a personalized diet plan based on your goals and preferences.
-        </p>
+    <div className="w-full max-w-2xl mx-auto space-y-4 px-4 sm:px-6 sm:space-y-8">
+      <ComponentHeader
+        title="Transform Your Health"
+        description="Get personalized diet plans tailored to your goals. Your journey to a healthier lifestyle starts with the right nutrition plan."
+      />
+      
+      <div className="space-y-4">
+        <Textarea
+          value={dietGoals}
+          onChange={(e) => setDietGoals(e.target.value)}
+          placeholder="Enter your diet goals..."
+          className="min-h-[200px] bg-card text-foreground border-gray-700 resize-none"
+        />
+        <Textarea
+          value={dietType}
+          onChange={(e) => setDietType(e.target.value)}
+          placeholder="Enter your preferred diet type..."
+          className="min-h-[200px] bg-card text-foreground border-gray-700 resize-none"
+        />
+        <Button onClick={generateDietPlan} disabled={isLoading} className="w-full">
+          {isLoading ? "Generating..." : "Generate Diet Plan"}
+        </Button>
       </div>
 
-      <DietPlanForm
-        formData={formData}
-        loading={loading}
-        onSubmit={handleSubmit}
-        onChange={handleFormChange}
-      />
-
-      <GeneratedPlan plan={generatedPlan} />
+      {generatedPlan && (
+        <div className="mt-4 p-4 bg-muted rounded-lg">
+          <h2 className="text-lg font-bold">Generated Diet Plan</h2>
+          <p>{generatedPlan}</p>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import ComponentHeader from "./shared/ComponentHeader";
 import { useState } from "react";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
@@ -56,14 +57,12 @@ const LinkedInHeadlineGenerator = () => {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto space-y-8">
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold">LinkedIn Headline Generator</h1>
-        <p className="text-lg text-muted-foreground">
-          Create an impactful LinkedIn headline that helps you stand out to recruiters and connections.
-        </p>
-      </div>
-
+    <div className="w-full max-w-2xl mx-auto space-y-4 px-4 sm:px-6 sm:space-y-8">
+      <ComponentHeader
+        title="Stand Out on LinkedIn"
+        description="Craft a powerful professional headline that gets you noticed. Make every word count in your career journey."
+      />
+      
       <Card className="p-6 space-y-6">
         <div className="space-y-4">
           <div className="space-y-2">

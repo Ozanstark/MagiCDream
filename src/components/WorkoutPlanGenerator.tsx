@@ -1,74 +1,93 @@
 import { useState } from "react";
+import ComponentHeader from "./shared/ComponentHeader";
+import { Button } from "./ui/button";
+import { Textarea } from "./ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { WorkoutForm, WorkoutFormData } from "./workout/WorkoutForm";
-import { WorkoutPlan } from "./workout/WorkoutPlan";
 
 const WorkoutPlanGenerator = () => {
-  const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
+  const [goal, setGoal] = useState("");
+  const [duration, setDuration] = useState("");
+  const [intensity, setIntensity] = useState("");
   const [generatedPlan, setGeneratedPlan] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
-  const handleSubmit = async (formData: WorkoutFormData) => {
-    setLoading(true);
-
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not authenticated");
-
-      const response = await supabase.functions.invoke('generate-workout-plan', {
-        body: formData,
+  const generatePlan = async () => {
+    if (!goal || !duration || !intensity) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all fields to generate a workout plan.",
+        variant: "destructive",
       });
+      return;
+    }
 
-      if (response.error) throw response.error;
-
-      const { data: { plan } } = response;
-
-      const { data, error } = await supabase
-        .from('workout_plans')
-        .insert({
-          user_id: user.id,
-          fitness_goal: formData.fitnessGoal,
-          fitness_level: formData.fitnessLevel,
-          equipment: formData.equipment,
-          workout_duration: formData.workoutDuration,
-          injuries: formData.injuries || null,
-          plan_content: plan,
-        })
-        .select()
-        .single();
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-workout-plan", {
+        body: {
+          goal,
+          duration,
+          intensity,
+        },
+      });
 
       if (error) throw error;
 
-      setGeneratedPlan(data.plan_content);
+      setGeneratedPlan(data.plan);
       toast({
         title: "Success!",
         description: "Your workout plan has been generated.",
       });
     } catch (error) {
-      console.error("Error:", error);
       toast({
         title: "Error",
         description: "Failed to generate workout plan. Please try again.",
         variant: "destructive",
       });
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 space-y-8">
-      <div className="space-y-2">
-        <h2 className="text-2xl font-bold">Workout Plan Generator</h2>
-        <p className="text-gray-500">
-          Generate a personalized workout plan based on your fitness level and goals.
-        </p>
+    <div className="w-full max-w-2xl mx-auto space-y-4 px-4 sm:px-6 sm:space-y-8">
+      <ComponentHeader
+        title="Achieve Your Fitness Goals"
+        description="Get customized workout plans that match your fitness level and goals. Transform your body with expert-designed exercise routines."
+      />
+
+      <div className="space-y-4">
+        <Textarea
+          value={goal}
+          onChange={(e) => setGoal(e.target.value)}
+          placeholder="Enter your fitness goal..."
+          className="min-h-[100px] bg-card text-foreground border-border"
+        />
+        <Textarea
+          value={duration}
+          onChange={(e) => setDuration(e.target.value)}
+          placeholder="Enter the duration of your workout..."
+          className="min-h-[100px] bg-card text-foreground border-border"
+        />
+        <Textarea
+          value={intensity}
+          onChange={(e) => setIntensity(e.target.value)}
+          placeholder="Enter the intensity level (e.g., low, medium, high)..."
+          className="min-h-[100px] bg-card text-foreground border-border"
+        />
+        <Button onClick={generatePlan} disabled={isLoading} className="w-full">
+          {isLoading ? "Generating..." : "Generate Workout Plan"}
+        </Button>
       </div>
 
-      <WorkoutForm onSubmit={handleSubmit} loading={loading} />
-      
-      {generatedPlan && <WorkoutPlan plan={generatedPlan} />}
+      {generatedPlan && (
+        <div className="mt-4 p-4 bg-card border border-border rounded-lg">
+          <h2 className="text-lg font-bold">Generated Workout Plan</h2>
+          <p>{generatedPlan}</p>
+        </div>
+      )}
     </div>
   );
 };

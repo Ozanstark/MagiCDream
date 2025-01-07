@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
-import { X } from "lucide-react";
+import { X, Lock, Key, Image } from "lucide-react";
 import PremiumFeature from "./PremiumFeature";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -66,6 +66,33 @@ const PhotoEncryption = () => {
           title="Fotoğraf Şifreleme"
           description="Fotoğraflarınızı güvenli bir şekilde şifreleyin ve paylaşın. Fotoğraflarınız sadece şifre anahtarına sahip kişiler tarafından görüntülenebilir."
         />
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div className="p-4 bg-card rounded-lg border border-border/20 space-y-2">
+            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+              <Image className="w-4 h-4 text-primary" />
+            </div>
+            <h3 className="font-semibold text-foreground">1. Fotoğraf Yükleyin</h3>
+            <p className="text-sm text-muted-foreground">Şifrelemek istediğiniz fotoğrafı seçin ve yükleyin.</p>
+          </div>
+
+          <div className="p-4 bg-card rounded-lg border border-border/20 space-y-2">
+            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+              <Lock className="w-4 h-4 text-primary" />
+            </div>
+            <h3 className="font-semibold text-foreground">2. Şifreleme Seçenekleri</h3>
+            <p className="text-sm text-muted-foreground">Silinme zamanı ve diğer güvenlik seçeneklerini belirleyin.</p>
+          </div>
+
+          <div className="p-4 bg-card rounded-lg border border-border/20 space-y-2">
+            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+              <Key className="w-4 h-4 text-primary" />
+            </div>
+            <h3 className="font-semibold text-foreground">3. Anahtarı Paylaşın</h3>
+            <p className="text-sm text-muted-foreground">Oluşturulan şifre çözme anahtarını güvenli bir şekilde paylaşın.</p>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Left Column - Decrypt Form */}
           <div className="space-y-4">

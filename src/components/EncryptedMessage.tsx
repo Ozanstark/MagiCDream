@@ -50,6 +50,32 @@ const EncryptedMessage = () => {
         title="Mesaj Şifreleme"
         description="Mesajlarınızı güvenli bir şekilde şifreleyin ve paylaşın. Mesajlarınız sadece şifre anahtarına sahip kişiler tarafından okunabilir."
       />
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="p-4 bg-card rounded-lg border border-border/20 space-y-2">
+          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+            <Lock className="w-4 h-4 text-primary" />
+          </div>
+          <h3 className="font-semibold text-foreground">1. Mesajı Girin</h3>
+          <p className="text-sm text-muted-foreground">Şifrelemek istediğiniz mesajı girin ve silinme seçeneğini belirleyin.</p>
+        </div>
+
+        <div className="p-4 bg-card rounded-lg border border-border/20 space-y-2">
+          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+            <Key className="w-4 h-4 text-primary" />
+          </div>
+          <h3 className="font-semibold text-foreground">2. Anahtarı Paylaşın</h3>
+          <p className="text-sm text-muted-foreground">Oluşturulan şifre çözme anahtarını güvenli bir şekilde alıcıya iletin.</p>
+        </div>
+
+        <div className="p-4 bg-card rounded-lg border border-border/20 space-y-2">
+          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+            <Copy className="w-4 h-4 text-primary" />
+          </div>
+          <h3 className="font-semibold text-foreground">3. Mesajı Çözün</h3>
+          <p className="text-sm text-muted-foreground">Şifreli mesajı ve anahtarı kullanarak mesajı çözün ve okuyun.</p>
+        </div>
+      </div>
       
       <MessageInputForm
         onMessageEncrypted={handleMessageEncrypted}

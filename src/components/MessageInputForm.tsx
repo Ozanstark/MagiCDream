@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
-import { Lock } from "lucide-react";
+import { Lock, Flame } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { encryptMessage } from "@/utils/encryption";
@@ -117,9 +117,11 @@ export const MessageInputForm = ({ onMessageEncrypted, onSuccess }: MessageInput
           </SelectContent>
         </Select>
       </div>
-      <Button onClick={handleEncrypt} className="w-full bg-yellow-400 hover:bg-yellow-500 text-black">
+      <Button onClick={handleEncrypt} className="w-full bg-yellow-400 hover:bg-yellow-500 text-black relative group">
         <Lock className="w-4 h-4 mr-2" />
         Mesajı Şifrele
+        <Flame className="absolute -top-2 -right-2 w-3 h-3 text-yellow-500 animate-sparkle" />
+        <div className="absolute inset-0 rounded-md animate-glow opacity-0 group-hover:opacity-100" />
       </Button>
     </div>
   );

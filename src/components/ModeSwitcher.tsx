@@ -33,19 +33,19 @@ const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
           key={item.id}
           variant={mode === item.id ? 'default' : 'outline'}
           onClick={() => onModeChange(item.id)}
-          className="flex items-center justify-start gap-2 w-full relative group"
+          className="flex items-center justify-between w-full relative group"
         >
-          <item.icon className="h-5 w-5" />
-          <span className="flex items-center gap-2">
-            {item.label}
-            {item.showWow && (
-              <img 
-                src="/lovable-uploads/6e858f00-7860-4b5f-b35a-7a25c98a71ff.png"
-                alt="WOW effect"
-                className="w-12 h-12 transform rotate-12 opacity-90 group-hover:scale-110 transition-transform"
-              />
-            )}
-          </span>
+          <div className="flex items-center gap-2">
+            <item.icon className="h-5 w-5" />
+            <span>{item.label}</span>
+          </div>
+          {item.showWow && (
+            <img 
+              src="/lovable-uploads/6e858f00-7860-4b5f-b35a-7a25c98a71ff.png"
+              alt="WOW effect"
+              className="w-12 h-12 transform rotate-12 opacity-90 group-hover:scale-110 transition-transform"
+            />
+          )}
         </Button>
       ))}
     </div>

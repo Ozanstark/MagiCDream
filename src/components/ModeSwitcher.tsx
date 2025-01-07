@@ -1,9 +1,9 @@
-import { Image, MessageSquareText, Music4, Twitter, Instagram } from "lucide-react";
+import { Image, MessageSquareText, Music4, Twitter, Instagram, Mail } from "lucide-react";
 import { Button } from "./ui/button";
 
 interface ModeSwitcherProps {
-  mode: 'image' | 'text' | 'music' | 'tweet' | 'instagram';
-  onModeChange: (mode: 'image' | 'text' | 'music' | 'tweet' | 'instagram') => void;
+  mode: 'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email';
+  onModeChange: (mode: 'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email') => void;
 }
 
 const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
@@ -51,6 +51,15 @@ const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
         title="Instagram Analysis"
       >
         <Instagram className="h-5 w-5" />
+      </Button>
+      <Button
+        variant={mode === 'email' ? 'default' : 'outline'}
+        size="icon"
+        onClick={() => onModeChange('email')}
+        className="w-10 h-10"
+        title="Email Generator"
+      >
+        <Mail className="h-5 w-5" />
       </Button>
     </div>
   );

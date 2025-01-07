@@ -5,9 +5,10 @@ import ImageGenerator from "@/components/ImageGenerator";
 import MusicGenerator from "@/components/MusicGenerator";
 import TweetGenerator from "@/components/TweetGenerator";
 import InstagramAnalyzer from "@/components/InstagramAnalyzer";
+import EmailGenerator from "@/components/EmailGenerator";
 
 const Index = () => {
-  const [mode, setMode] = useState<'image' | 'text' | 'music' | 'tweet' | 'instagram'>('image');
+  const [mode, setMode] = useState<'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email'>('image');
 
   return (
     <div className="min-h-screen p-4 md:p-8 flex flex-col items-center gap-4 relative">
@@ -20,6 +21,8 @@ const Index = () => {
         <TweetGenerator />
       ) : mode === 'instagram' ? (
         <InstagramAnalyzer />
+      ) : mode === 'email' ? (
+        <EmailGenerator />
       ) : (
         <ImageGenerator />
       )}

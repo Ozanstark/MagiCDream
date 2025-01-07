@@ -40,40 +40,17 @@ const TwitterBioGenerator = () => {
       
       Make it engaging, concise, and memorable. Include relevant emojis if appropriate.`;
 
-      const response = await supabase.functions.invoke('generate-text', {
+      const { data, error } = await supabase.functions.invoke('generate-text', {
         body: { prompt },
       });
 
-      if (response.error) throw response.error;
+      if (error) throw error;
 
-      const reader = new ReadableStream({
-        start(controller) {
-          const text = new TextDecoder();
-          const lines = text.decode(response.data).split('\n');
-          
-          for (const line of lines) {
-            if (line.startsWith('data: ') && line !== 'data: [DONE]') {
-              try {
-                const data = JSON.parse(line.slice(6));
-                if (data.choices?.[0]?.delta?.content) {
-                  controller.enqueue(data.choices[0].delta.content);
-                }
-              } catch (e) {
-                console.error('Error parsing SSE message:', e);
-              }
-            }
-          }
-          controller.close();
-        },
-      });
-
-      let output = '';
-      const reader2 = reader.getReader();
-      while (true) {
-        const { done, value } = await reader2.read();
-        if (done) break;
-        output += value;
-        setResponse(output);
+      if (data && typeof data === 'string') {
+        setResponse(data);
+      } else {
+        console.error('Unexpected response format:', data);
+        throw new Error('Unexpected response format from server');
       }
     } catch (error) {
       console.error("Bio generation error:", error);

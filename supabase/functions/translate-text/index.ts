@@ -45,7 +45,7 @@ serve(async (req) => {
         ],
         temperature: 0.7,
       }),
-    })
+    });
 
     if (!openAIResponse.ok) {
       const errorData = await openAIResponse.json()
@@ -70,4 +70,4 @@ serve(async (req) => {
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }
-})
+});

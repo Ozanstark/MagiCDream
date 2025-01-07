@@ -9,7 +9,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -23,7 +22,6 @@ serve(async (req) => {
 
     console.log('Analyzing images:', imageUrls);
 
-    // Validate URLs
     imageUrls.forEach((url, index) => {
       try {
         new URL(url);
@@ -32,7 +30,6 @@ serve(async (req) => {
       }
     });
 
-    // Analyze both images
     const results = await Promise.all(imageUrls.map(async (url, index) => {
       try {
         console.log(`Starting analysis for image ${index + 1}`);
@@ -48,7 +45,7 @@ serve(async (req) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "gpt-4o-mini",  // Updated to use the correct model
+            model: "gpt-4o-mini",
             messages: [
               {
                 role: "system",
@@ -89,12 +86,10 @@ serve(async (req) => {
 
         const analysis = openaiData.choices[0].message.content;
         
-        // Extract score using regex based on language
         const scoreRegex = language === "tr" ? /SKOR:\s*(\d+)\/100/i : /SCORE:\s*(\d+)\/100/i;
         const scoreMatch = analysis.match(scoreRegex);
         const score = scoreMatch ? parseInt(scoreMatch[1]) : 75;
 
-        // Extract feedback based on language
         const feedbackRegex = language === "tr" ? /GERİBİLDİRİM:\s*([\s\S]*)/i : /FEEDBACK:\s*([\s\S]*)/i;
         const feedbackMatch = analysis.match(feedbackRegex);
         const feedback = feedbackMatch ? feedbackMatch[1].trim() : analysis;

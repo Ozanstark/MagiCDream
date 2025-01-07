@@ -7,15 +7,13 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
   try {
-    const { text, model } = await req.json()
+    const { text } = await req.json()
     
-    // Validate input
     if (!text) {
       throw new Error('Text is required')
     }
@@ -26,7 +24,7 @@ serve(async (req) => {
       throw new Error('OpenAI API key is not configured')
     }
 
-    console.log('Sending request to OpenAI with model:', model)
+    console.log('Sending request to OpenAI')
 
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -35,7 +33,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini', // Using the recommended model
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -47,7 +45,7 @@ serve(async (req) => {
           }
         ],
       }),
-    })
+    });
 
     if (!openAIResponse.ok) {
       const errorData = await openAIResponse.json()
@@ -85,4 +83,4 @@ serve(async (req) => {
       }
     )
   }
-})
+});

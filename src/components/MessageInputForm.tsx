@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
-import { Lock, Flame } from "lucide-react";
+import { Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { encryptMessage } from "@/utils/encryption";
@@ -123,9 +123,10 @@ export const MessageInputForm = ({ onMessageEncrypted, onSuccess }: MessageInput
       >
         <Lock className="w-4 h-4 mr-2" />
         Mesajı Şifrele
-        <Flame 
-          className="absolute -top-2 -right-2 w-5 h-5 text-yellow-600 animate-sparkle" 
-          strokeWidth={2.5}
+        <img 
+          src="/lovable-uploads/6e858f00-7860-4b5f-b35a-7a25c98a71ff.png"
+          alt="WOW effect"
+          className="absolute -top-3 -right-3 w-8 h-8 transform rotate-12 opacity-90 group-hover:scale-110 transition-transform"
         />
         <div className="absolute inset-0 rounded-md animate-glow opacity-0 group-hover:opacity-100" />
       </Button>

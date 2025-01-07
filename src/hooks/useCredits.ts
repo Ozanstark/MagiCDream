@@ -8,55 +8,6 @@ export const useCredits = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  useEffect(() => {
-    fetchCredits();
-    
-    // Subscribe to realtime credits updates
-    let channel: RealtimeChannel | null = null;
-
-    const setupRealtimeSubscription = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
-
-      const newChannel = supabase
-        .channel('credits_changes')
-        .on(
-          'postgres_changes',
-          {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'profiles',
-            filter: `id=eq.${user.id}`
-          },
-          (payload) => {
-            setCredits(payload.new.credits);
-          }
-        )
-        .subscribe();
-
-      return newChannel;
-    };
-
-    // Auto refresh credits every 5 minutes
-    const refreshInterval = setInterval(() => {
-      fetchCredits();
-    }, 5 * 60 * 1000); // 5 minutes
-
-    // Setup subscription
-    setupRealtimeSubscription().then(ch => {
-      if (ch) {
-        channel = ch;
-      }
-    });
-
-    return () => {
-      if (channel) {
-        supabase.removeChannel(channel);
-      }
-      clearInterval(refreshInterval);
-    };
-  }, []);
-
   const fetchCredits = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -72,6 +23,7 @@ export const useCredits = () => {
       
       if (profile) {
         setCredits(profile.credits);
+        console.log('Credits fetched:', profile.credits); // Debug log
       }
     } catch (error) {
       console.error('Error fetching credits:', error);
@@ -84,6 +36,63 @@ export const useCredits = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    console.log('Setting up credits monitoring...'); // Debug log
+    fetchCredits();
+    
+    // Subscribe to realtime credits updates
+    let channel: RealtimeChannel | null = null;
+
+    const setupRealtimeSubscription = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      console.log('Setting up realtime subscription for user:', user.id); // Debug log
+
+      const newChannel = supabase
+        .channel('credits_changes')
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'profiles',
+            filter: `id=eq.${user.id}`
+          },
+          (payload) => {
+            console.log('Realtime credit update received:', payload.new.credits); // Debug log
+            setCredits(payload.new.credits);
+          }
+        )
+        .subscribe();
+
+      return newChannel;
+    };
+
+    // Auto refresh credits every 5 minutes
+    const refreshInterval = setInterval(() => {
+      console.log('Auto-refreshing credits...'); // Debug log
+      fetchCredits();
+    }, 5 * 60 * 1000); // 5 minutes
+
+    // Setup subscription
+    setupRealtimeSubscription().then(ch => {
+      if (ch) {
+        channel = ch;
+        console.log('Realtime subscription setup complete'); // Debug log
+      }
+    });
+
+    // Cleanup function
+    return () => {
+      console.log('Cleaning up credits monitoring...'); // Debug log
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+      clearInterval(refreshInterval);
+    };
+  }, []);
 
   return { credits, isLoading, refreshCredits: fetchCredits };
 };

@@ -10,9 +10,10 @@ interface PhotoListProps {
   photos: EncryptedPhoto[];
   onPhotoDeleted: () => void;
   onPhotoEncrypted: () => void;
+  onPhotoView?: (content: string, key: string) => void;
 }
 
-const PhotoList = ({ photos, onPhotoDeleted, onPhotoEncrypted }: PhotoListProps) => {
+const PhotoList = ({ photos, onPhotoDeleted, onPhotoEncrypted, onPhotoView }: PhotoListProps) => {
   const { toast } = useToast();
 
   const handleDelete = async (photoId: string) => {
@@ -53,7 +54,11 @@ const PhotoList = ({ photos, onPhotoDeleted, onPhotoEncrypted }: PhotoListProps)
       <div className="space-y-4">
         {photos.map((photo) => (
           <Card key={photo.id} className="p-4">
-            <PhotoListItem photo={photo} onDelete={handleDelete} />
+            <PhotoListItem 
+              photo={photo} 
+              onDelete={handleDelete} 
+              onView={onPhotoView}
+            />
           </Card>
         ))}
       </div>

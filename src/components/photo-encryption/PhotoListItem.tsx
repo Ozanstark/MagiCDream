@@ -1,5 +1,5 @@
 import { Button } from "../ui/button";
-import { Lock, Key, Trash2 } from "lucide-react";
+import { Lock, Key, Trash2, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
 import type { EncryptedPhoto } from "@/types/encrypted-content";
@@ -7,9 +7,10 @@ import type { EncryptedPhoto } from "@/types/encrypted-content";
 interface PhotoListItemProps {
   photo: EncryptedPhoto;
   onDelete: (photoId: string) => void;
+  onView?: (content: string, key: string) => void;
 }
 
-const PhotoListItem = ({ photo, onDelete }: PhotoListItemProps) => {
+const PhotoListItem = ({ photo, onDelete, onView }: PhotoListItemProps) => {
   const { toast } = useToast();
 
   return (
@@ -48,6 +49,13 @@ const PhotoListItem = ({ photo, onDelete }: PhotoListItemProps) => {
           }}
         >
           <Key className="w-4 h-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onView?.(photo.encrypted_content, photo.decryption_key)}
+        >
+          <Eye className="w-4 h-4 text-blue-400" />
         </Button>
         <Button
           variant="outline"

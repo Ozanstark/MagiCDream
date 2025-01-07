@@ -43,6 +43,34 @@ const PhotoEncryption = () => {
     fetchEncryptedPhotos();
   }, []);
 
+  const handlePhotoView = (content: string, key: string) => {
+    setDecryptedContent(null); // Reset any existing decrypted content
+    const formData = new FormData();
+    formData.append('encryptedContent', content);
+    formData.append('decryptionKey', key);
+    
+    // Use the existing DecryptPhotoForm's onDecrypt functionality
+    fetch('/api/decrypt-photo', {
+      method: 'POST',
+      body: formData,
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        setDecryptedContent(data.decryptedContent);
+      })
+      .catch(error => {
+        console.error('Decryption error:', error);
+        toast({
+          title: "Hata",
+          description: "Fotoğraf çözümlenirken bir hata oluştu",
+          variant: "destructive",
+        });
+      });
+  };
+
   return (
     <PremiumFeature>
       <div className="space-y-4">
@@ -77,6 +105,7 @@ const PhotoEncryption = () => {
             photos={encryptedPhotos}
             onPhotoDeleted={fetchEncryptedPhotos}
             onPhotoEncrypted={fetchEncryptedPhotos}
+            onPhotoView={handlePhotoView}
           />
         </div>
       </div>

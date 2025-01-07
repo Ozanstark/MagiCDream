@@ -51,6 +51,14 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/share/:shareId"
+              element={
+                <ProtectedRoute>
+                  <Index />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
           <Toaster />
           <Sonner />

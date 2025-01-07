@@ -3,12 +3,14 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { decryptMessage } from "@/utils/encryption";
+import { Copy, Share2 } from "lucide-react";
 
 interface Message {
   id: string;
   encrypted_content: string;
   decryption_key: string;
   created_at: string;
+  share_id: string;
 }
 
 interface EncryptedMessagesListProps {
@@ -46,15 +48,34 @@ export const EncryptedMessagesList = ({ messages }: EncryptedMessagesListProps) 
     }
   };
 
+  const copyShareLink = (shareId: string) => {
+    const shareUrl = `${window.location.origin}/share/${shareId}`;
+    navigator.clipboard.writeText(shareUrl);
+    toast({
+      title: "Kopyalandı",
+      description: "Paylaşım linki panoya kopyalandı",
+    });
+  };
+
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-bold text-white">Şifreli Mesajlar</h2>
       <div className="space-y-4">
         {messages.map((msg) => (
           <div key={msg.id} className="p-4 border border-gray-700 rounded-lg space-y-2 bg-[#1a1b26]">
-            <p className="font-mono text-sm break-all text-white">
-              {msg.encrypted_content}
-            </p>
+            <div className="flex justify-between items-start gap-4">
+              <p className="font-mono text-sm break-all text-white flex-1">
+                {msg.encrypted_content}
+              </p>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => copyShareLink(msg.share_id)}
+                className="border-gray-700 text-white hover:text-white shrink-0"
+              >
+                <Share2 className="w-4 h-4" />
+              </Button>
+            </div>
             <div className="flex gap-2">
               <Input
                 type="text"

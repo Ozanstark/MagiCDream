@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
-import { Copy, Key, Lock, Trash2, Eye } from "lucide-react";
+import { Copy, Key, Lock, Trash2, Eye, Flame } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -110,8 +110,11 @@ export const MessageCard = ({ message, onDelete }: MessageCardProps) => {
             variant="ghost"
             size="sm"
             onClick={handleDecrypt}
+            className="relative group"
           >
             <Eye className="w-4 h-4" />
+            <Flame className="absolute -top-2 -right-2 w-3 h-3 text-yellow-500 animate-sparkle" />
+            <div className="absolute inset-0 rounded-md animate-glow opacity-0 group-hover:opacity-100" />
           </Button>
           <Button
             variant="ghost"

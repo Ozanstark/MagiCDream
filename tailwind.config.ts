@@ -73,12 +73,17 @@ export default {
         'glow': {
           '0%, 100%': { boxShadow: '0 0 15px #FFD700' },
           '50%': { boxShadow: '0 0 25px #FFD700' }
+        },
+        'sparkle': {
+          '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+          '50%': { opacity: '0.5', transform: 'scale(1.2)' }
         }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'glow': 'glow 2s ease-in-out infinite'
+        'glow': 'glow 2s ease-in-out infinite',
+        'sparkle': 'sparkle 1.5s ease-in-out infinite'
       }
     }
   },

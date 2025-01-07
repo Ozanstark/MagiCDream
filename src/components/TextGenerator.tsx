@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import ComponentHeader from "./shared/ComponentHeader";
-import TextModelSelector from "./TextModelSelector";
 import { useToast } from "./ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -30,11 +29,15 @@ const TextGenerator = () => {
 
       if (error) throw error;
 
-      setGeneratedText(data.generatedText);
-      toast({
-        title: "Success!",
-        description: "Text generated successfully.",
-      });
+      if (data?.generatedText) {
+        setGeneratedText(data.generatedText);
+        toast({
+          title: "Success!",
+          description: "Text generated successfully.",
+        });
+      } else {
+        throw new Error("No text was generated");
+      }
     } catch (error) {
       console.error("Error generating text:", error);
       toast({

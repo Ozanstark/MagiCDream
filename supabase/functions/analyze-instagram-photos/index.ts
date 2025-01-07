@@ -20,65 +20,65 @@ serve(async (req) => {
     console.log('Analyzing images:', imageUrls)
 
     const systemPrompt = language === 'tr' 
-      ? "Sen profesyonel bir Instagram danışmanısın. Fotoğrafları analiz et ve Instagram'da ne kadar etkileşim alabileceklerini değerlendir. Kompozisyon, renk kullanımı, ışık ve genel estetik açısından değerlendir. Puanı 100 üzerinden ver ve detaylı geri bildirim sağla. Tüm yanıtlar Türkçe olmalı."
-      : "You are a professional Instagram consultant. Analyze the photos and evaluate their potential engagement on Instagram. Consider composition, color usage, lighting, and overall aesthetics. Provide a score out of 100 and detailed feedback."
+      ? "Sen profesyonel bir Instagram danışmanısın. Her fotoğraf için farklı bir puan ver ve kısa, öz geri bildirimler sağla. Kompozisyon, renk ve ışık açısından değerlendir. Her geri bildirim 3 mini başlık altında kısa cümleler halinde olmalı: 'Güçlü Yönler:', 'Geliştirilebilir:', 'Öneriler:'. Tüm yanıtlar Türkçe olmalı."
+      : "You are a professional Instagram consultant. Give different scores for each photo and provide concise feedback. Evaluate composition, color, and lighting. Each feedback should be in short sentences under 3 mini headings: 'Strengths:', 'Areas for Improvement:', 'Suggestions:'"
 
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY')
     if (!openAIApiKey) {
       throw new Error('OpenAI API key is not configured')
     }
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: systemPrompt,
-          },
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: language === 'tr' 
-                  ? 'Bu fotoğrafları analiz et ve Instagram potansiyellerini değerlendir.'
-                  : 'Analyze these photos and evaluate their Instagram potential.',
-              },
-              ...imageUrls.map(url => ({
-                type: "image_url",
-                image_url: {
-                  url: url
+    const responses = await Promise.all(imageUrls.map(async (url, index) => {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openAIApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            {
+              role: 'system',
+              content: systemPrompt,
+            },
+            {
+              role: 'user',
+              content: [
+                {
+                  type: 'text',
+                  text: language === 'tr' 
+                    ? `Bu fotoğrafı analiz et ve Instagram potansiyelini değerlendir. Diğer fotoğraftan farklı bir puan ver (${index === 0 ? '60-100' : '0-59'} arası).`
+                    : `Analyze this photo and evaluate its Instagram potential. Give a different score than the other photo (between ${index === 0 ? '60-100' : '0-59'}).`,
+                },
+                {
+                  type: "image_url",
+                  image_url: {
+                    url: url
+                  }
                 }
-              }))
-            ]
-          }
-        ],
-      }),
-    })
+              ]
+            }
+          ],
+        }),
+      })
 
-    if (!response.ok) {
-      const error = await response.json()
-      console.error('OpenAI API error:', error)
-      throw new Error(`OpenAI API error: ${error.error?.message || 'Unknown error'}`)
-    }
+      if (!response.ok) {
+        const error = await response.json()
+        console.error('OpenAI API error:', error)
+        throw new Error(`OpenAI API error: ${error.error?.message || 'Unknown error'}`)
+      }
 
-    const data = await response.json()
-    console.log('OpenAI response:', data)
+      const data = await response.json()
+      return data.choices[0].message.content
+    }))
 
-    // Parse the response to extract scores and feedback
-    const results = imageUrls.map((_, index) => {
-      const analysis = data.choices[0].message.content
-      // Extract score using regex (assuming the score is mentioned as X/100)
+    // Parse the responses to extract scores and feedback
+    const results = responses.map(analysis => {
       const scoreMatch = analysis.match(/(\d+)\/100/)
       return {
         score: scoreMatch ? parseInt(scoreMatch[1]) : null,
-        caption: language === 'tr' ? "AI tarafından oluşturulan başlık burada olacak" : "AI-generated caption will be here",
+        caption: "",
         feedback: analysis
       }
     })

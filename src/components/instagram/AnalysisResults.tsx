@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { ScrollArea } from "../ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Star, ThumbsUp, MessageCircle } from "lucide-react";
+import { Star, ThumbsUp } from "lucide-react";
 
 interface AnalysisResult {
   score: number;
@@ -21,6 +21,11 @@ export const AnalysisResults = ({
   onLanguageChange,
 }: AnalysisResultsProps) => {
   if (!results.length) return null;
+
+  const formatFeedback = (feedback: string) => {
+    const sections = feedback.split('\n\n');
+    return sections.map(section => section.trim()).filter(Boolean);
+  };
 
   return (
     <div className="space-y-6">
@@ -56,15 +61,13 @@ export const AnalysisResults = ({
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-start gap-2">
-                  <MessageCircle className="h-5 w-5 text-primary mt-1" />
-                  <div>
-                    <p className="text-sm font-medium">Detaylı Geri Bildirim</p>
-                    <ScrollArea className="h-24 w-full rounded-md border p-2">
-                      <p className="text-sm text-muted-foreground">{result.feedback}</p>
-                    </ScrollArea>
-                  </div>
-                </div>
+                <ScrollArea className="h-32 w-full rounded-md border p-4">
+                  {formatFeedback(result.feedback).map((section, idx) => (
+                    <div key={idx} className="mb-2 last:mb-0">
+                      <p className="text-sm whitespace-pre-line">{section}</p>
+                    </div>
+                  ))}
+                </ScrollArea>
               </div>
             </CardContent>
           </Card>

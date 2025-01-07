@@ -4,10 +4,12 @@ import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useApiLimits } from "@/hooks/useApiLimits";
 
 const WeddingSpeechGenerator = () => {
   const [speech, setSpeech] = useState("");
   const { toast } = useToast();
+  const { checkWeddingSpeech } = useApiLimits();
 
   const handleGenerateSpeech = async () => {
     if (!speech.trim()) {
@@ -19,6 +21,11 @@ const WeddingSpeechGenerator = () => {
       return;
     }
 
+    console.log('Checking credits before Wedding Speech generation...');
+    const canProceed = await checkWeddingSpeech();
+    console.log('Credit check result:', canProceed);
+    if (!canProceed) return;
+
     try {
       const { data, error } = await supabase.functions.invoke("generate-wedding-speech", {
         body: { prompt: speech },
@@ -26,12 +33,19 @@ const WeddingSpeechGenerator = () => {
 
       if (error) throw error;
 
-      setSpeech(data.speech);
-      toast({
-        title: "Success!",
-        description: "Your wedding speech has been generated.",
-      });
+      if (data?.speech) {
+        setSpeech(data.speech);
+        console.log('Speech generated successfully, 20 credits should be deducted');
+        toast({
+          title: "Success!",
+          description: "Your wedding speech has been generated.",
+        });
+      } else {
+        console.error('Unexpected response format:', data);
+        throw new Error('Unexpected response format from server');
+      }
     } catch (error) {
+      console.error('Error generating speech:', error);
       toast({
         title: "Error",
         description: "Failed to generate speech. Please try again.",

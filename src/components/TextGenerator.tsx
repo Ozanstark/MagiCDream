@@ -4,18 +4,31 @@ import { Textarea } from "./ui/textarea";
 import ComponentHeader from "./shared/ComponentHeader";
 import { useToast } from "./ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useApiLimits } from "@/hooks/useApiLimits";
 
 const TextGenerator = () => {
   const [prompt, setPrompt] = useState("");
   const [generatedText, setGeneratedText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { checkTextGeneration } = useApiLimits();
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
       toast({
         title: "Error",
         description: "Please enter a prompt to generate text.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check if user has enough credits BEFORE generating the text
+    const canProceed = await checkTextGeneration();
+    if (!canProceed) {
+      toast({
+        title: "Error",
+        description: "Insufficient credits to generate text",
         variant: "destructive",
       });
       return;

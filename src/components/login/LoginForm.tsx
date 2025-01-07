@@ -1,8 +1,42 @@
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useEffect } from "react";
 
 export const LoginForm = () => {
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'USER_DELETED') {
+        toast({
+          variant: "destructive",
+          title: "Hesap silindi",
+          description: "Hesabınız başarıyla silindi.",
+        });
+      }
+      
+      if (event === 'PASSWORD_RECOVERY') {
+        toast({
+          title: "Şifre sıfırlama",
+          description: "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.",
+        });
+      }
+      
+      // Hata yönetimi
+      if (event === 'USER_UPDATED' && !session) {
+        toast({
+          variant: "destructive",
+          title: "Giriş hatası",
+          description: "E-posta veya şifre hatalı. Lütfen bilgilerinizi kontrol edip tekrar deneyin.",
+        });
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [toast]);
+
   return (
     <div className="flex-1 flex items-center justify-center p-8">
       <div className="w-full max-w-md space-y-8">
@@ -46,11 +80,17 @@ export const LoginForm = () => {
                   email_label: "E-posta",
                   password_label: "Şifre",
                   button_label: "Giriş Yap",
+                  loading_button_label: "Giriş yapılıyor...",
+                  password_input_placeholder: "Şifreniz",
+                  email_input_placeholder: "E-posta adresiniz",
                 },
                 sign_up: {
                   email_label: "E-posta",
                   password_label: "Şifre",
                   button_label: "Kayıt Ol",
+                  loading_button_label: "Kayıt olunuyor...",
+                  password_input_placeholder: "Şifreniz",
+                  email_input_placeholder: "E-posta adresiniz",
                 }
               }
             }}

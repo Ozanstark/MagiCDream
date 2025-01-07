@@ -115,7 +115,7 @@ const EncryptedMessage = () => {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Şifrelemek istediğiniz mesajı girin..."
-          className="min-h-[400px] bg-[#1a1b26] text-white border-gray-700 resize-none"
+          className="min-h-[200px] bg-[#1a1b26] text-white border-gray-700 resize-none"
         />
         <Button onClick={encryptMessage} className="w-full bg-yellow-400 hover:bg-yellow-500 text-black">
           <Lock className="w-4 h-4 mr-2" />

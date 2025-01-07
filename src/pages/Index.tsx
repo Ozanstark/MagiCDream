@@ -16,6 +16,7 @@ import WeddingSpeechGenerator from "@/components/WeddingSpeechGenerator";
 import DietPlanGenerator from "@/components/DietPlanGenerator";
 import WorkoutPlanGenerator from "@/components/WorkoutPlanGenerator";
 import EncryptedMessage from "@/components/EncryptedMessage";
+import PhotoEncryption from "@/components/PhotoEncryption";
 
 const Index = () => {
   const [mode, setMode] = useState<
@@ -35,6 +36,7 @@ const Index = () => {
     | "diet"
     | "workout"
     | "encrypt"
+    | "photo-encrypt"
   >("image");
 
   const getComponent = () => {
@@ -69,6 +71,8 @@ const Index = () => {
         return <WorkoutPlanGenerator />;
       case "encrypt":
         return <EncryptedMessage />;
+      case "photo-encrypt":
+        return <PhotoEncryption />;
       default:
         return <ImageGenerator />;
     }

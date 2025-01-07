@@ -2,8 +2,8 @@ import { Image, MessageSquareText, Music4, Twitter, Instagram, Mail, FileText, G
 import { Button } from "./ui/button";
 
 interface ModeSwitcherProps {
-  mode: 'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator' | 'blog' | 'essay' | 'twitter-bio' | 'linkedin' | 'wedding-speech' | 'diet' | 'workout' | 'encrypt';
-  onModeChange: (mode: 'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator' | 'blog' | 'essay' | 'twitter-bio' | 'linkedin' | 'wedding-speech' | 'diet' | 'workout' | 'encrypt') => void;
+  mode: 'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator' | 'blog' | 'essay' | 'twitter-bio' | 'linkedin' | 'wedding-speech' | 'diet' | 'workout' | 'encrypt' | 'photo-encrypt';
+  onModeChange: (mode: 'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator' | 'blog' | 'essay' | 'twitter-bio' | 'linkedin' | 'wedding-speech' | 'diet' | 'workout' | 'encrypt' | 'photo-encrypt') => void;
 }
 
 const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
@@ -24,6 +24,7 @@ const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
     { id: 'humanizer', icon: FileText, label: 'AI Paragraph Humanizer', showWow: false, isPremium: false },
     { id: 'translator', icon: Globe, label: 'AI Translator', showWow: false, isPremium: false },
     { id: 'encrypt', icon: Lock, label: 'Message Encryption', showWow: true, isPremium: true },
+    { id: 'photo-encrypt', icon: Lock, label: 'Photo Encryption', showWow: true, isPremium: true },
   ] as const;
 
   return (

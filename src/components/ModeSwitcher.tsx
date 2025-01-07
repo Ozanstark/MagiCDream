@@ -39,14 +39,11 @@ const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
           <span className="flex items-center gap-2">
             {item.label}
             {item.isPremium && (
-              <div className="relative">
-                <Crown className="h-4 w-4 text-yellow-500" />
-                <img 
-                  src="/lovable-uploads/6e858f00-7860-4b5f-b35a-7a25c98a71ff.png"
-                  alt="WOW effect"
-                  className="absolute -top-3 -right-3 w-6 h-6 transform rotate-12 opacity-90 group-hover:scale-110 transition-transform"
-                />
-              </div>
+              <img 
+                src="/lovable-uploads/6e858f00-7860-4b5f-b35a-7a25c98a71ff.png"
+                alt="WOW effect"
+                className="w-6 h-6 transform rotate-12 opacity-90 group-hover:scale-110 transition-transform"
+              />
             )}
           </span>
         </Button>

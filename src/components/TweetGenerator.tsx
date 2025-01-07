@@ -39,8 +39,8 @@ const TweetGenerator = () => {
         topic={topic}
         description={description}
         isGenerating={isGenerating}
-        onTopicChange={(e) => setTopic(e.target.value)}
-        onDescriptionChange={(e) => setDescription(e.target.value)}
+        onTopicChange={setTopic}
+        onDescriptionChange={setDescription}
         onGenerate={handleGenerateTweet}
       />
       <TweetOutput 

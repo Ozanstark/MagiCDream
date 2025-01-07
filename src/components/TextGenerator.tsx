@@ -4,8 +4,6 @@ import { Input } from "./ui/input";
 import { Wand2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { HfInference } from "@huggingface/inference";
-import TextModelSelector from "./TextModelSelector";
-import { AVAILABLE_TEXT_MODELS, TextModelType } from "@/types/text-models";
 import { useApiLimits } from "@/hooks/useApiLimits";
 
 const client = new HfInference("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");
@@ -14,7 +12,6 @@ const TextGenerator = () => {
   const [prompt, setPrompt] = useState("");
   const [response, setResponse] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<TextModelType>(AVAILABLE_TEXT_MODELS[0]);
   const { toast } = useToast();
   const { checkTextGenerationLimit, recordTextGeneration } = useApiLimits();
 
@@ -78,12 +75,6 @@ const TextGenerator = () => {
           Materialize your ideas, doubts and questions through text to transform them into text answers and solutions. Start dreaming.
         </p>
       </div>
-
-      <TextModelSelector
-        selectedModel={selectedModel}
-        onModelChange={setSelectedModel}
-        disabled={isLoading}
-      />
 
       <div className="flex flex-col md:flex-row gap-3">
         <Input

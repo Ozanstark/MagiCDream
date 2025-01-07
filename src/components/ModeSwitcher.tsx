@@ -41,8 +41,8 @@ const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
           </div>
           {item.isPremium ? (
             <img 
-              src="/lovable-uploads/bc1345ad-6865-4d80-a14d-5a8f5cbbd498.png"
-              alt="Premium feature"
+              src="/lovable-uploads/6e858f00-7860-4b5f-b35a-7a25c98a71ff.png"
+              alt="WOW effect"
               className="w-12 h-12 transform rotate-12 opacity-90 group-hover:scale-110 transition-transform"
             />
           ) : (

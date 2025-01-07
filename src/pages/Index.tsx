@@ -11,9 +11,10 @@ import Translator from "@/components/Translator";
 import BlogIntroGenerator from "@/components/BlogIntroGenerator";
 import EssayHumanizer from "@/components/EssayHumanizer";
 import TwitterBioGenerator from "@/components/TwitterBioGenerator";
+import LinkedInHeadlineGenerator from "@/components/LinkedInHeadlineGenerator";
 
 const Index = () => {
-  const [mode, setMode] = useState<'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator' | 'blog' | 'essay' | 'twitter-bio'>('image');
+  const [mode, setMode] = useState<'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator' | 'blog' | 'essay' | 'twitter-bio' | 'linkedin'>('image');
 
   const getComponent = () => {
     switch (mode) {
@@ -37,6 +38,8 @@ const Index = () => {
         return <EssayHumanizer />;
       case 'twitter-bio':
         return <TwitterBioGenerator />;
+      case 'linkedin':
+        return <LinkedInHeadlineGenerator />;
       default:
         return <ImageGenerator />;
     }

@@ -42,7 +42,7 @@ const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
               <img 
                 src="/lovable-uploads/6e858f00-7860-4b5f-b35a-7a25c98a71ff.png"
                 alt="WOW effect"
-                className="w-6 h-6 transform rotate-12 opacity-90 group-hover:scale-110 transition-transform"
+                className="w-12 h-12 transform rotate-12 opacity-90 group-hover:scale-110 transition-transform"
               />
             )}
           </span>

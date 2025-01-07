@@ -6,6 +6,7 @@ import { Label } from "./ui/label";
 import { useToast } from "./ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import ComponentHeader from "./shared/ComponentHeader";
+import { useApiLimits } from "@/hooks/useApiLimits";
 
 const EssayHumanizer = () => {
   const [essayText, setEssayText] = useState("");
@@ -13,6 +14,7 @@ const EssayHumanizer = () => {
   const [complexity, setComplexity] = useState("college");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { checkEssayHumanizer } = useApiLimits();
 
   const handleHumanize = async () => {
     if (!essayText.trim()) {
@@ -23,6 +25,10 @@ const EssayHumanizer = () => {
       });
       return;
     }
+
+    // Check if user has enough credits
+    const hasEnoughCredits = await checkEssayHumanizer();
+    if (!hasEnoughCredits) return;
 
     setIsLoading(true);
 

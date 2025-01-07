@@ -67,29 +67,29 @@ const PhotoEncryption = () => {
           description="Fotoğraflarınızı güvenli bir şekilde şifreleyin ve paylaşın. Fotoğraflarınız sadece şifre anahtarına sahip kişiler tarafından görüntülenebilir."
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="p-4 bg-card rounded-lg border border-border/20 space-y-2">
-            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+        <div className="flex gap-4 overflow-x-auto pb-2">
+          <div className="min-w-[200px] p-3 bg-card rounded-lg border border-border/20">
+            <div className="flex items-center gap-2 mb-2">
               <Image className="w-4 h-4 text-primary" />
+              <span className="font-medium">1. Fotoğraf Seçin</span>
             </div>
-            <h3 className="font-semibold text-foreground">1. Fotoğraf Yükleyin</h3>
-            <p className="text-sm text-muted-foreground">Şifrelemek istediğiniz fotoğrafı seçin ve yükleyin.</p>
+            <p className="text-xs text-muted-foreground">Şifrelemek istediğiniz fotoğrafı yükleyin</p>
           </div>
 
-          <div className="p-4 bg-card rounded-lg border border-border/20 space-y-2">
-            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+          <div className="min-w-[200px] p-3 bg-card rounded-lg border border-border/20">
+            <div className="flex items-center gap-2 mb-2">
               <Lock className="w-4 h-4 text-primary" />
+              <span className="font-medium">2. Ayarları Seçin</span>
             </div>
-            <h3 className="font-semibold text-foreground">2. Şifreleme Seçenekleri</h3>
-            <p className="text-sm text-muted-foreground">Silinme zamanı ve diğer güvenlik seçeneklerini belirleyin.</p>
+            <p className="text-xs text-muted-foreground">Silinme zamanı ve güvenlik ayarlarını belirleyin</p>
           </div>
 
-          <div className="p-4 bg-card rounded-lg border border-border/20 space-y-2">
-            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+          <div className="min-w-[200px] p-3 bg-card rounded-lg border border-border/20">
+            <div className="flex items-center gap-2 mb-2">
               <Key className="w-4 h-4 text-primary" />
+              <span className="font-medium">3. Anahtarı İletin</span>
             </div>
-            <h3 className="font-semibold text-foreground">3. Anahtarı Paylaşın</h3>
-            <p className="text-sm text-muted-foreground">Oluşturulan şifre çözme anahtarını güvenli bir şekilde paylaşın.</p>
+            <p className="text-xs text-muted-foreground">Şifre çözme anahtarını güvenli şekilde paylaşın</p>
           </div>
         </div>
 

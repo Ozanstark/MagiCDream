@@ -51,29 +51,29 @@ const EncryptedMessage = () => {
         description="Mesajlarınızı güvenli bir şekilde şifreleyin ve paylaşın. Mesajlarınız sadece şifre anahtarına sahip kişiler tarafından okunabilir."
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="p-4 bg-card rounded-lg border border-border/20 space-y-2">
-          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+      <div className="flex gap-4 mb-6 overflow-x-auto pb-2">
+        <div className="min-w-[200px] p-3 bg-card rounded-lg border border-border/20">
+          <div className="flex items-center gap-2 mb-2">
             <Lock className="w-4 h-4 text-primary" />
+            <span className="font-medium">1. Mesajı Girin</span>
           </div>
-          <h3 className="font-semibold text-foreground">1. Mesajı Girin</h3>
-          <p className="text-sm text-muted-foreground">Şifrelemek istediğiniz mesajı girin ve silinme seçeneğini belirleyin.</p>
+          <p className="text-xs text-muted-foreground">Mesajınızı yazın ve silinme seçeneğini belirleyin</p>
         </div>
 
-        <div className="p-4 bg-card rounded-lg border border-border/20 space-y-2">
-          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+        <div className="min-w-[200px] p-3 bg-card rounded-lg border border-border/20">
+          <div className="flex items-center gap-2 mb-2">
             <Key className="w-4 h-4 text-primary" />
+            <span className="font-medium">2. Anahtarı Paylaşın</span>
           </div>
-          <h3 className="font-semibold text-foreground">2. Anahtarı Paylaşın</h3>
-          <p className="text-sm text-muted-foreground">Oluşturulan şifre çözme anahtarını güvenli bir şekilde alıcıya iletin.</p>
+          <p className="text-xs text-muted-foreground">Şifre çözme anahtarını güvenli bir şekilde iletin</p>
         </div>
 
-        <div className="p-4 bg-card rounded-lg border border-border/20 space-y-2">
-          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+        <div className="min-w-[200px] p-3 bg-card rounded-lg border border-border/20">
+          <div className="flex items-center gap-2 mb-2">
             <Copy className="w-4 h-4 text-primary" />
+            <span className="font-medium">3. Mesajı Çözün</span>
           </div>
-          <h3 className="font-semibold text-foreground">3. Mesajı Çözün</h3>
-          <p className="text-sm text-muted-foreground">Şifreli mesajı ve anahtarı kullanarak mesajı çözün ve okuyun.</p>
+          <p className="text-xs text-muted-foreground">Anahtarı kullanarak mesajı görüntüleyin</p>
         </div>
       </div>
       

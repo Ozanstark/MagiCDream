@@ -42,16 +42,22 @@ const EncryptedMessage = () => {
     try {
       console.log("Starting encryption for message:", message);
       
-      // Simple encryption for demonstration (in real-world, use stronger encryption)
+      // Generate a random key
       const key = Math.random().toString(36).substring(7);
       console.log("Generated key:", key);
       
-      const shiftedChars = message
-        .split("")
-        .map((char) => String.fromCharCode(char.charCodeAt(0) + key.length));
-      console.log("Shifted characters:", shiftedChars);
+      // Convert the message to UTF-8 bytes, then base64
+      const encoder = new TextEncoder();
+      const messageBytes = encoder.encode(message);
       
-      const encrypted = btoa(shiftedChars.join(""));
+      // Simple XOR encryption with key
+      const encryptedBytes = new Uint8Array(messageBytes.length);
+      for (let i = 0; i < messageBytes.length; i++) {
+        encryptedBytes[i] = messageBytes[i] ^ key.charCodeAt(i % key.length);
+      }
+      
+      // Convert encrypted bytes to base64
+      const encrypted = btoa(String.fromCharCode.apply(null, [...encryptedBytes]));
       console.log("Final encrypted message:", encrypted);
 
       const { error } = await supabase.from("encrypted_messages").insert({
@@ -93,16 +99,29 @@ const EncryptedMessage = () => {
     }
 
     try {
-      const decrypted = atob(encrypted)
-        .split("")
-        .map((char) => String.fromCharCode(char.charCodeAt(0) - key.length))
-        .join("");
+      // Convert base64 back to bytes
+      const encryptedBytes = new Uint8Array(
+        atob(encrypted)
+          .split("")
+          .map(char => char.charCodeAt(0))
+      );
+      
+      // XOR decrypt with key
+      const decryptedBytes = new Uint8Array(encryptedBytes.length);
+      for (let i = 0; i < encryptedBytes.length; i++) {
+        decryptedBytes[i] = encryptedBytes[i] ^ key.charCodeAt(i % key.length);
+      }
+      
+      // Convert decrypted bytes back to text
+      const decoder = new TextDecoder();
+      const decrypted = decoder.decode(decryptedBytes);
 
       toast({
         title: "Mesaj çözüldü",
         description: decrypted,
       });
     } catch (error) {
+      console.error("Decryption error:", error);
       toast({
         title: "Hata",
         description: "Mesaj çözülürken bir hata oluştu",

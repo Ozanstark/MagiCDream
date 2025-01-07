@@ -17,7 +17,6 @@ interface PhotoListProps {
 
 const PhotoList = ({ photos, onPhotoDeleted, onPhotoEncrypted }: PhotoListProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [encryptionKey, setEncryptionKey] = useState("");
   const { toast } = useToast();
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,27 +26,31 @@ const PhotoList = ({ photos, onPhotoDeleted, onPhotoEncrypted }: PhotoListProps)
   };
 
   const handleEncrypt = async () => {
-    if (!selectedFile || !encryptionKey) {
+    if (!selectedFile) {
       toast({
         title: "Hata",
-        description: "Lütfen bir fotoğraf ve şifreleme anahtarı girin",
+        description: "Lütfen bir fotoğraf seçin",
         variant: "destructive",
       });
       return;
     }
 
     try {
+      // Generate a random key
+      const key = Math.random().toString(36).substring(7);
+      console.log("Generated key:", key);
+
       const reader = new FileReader();
       reader.onload = async (e) => {
         if (e.target?.result) {
           const base64String = e.target.result.toString().split(',')[1];
-          const encryptedContent = encryptMessage(base64String, encryptionKey);
+          const encryptedContent = encryptMessage(base64String, key);
 
           const { error } = await supabase
             .from('encrypted_photos')
             .insert({
               encrypted_content: encryptedContent,
-              decryption_key: encryptionKey,
+              decryption_key: key,
               deletion_type: "never" as DeletionType,
               user_id: (await supabase.auth.getUser()).data.user?.id
             });
@@ -61,7 +64,6 @@ const PhotoList = ({ photos, onPhotoDeleted, onPhotoEncrypted }: PhotoListProps)
 
           onPhotoEncrypted();
           setSelectedFile(null);
-          setEncryptionKey("");
         }
       };
       reader.readAsDataURL(selectedFile);
@@ -111,15 +113,9 @@ const PhotoList = ({ photos, onPhotoDeleted, onPhotoEncrypted }: PhotoListProps)
             onChange={handleFileSelect}
             className="cursor-pointer"
           />
-          <Input
-            type="password"
-            placeholder="Şifreleme anahtarı"
-            value={encryptionKey}
-            onChange={(e) => setEncryptionKey(e.target.value)}
-          />
           <Button
             onClick={handleEncrypt}
-            disabled={!selectedFile || !encryptionKey}
+            disabled={!selectedFile}
             className="w-full"
           >
             <Lock className="w-4 h-4 mr-2" />

@@ -39,7 +39,9 @@ serve(async (req) => {
           },
           ...imageUrls.map(url => ({
             type: "image_url",
-            image_url: url
+            image_url: {
+              url: url
+            }
           }))
         ]
       }
@@ -67,10 +69,20 @@ serve(async (req) => {
     const data = await response.json();
     console.log('OpenAI response:', data);
 
-    const analysis = data.choices[0].message.content;
+    // Parse the response to extract scores and feedback
+    const results = imageUrls.map((_, index) => {
+      const analysis = data.choices[0].message.content;
+      // Extract score using regex (assuming the score is mentioned as X/100)
+      const scoreMatch = analysis.match(/(\d+)\/100/);
+      return {
+        score: scoreMatch ? parseInt(scoreMatch[1]) : null,
+        caption: "AI-generated caption will be here",
+        feedback: analysis
+      };
+    });
 
     return new Response(
-      JSON.stringify({ analysis }),
+      JSON.stringify(results),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 

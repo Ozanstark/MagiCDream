@@ -11,6 +11,7 @@ interface Message {
   created_at: string;
   deletion_type: "never" | "on_view" | "timed";
   deletion_time: string | null;
+  decryption_count: number;
 }
 
 interface EncryptedMessagesListProps {
@@ -43,12 +44,15 @@ export const EncryptedMessagesList = ({ onMessageDecrypted }: EncryptedMessagesL
       return;
     }
 
-    // Type assertion to ensure the data matches our Message interface
     setUserMessages(messages as Message[]);
   };
 
   const handleDecryptSuccess = async (decrypted: string) => {
     setDecryptedMessage(decrypted);
+  };
+
+  const handleMessageDelete = (messageId: string) => {
+    setUserMessages(prevMessages => prevMessages.filter(msg => msg.id !== messageId));
   };
 
   return (
@@ -73,7 +77,11 @@ export const EncryptedMessagesList = ({ onMessageDecrypted }: EncryptedMessagesL
           <h2 className="text-2xl font-bold text-white">Mesajlarım</h2>
           <div className="space-y-4">
             {userMessages.map((message) => (
-              <MessageCard key={message.id} message={message} />
+              <MessageCard 
+                key={message.id} 
+                message={message} 
+                onDelete={handleMessageDelete}
+              />
             ))}
           </div>
         </div>

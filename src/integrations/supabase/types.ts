@@ -87,6 +87,7 @@ export type Database = {
       encrypted_messages: {
         Row: {
           created_at: string
+          decryption_count: number | null
           decryption_key: string
           deletion_time: string | null
           deletion_type: string
@@ -96,6 +97,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          decryption_count?: number | null
           decryption_key: string
           deletion_time?: string | null
           deletion_type?: string
@@ -105,6 +107,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          decryption_count?: number | null
           decryption_key?: string
           deletion_time?: string | null
           deletion_type?: string

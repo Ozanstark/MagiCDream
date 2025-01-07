@@ -164,6 +164,42 @@ export type Database = {
         }
         Relationships: []
       }
+      workout_plans: {
+        Row: {
+          created_at: string
+          equipment: string[]
+          fitness_goal: string
+          fitness_level: Database["public"]["Enums"]["fitness_level"]
+          id: string
+          injuries: string | null
+          plan_content: string
+          user_id: string | null
+          workout_duration: number
+        }
+        Insert: {
+          created_at?: string
+          equipment: string[]
+          fitness_goal: string
+          fitness_level: Database["public"]["Enums"]["fitness_level"]
+          id?: string
+          injuries?: string | null
+          plan_content: string
+          user_id?: string | null
+          workout_duration: number
+        }
+        Update: {
+          created_at?: string
+          equipment?: string[]
+          fitness_goal?: string
+          fitness_level?: Database["public"]["Enums"]["fitness_level"]
+          id?: string
+          injuries?: string | null
+          plan_content?: string
+          user_id?: string | null
+          workout_duration?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -179,6 +215,7 @@ export type Database = {
       }
     }
     Enums: {
+      fitness_level: "beginner" | "intermediate" | "advanced"
       subscription_status: "free" | "premium"
     }
     CompositeTypes: {

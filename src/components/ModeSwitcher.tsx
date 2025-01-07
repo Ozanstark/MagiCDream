@@ -1,4 +1,4 @@
-import { Image, MessageSquareText, Music4, Twitter, Instagram, Mail, FileText, Globe } from "lucide-react";
+import { Image, MessageSquareText, Music4, Twitter, Instagram, Mail, FileText, Globe, Crown } from "lucide-react";
 import { Button } from "./ui/button";
 
 interface ModeSwitcherProps {
@@ -8,14 +8,14 @@ interface ModeSwitcherProps {
 
 const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
   const modes = [
-    { id: 'image', icon: Image, label: 'Image Generator' },
-    { id: 'text', icon: MessageSquareText, label: 'Text Generator' },
-    { id: 'music', icon: Music4, label: 'Music Generator' },
-    { id: 'tweet', icon: Twitter, label: 'Tweet Generator' },
-    { id: 'instagram', icon: Instagram, label: 'Instagram Analysis' },
-    { id: 'email', icon: Mail, label: 'Email Generator' },
-    { id: 'humanizer', icon: FileText, label: 'AI Paragraph Humanizer' },
-    { id: 'translator', icon: Globe, label: 'AI Translator' },
+    { id: 'image', icon: Image, label: 'Image Generator', isPremium: false },
+    { id: 'text', icon: MessageSquareText, label: 'Text Generator', isPremium: true },
+    { id: 'music', icon: Music4, label: 'Music Generator', isPremium: false },
+    { id: 'tweet', icon: Twitter, label: 'Tweet Generator', isPremium: true },
+    { id: 'instagram', icon: Instagram, label: 'Instagram Analysis', isPremium: false },
+    { id: 'email', icon: Mail, label: 'Email Generator', isPremium: true },
+    { id: 'humanizer', icon: FileText, label: 'AI Paragraph Humanizer', isPremium: true },
+    { id: 'translator', icon: Globe, label: 'AI Translator', isPremium: true },
   ] as const;
 
   return (
@@ -28,7 +28,12 @@ const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
           className="flex items-center justify-start gap-2 w-full"
         >
           <item.icon className="h-5 w-5" />
-          <span>{item.label}</span>
+          <span className="flex items-center gap-2">
+            {item.label}
+            {item.isPremium && (
+              <Crown className="h-4 w-4 text-yellow-500" />
+            )}
+          </span>
         </Button>
       ))}
     </div>

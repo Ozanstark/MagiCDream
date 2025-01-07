@@ -11,6 +11,8 @@ interface Message {
   encrypted_content: string;
   decryption_key: string;
   created_at: string;
+  deletion_type: "never" | "on_view" | "timed";
+  deletion_time: string | null;
 }
 
 interface EncryptedMessagesListProps {
@@ -37,6 +39,23 @@ export const EncryptedMessagesList = ({ messages, onMessageDecrypted }: Encrypte
     try {
       const decrypted = decryptMessage(encryptedInput, decryptInput);
       setDecryptedMessage(decrypted);
+      
+      // If message is set to be deleted on view, delete it now
+      if (messages.length > 0) {
+        const message = messages.find(m => m.encrypted_content === encryptedInput);
+        if (message && message.deletion_type === "on_view") {
+          const { error } = await supabase
+            .from("encrypted_messages")
+            .delete()
+            .eq("id", message.id);
+
+          if (error) {
+            console.error("Error deleting message:", error);
+          } else {
+            onMessageDecrypted(message.id);
+          }
+        }
+      }
       
       toast({
         title: "Başarılı",

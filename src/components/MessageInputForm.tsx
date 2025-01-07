@@ -5,6 +5,7 @@ import { Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { encryptMessage } from "@/utils/encryption";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 interface MessageInputFormProps {
   onMessageEncrypted: (key: string, message: string) => void;
@@ -13,6 +14,7 @@ interface MessageInputFormProps {
 
 export const MessageInputForm = ({ onMessageEncrypted, onSuccess }: MessageInputFormProps) => {
   const [message, setMessage] = useState("");
+  const [deletionType, setDeletionType] = useState<"never" | "on_view" | "timed">("never");
   const { toast } = useToast();
 
   const handleEncrypt = async () => {
@@ -46,10 +48,18 @@ export const MessageInputForm = ({ onMessageEncrypted, onSuccess }: MessageInput
       const encrypted = encryptMessage(message, key);
       console.log("Encrypted message:", encrypted);
 
+      // Calculate deletion_time if needed
+      let deletion_time = null;
+      if (deletionType === 'timed') {
+        deletion_time = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+      }
+
       const { error } = await supabase.from("encrypted_messages").insert({
         encrypted_content: encrypted,
         decryption_key: key,
-        user_id: session.user.id
+        user_id: session.user.id,
+        deletion_type: deletionType,
+        deletion_time
       });
 
       if (error) {
@@ -68,6 +78,7 @@ export const MessageInputForm = ({ onMessageEncrypted, onSuccess }: MessageInput
 
       // Clear the input
       setMessage("");
+      setDeletionType("never");
       
       // Finally call onSuccess
       onSuccess();
@@ -90,6 +101,22 @@ export const MessageInputForm = ({ onMessageEncrypted, onSuccess }: MessageInput
         placeholder="Şifrelemek istediğiniz mesajı girin..."
         className="min-h-[200px] bg-[#1a1b26] text-white border-gray-700 resize-none"
       />
+      <div className="space-y-2">
+        <label className="text-sm text-white">Mesaj Silinme Seçeneği</label>
+        <Select
+          value={deletionType}
+          onValueChange={(value: "never" | "on_view" | "timed") => setDeletionType(value)}
+        >
+          <SelectTrigger className="bg-[#1a1b26] text-white border-gray-700">
+            <SelectValue placeholder="Silinme seçeneği seçin" />
+          </SelectTrigger>
+          <SelectContent className="bg-[#1a1b26] text-white border-gray-700">
+            <SelectItem value="never">Asla silme</SelectItem>
+            <SelectItem value="on_view">Görüntülendiğinde sil</SelectItem>
+            <SelectItem value="timed">1 saat sonra sil</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
       <Button onClick={handleEncrypt} className="w-full bg-yellow-400 hover:bg-yellow-500 text-black">
         <Lock className="w-4 h-4 mr-2" />
         Mesajı Şifrele

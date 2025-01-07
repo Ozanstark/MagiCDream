@@ -2,7 +2,7 @@ import { Coins, LogOut } from "lucide-react";
 import { useCredits } from "@/hooks/useCredits";
 import { Button } from "./ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "./use-toast";
+import { useToast } from "@/components/ui/use-toast";
 
 const Credits = () => {
   const { credits, isLoading } = useCredits();

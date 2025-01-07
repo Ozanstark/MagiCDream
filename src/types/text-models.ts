@@ -6,8 +6,8 @@ export type TextModelType = {
 
 export const AVAILABLE_TEXT_MODELS: TextModelType[] = [
   {
-    id: "mistralai/Mistral-Nemo-Instruct-2407",
-    name: "Mistral-Nemo-Instruct-2407",
+    id: "mistralai/Mistral-7B-Instruct-v0.1",
+    name: "Mistral-7B-Instruct",
     description: "Advanced language model for text generation"
   }
 ];

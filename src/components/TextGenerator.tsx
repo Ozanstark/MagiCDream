@@ -40,26 +40,24 @@ const TextGenerator = () => {
     setIsLoading(true);
     try {
       let output = "";
-      const stream = client.chatCompletionStream({
-        model: selectedModel.id,
-        messages: [
-          {
-            role: "user",
-            content: prompt
-          }
-        ],
-        max_tokens: 500
+      const stream = await client.textGenerationStream({
+        model: "mistralai/Mistral-7B-Instruct-v0.1",
+        inputs: prompt,
+        parameters: {
+          max_new_tokens: 500,
+          temperature: 0.7,
+          top_p: 0.95,
+          repetition_penalty: 1.1,
+        }
       });
 
       for await (const chunk of stream) {
-        if (chunk.choices && chunk.choices.length > 0) {
-          const newContent = chunk.choices[0].delta.content;
-          output += newContent;
-          setResponse(output);
-        }
+        output += chunk.token.text;
+        setResponse(output);
       }
       recordTextGeneration();
     } catch (error) {
+      console.error("Text generation error:", error);
       toast({
         title: "Hata",
         description: error instanceof Error ? error.message : "Metin oluşturulurken bir hata oluştu",

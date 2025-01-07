@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "./use-toast";
+import { RealtimeChannel } from "@supabase/supabase-js";
 
 export const useCredits = () => {
   const [credits, setCredits] = useState<number | null>(null);
@@ -11,11 +12,13 @@ export const useCredits = () => {
     fetchCredits();
     
     // Subscribe to realtime credits updates
+    let channel: RealtimeChannel | null = null;
+
     const setupRealtimeSubscription = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) return null;
 
-      const channel = supabase
+      const newChannel = supabase
         .channel('credits_changes')
         .on(
           'postgres_changes',
@@ -31,7 +34,7 @@ export const useCredits = () => {
         )
         .subscribe();
 
-      return channel;
+      return newChannel;
     };
 
     // Auto refresh credits every 5 minutes
@@ -39,10 +42,11 @@ export const useCredits = () => {
       fetchCredits();
     }, 5 * 60 * 1000); // 5 minutes
 
-    // Setup subscription and store cleanup function
-    let channel: ReturnType<typeof setupRealtimeSubscription>;
+    // Setup subscription
     setupRealtimeSubscription().then(ch => {
-      channel = ch;
+      if (ch) {
+        channel = ch;
+      }
     });
 
     return () => {

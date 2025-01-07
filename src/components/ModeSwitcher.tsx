@@ -9,20 +9,9 @@ interface ModeSwitcherProps {
 const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
   const modes = [
     { id: 'image', icon: Image, label: 'Image Generator', showWow: true, isPremium: true },
-    { id: 'text', icon: MessageSquareText, label: 'Text Generator', showWow: false, isPremium: false },
-    { id: 'blog', icon: BookOpen, label: 'Blog Intro Generator', showWow: false, isPremium: false },
-    { id: 'essay', icon: PenTool, label: 'Essay Humanizer', showWow: false, isPremium: false },
-    { id: 'twitter-bio', icon: UserCircle, label: 'Twitter Bio Generator', showWow: false, isPremium: false },
-    { id: 'linkedin', icon: Linkedin, label: 'LinkedIn Headline Generator', showWow: false, isPremium: false },
-    { id: 'wedding-speech', icon: Heart, label: 'Wedding Speech Generator', showWow: false, isPremium: false },
+    { id: 'instagram', icon: Instagram, label: 'Instagram Analysis', showWow: true, isPremium: true },
     { id: 'diet', icon: Salad, label: 'Diet Plan Generator', showWow: true, isPremium: true },
     { id: 'workout', icon: Dumbbell, label: 'Workout Plan Generator', showWow: true, isPremium: true },
-    { id: 'music', icon: Music4, label: 'Music Generator', showWow: false, isPremium: false },
-    { id: 'tweet', icon: Twitter, label: 'Tweet Generator', showWow: false, isPremium: false },
-    { id: 'instagram', icon: Instagram, label: 'Instagram Analysis', showWow: true, isPremium: true },
-    { id: 'email', icon: Mail, label: 'Email Generator', showWow: false, isPremium: false },
-    { id: 'humanizer', icon: FileText, label: 'AI Paragraph Humanizer', showWow: false, isPremium: false },
-    { id: 'translator', icon: Globe, label: 'AI Translator', showWow: false, isPremium: false },
     { id: 'encrypt', icon: Lock, label: 'Message Encryption', showWow: true, isPremium: true },
     { id: 'photo-encrypt', icon: Lock, label: 'Photo Encryption', showWow: true, isPremium: true },
   ] as const;
@@ -40,19 +29,11 @@ const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
             <item.icon className="h-5 w-5" />
             <span>{item.label}</span>
           </div>
-          {item.isPremium ? (
-            <img 
-              src="/lovable-uploads/6e858f00-7860-4b5f-b35a-7a25c98a71ff.png"
-              alt="WOW effect"
-              className="w-12 h-12 transform rotate-12 opacity-90 group-hover:scale-110 transition-transform"
-            />
-          ) : (
-            <img 
-              src="/lovable-uploads/bc1345ad-6865-4d80-a14d-5a8f5cbbd498.png"
-              alt="Free feature"
-              className="w-8 h-8 transform rotate-0 opacity-100 group-hover:scale-110 transition-transform"
-            />
-          )}
+          <img 
+            src="/lovable-uploads/6e858f00-7860-4b5f-b35a-7a25c98a71ff.png"
+            alt="WOW effect"
+            className="w-12 h-12 transform rotate-12 opacity-90 group-hover:scale-110 transition-transform"
+          />
         </Button>
       ))}
     </div>

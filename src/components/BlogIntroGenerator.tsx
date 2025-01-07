@@ -4,12 +4,14 @@ import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { useToast } from "./ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useApiLimits } from "@/hooks/useApiLimits";
 
 const BlogIntroGenerator = () => {
   const [topic, setTopic] = useState("");
   const [intro, setIntro] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { checkBlogIntro } = useApiLimits();
 
   const generateIntro = async () => {
     if (!topic.trim()) {
@@ -29,12 +31,28 @@ const BlogIntroGenerator = () => {
 
       if (error) throw error;
 
-      setIntro(data.intro);
-      toast({
-        title: "Success!",
-        description: "Your blog introduction has been generated.",
-      });
+      if (data?.intro) {
+        // Check and deduct credits only after successful generation
+        const canProceed = await checkBlogIntro();
+        if (!canProceed) {
+          toast({
+            title: "Error",
+            description: "Insufficient credits to generate blog introduction",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        setIntro(data.intro);
+        toast({
+          title: "Success!",
+          description: "Your blog introduction has been generated.",
+        });
+      } else {
+        throw new Error("No introduction was generated");
+      }
     } catch (error) {
+      console.error("Error generating introduction:", error);
       toast({
         title: "Error",
         description: "Failed to generate introduction. Please try again.",

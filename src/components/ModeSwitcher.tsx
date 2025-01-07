@@ -39,16 +39,16 @@ const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
             <item.icon className="h-5 w-5" />
             <span>{item.label}</span>
           </div>
-          {item.showWow ? (
+          {item.isPremium ? (
             <img 
-              src="/lovable-uploads/6e858f00-7860-4b5f-b35a-7a25c98a71ff.png"
-              alt="WOW effect"
+              src="/lovable-uploads/bc1345ad-6865-4d80-a14d-5a8f5cbbd498.png"
+              alt="Premium feature"
               className="w-12 h-12 transform rotate-12 opacity-90 group-hover:scale-110 transition-transform"
             />
           ) : (
             <img 
-              src="/lovable-uploads/6e858f00-7860-4b5f-b35a-7a25c98a71ff.png"
-              alt="WOW effect"
+              src="/lovable-uploads/bc1345ad-6865-4d80-a14d-5a8f5cbbd498.png"
+              alt="Free feature"
               className="w-6 h-6 transform rotate-12 opacity-50 group-hover:scale-110 transition-transform"
             />
           )}

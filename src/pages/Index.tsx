@@ -7,9 +7,10 @@ import TweetGenerator from "@/components/TweetGenerator";
 import InstagramAnalyzer from "@/components/InstagramAnalyzer";
 import EmailGenerator from "@/components/EmailGenerator";
 import ParagraphHumanizer from "@/components/ParagraphHumanizer";
+import Translator from "@/components/Translator";
 
 const Index = () => {
-  const [mode, setMode] = useState<'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email' | 'humanizer'>('image');
+  const [mode, setMode] = useState<'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator'>('image');
 
   const getComponent = () => {
     switch (mode) {
@@ -25,6 +26,8 @@ const Index = () => {
         return <EmailGenerator />;
       case 'humanizer':
         return <ParagraphHumanizer />;
+      case 'translator':
+        return <Translator />;
       default:
         return <ImageGenerator />;
     }

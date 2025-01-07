@@ -1,9 +1,9 @@
-import { Image, MessageSquareText, Music4, Twitter, Instagram, Mail, FileText } from "lucide-react";
+import { Image, MessageSquareText, Music4, Twitter, Instagram, Mail, FileText, Globe } from "lucide-react";
 import { Button } from "./ui/button";
 
 interface ModeSwitcherProps {
-  mode: 'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email' | 'humanizer';
-  onModeChange: (mode: 'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email' | 'humanizer') => void;
+  mode: 'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator';
+  onModeChange: (mode: 'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator') => void;
 }
 
 const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
@@ -15,6 +15,7 @@ const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
     { id: 'instagram', icon: Instagram, label: 'Instagram Analysis' },
     { id: 'email', icon: Mail, label: 'Email Generator' },
     { id: 'humanizer', icon: FileText, label: 'AI Paragraph Humanizer' },
+    { id: 'translator', icon: Globe, label: 'AI Translator' },
   ] as const;
 
   return (

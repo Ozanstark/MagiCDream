@@ -49,7 +49,8 @@ export const EncryptedMessagesList = ({ onMessageDecrypted }: EncryptedMessagesL
       return;
     }
 
-    setUserMessages(messages);
+    // Type assertion to ensure the data matches our Message interface
+    setUserMessages(messages as Message[]);
   };
 
   const copyToClipboard = (text: string, type: "message" | "key") => {

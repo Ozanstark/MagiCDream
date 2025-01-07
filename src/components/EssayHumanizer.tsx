@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Label } from "./ui/label";
 import { useToast } from "./ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import ComponentHeader from "./shared/ComponentHeader";
 
 const EssayHumanizer = () => {
   const [essayText, setEssayText] = useState("");
@@ -55,12 +56,10 @@ const EssayHumanizer = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 p-6">
-      <div className="space-y-2 text-center">
-        <h1 className="text-4xl font-bold tracking-tighter">Essay Humanizer</h1>
-        <p className="text-muted-foreground">
-          Transform your AI-generated essay into natural, human-like writing that bypasses AI detection.
-        </p>
-      </div>
+      <ComponentHeader
+        title="Essay Humanizer"
+        description="Transform your AI-generated essay into natural, human-like writing that bypasses AI detection."
+      />
 
       <div className="space-y-4">
         <div>

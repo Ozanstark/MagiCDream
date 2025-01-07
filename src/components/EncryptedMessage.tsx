@@ -21,7 +21,10 @@ const EncryptedMessage = () => {
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching messages:", error);
+        throw error;
+      }
       return data;
     },
   });
@@ -37,21 +40,29 @@ const EncryptedMessage = () => {
     }
 
     try {
+      console.log("Starting encryption for message:", message);
+      
       // Simple encryption for demonstration (in real-world, use stronger encryption)
       const key = Math.random().toString(36).substring(7);
-      const encrypted = btoa(
-        message
-          .split("")
-          .map((char) => String.fromCharCode(char.charCodeAt(0) + key.length))
-          .join("")
-      );
+      console.log("Generated key:", key);
+      
+      const shiftedChars = message
+        .split("")
+        .map((char) => String.fromCharCode(char.charCodeAt(0) + key.length));
+      console.log("Shifted characters:", shiftedChars);
+      
+      const encrypted = btoa(shiftedChars.join(""));
+      console.log("Final encrypted message:", encrypted);
 
       const { error } = await supabase.from("encrypted_messages").insert({
         encrypted_content: encrypted,
         decryption_key: key,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase insert error:", error);
+        throw error;
+      }
 
       toast({
         title: "Başarılı",
@@ -62,6 +73,7 @@ const EncryptedMessage = () => {
       setDecryptKey(key);
       refetch();
     } catch (error) {
+      console.error("Encryption error:", error);
       toast({
         title: "Hata",
         description: "Mesaj şifrelenirken bir hata oluştu",

@@ -11,6 +11,9 @@ export const useCredits = () => {
     fetchCredits();
     
     // Subscribe to realtime credits updates
+    const { data: { user } } = supabase.auth.getUser();
+    if (!user) return;
+
     const channel = supabase
       .channel('credits_changes')
       .on(
@@ -19,7 +22,7 @@ export const useCredits = () => {
           event: 'UPDATE',
           schema: 'public',
           table: 'profiles',
-          filter: `id=eq.${supabase.auth.getUser()}`
+          filter: `id=eq.${user.id}`
         },
         (payload) => {
           setCredits(payload.new.credits);
@@ -27,16 +30,26 @@ export const useCredits = () => {
       )
       .subscribe();
 
+    // Auto refresh credits every 5 minutes
+    const refreshInterval = setInterval(() => {
+      fetchCredits();
+    }, 5 * 60 * 1000); // 5 minutes
+
     return () => {
       supabase.removeChannel(channel);
+      clearInterval(refreshInterval);
     };
   }, []);
 
   const fetchCredits = async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('credits')
+        .eq('id', user.id)
         .maybeSingle();
 
       if (error) throw error;
@@ -56,5 +69,5 @@ export const useCredits = () => {
     }
   };
 
-  return { credits, isLoading };
+  return { credits, isLoading, refreshCredits: fetchCredits };
 };

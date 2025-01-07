@@ -31,17 +31,22 @@ const EncryptedMessage = () => {
     });
   };
 
+  const handleMessageEncrypted = (key: string, message: string) => {
+    console.log("Message encrypted, setting state:", { key, message });
+    setDecryptKey(key);
+    setEncryptedMessage(message);
+  };
+
+  const handleSuccess = () => {
+    // Do not clear the message and key immediately after success
+    console.log("Success handler called");
+  };
+
   return (
     <div className="max-w-2xl mx-auto space-y-8 p-6">
       <MessageInputForm
-        onMessageEncrypted={(key, message) => {
-          setDecryptKey(key);
-          setEncryptedMessage(message);
-        }}
-        onSuccess={() => {
-          setDecryptKey("");
-          setEncryptedMessage("");
-        }}
+        onMessageEncrypted={handleMessageEncrypted}
+        onSuccess={handleSuccess}
       />
       
       {(decryptKey && encryptedMessage) && (

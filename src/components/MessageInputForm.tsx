@@ -57,13 +57,19 @@ export const MessageInputForm = ({ onMessageEncrypted, onSuccess }: MessageInput
         throw error;
       }
 
+      // First call onMessageEncrypted to update parent state
+      onMessageEncrypted(key, encrypted);
+
+      // Then show success toast
       toast({
         title: "Başarılı",
         description: "Mesajınız şifrelendi",
       });
 
-      onMessageEncrypted(key, encrypted);
+      // Clear the input
       setMessage("");
+      
+      // Finally call onSuccess
       onSuccess();
     } catch (error) {
       console.error("Encryption error:", error);

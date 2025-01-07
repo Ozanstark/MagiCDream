@@ -62,8 +62,8 @@ export const MessageInputForm = ({ onMessageEncrypted, onSuccess }: MessageInput
         description: "Mesajınız şifrelendi",
       });
 
-      setMessage("");
       onMessageEncrypted(key, encrypted);
+      setMessage("");
       onSuccess();
     } catch (error) {
       console.error("Encryption error:", error);

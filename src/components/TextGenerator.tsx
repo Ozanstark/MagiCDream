@@ -23,17 +23,6 @@ const TextGenerator = () => {
       return;
     }
 
-    // Check if user has enough credits BEFORE generating the text
-    const canProceed = await checkTextGeneration();
-    if (!canProceed) {
-      toast({
-        title: "Error",
-        description: "Insufficient credits to generate text",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("generate-text", {
@@ -43,6 +32,17 @@ const TextGenerator = () => {
       if (error) throw error;
 
       if (data?.generatedText) {
+        // Check and deduct credits only after successful generation
+        const canProceed = await checkTextGeneration();
+        if (!canProceed) {
+          toast({
+            title: "Error",
+            description: "Insufficient credits to generate text",
+            variant: "destructive",
+          });
+          return;
+        }
+
         setGeneratedText(data.generatedText);
         toast({
           title: "Success!",

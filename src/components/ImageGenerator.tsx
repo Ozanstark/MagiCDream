@@ -54,27 +54,6 @@ const ImageGenerator = () => {
     }
   };
 
-  const consumeCredits = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { error } = await supabase.rpc('update_user_credits', {
-      user_id: user.id,
-      amount: -20, // Deduct 20 credits for image generation
-      action_type: 'image_generation',
-      description: `Generated image with prompt: ${prompt}`
-    });
-
-    if (error) {
-      console.error('Error consuming credits:', error);
-      toast({
-        title: "Error",
-        description: "Failed to consume credits",
-        variant: "destructive",
-      });
-    }
-  };
-
   const generateImage = async () => {
     if (!prompt.trim()) {
       toast({
@@ -85,9 +64,16 @@ const ImageGenerator = () => {
       return;
     }
 
-    // Check if user has enough credits
+    // Check if user has enough credits BEFORE generating the image
     const canProceed = await checkImageGeneration();
-    if (!canProceed) return;
+    if (!canProceed) {
+      toast({
+        title: "Error",
+        description: "Insufficient credits to generate image",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -115,9 +101,6 @@ const ImageGenerator = () => {
       const isNSFW = false;
 
       const { publicUrl } = await uploadImageToStorage(blob, prompt, selectedModel.id, isNSFW);
-
-      // Consume credits after successful generation
-      await consumeCredits();
 
       const newImage = {
         url: publicUrl,

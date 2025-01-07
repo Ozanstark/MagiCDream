@@ -45,7 +45,7 @@ const Login = () => {
       <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-background to-secondary p-12 flex-col justify-center">
         <div className="space-y-8">
           <h1 className="text-4xl font-bold rainbow-text">
-            Magic Painting Engine
+            CreativeMind Studio
           </h1>
           <p className="text-muted-foreground text-lg mb-12">
             Yapay zeka destekli içerik üretim platformu
@@ -75,7 +75,7 @@ const Login = () => {
         <div className="w-full max-w-md space-y-8">
           <div className="text-center lg:hidden">
             <h2 className="text-3xl font-bold rainbow-text mb-4">
-              Magic Painting Engine
+              CreativeMind Studio
             </h2>
             <p className="text-muted-foreground mb-8">
               Yapay zeka destekli içerik üretim platformu

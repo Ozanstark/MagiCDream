@@ -4,10 +4,12 @@ import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { useToast } from "./ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Loader2 } from "lucide-react";
 
 const EmailGenerator = () => {
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
 
   const handleGenerateEmail = async () => {
@@ -21,6 +23,7 @@ const EmailGenerator = () => {
     }
 
     try {
+      setIsGenerating(true);
       const { data, error } = await supabase.functions.invoke("generate-email", {
         body: { subject, body },
       });
@@ -38,6 +41,8 @@ const EmailGenerator = () => {
         description: "Failed to generate email. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -60,8 +65,15 @@ const EmailGenerator = () => {
         placeholder="Email body"
         className="min-h-[200px] bg-[#1a1b26] text-white border-gray-700 resize-none"
       />
-      <Button onClick={handleGenerateEmail} className="w-full">
-        Generate Email
+      <Button onClick={handleGenerateEmail} className="w-full" disabled={isGenerating}>
+        {isGenerating ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Generating...
+          </>
+        ) : (
+          "Generate Email"
+        )}
       </Button>
     </div>
   );

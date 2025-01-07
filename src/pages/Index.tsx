@@ -5,7 +5,6 @@ import ImageGenerator from "@/components/ImageGenerator";
 import MusicGenerator from "@/components/MusicGenerator";
 import TweetGenerator from "@/components/TweetGenerator";
 import InstagramAnalyzer from "@/components/InstagramAnalyzer";
-import PremiumFeature from "@/components/PremiumFeature";
 
 const Index = () => {
   const [mode, setMode] = useState<'image' | 'text' | 'music' | 'tweet' | 'instagram'>('image');
@@ -20,9 +19,7 @@ const Index = () => {
       ) : mode === 'tweet' ? (
         <TweetGenerator />
       ) : mode === 'instagram' ? (
-        <PremiumFeature>
-          <InstagramAnalyzer />
-        </PremiumFeature>
+        <InstagramAnalyzer />
       ) : (
         <ImageGenerator />
       )}

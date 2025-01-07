@@ -5,7 +5,6 @@ import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageUploader } from "./instagram/ImageUploader";
 import { AnalysisResults } from "./instagram/AnalysisResults";
-import { PremiumUpgrade } from "./instagram/PremiumUpgrade";
 
 interface AnalysisResult {
   score: number;
@@ -18,13 +17,7 @@ const InstagramAnalyzer = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [results, setResults] = useState<AnalysisResult[]>([]);
   const [language, setLanguage] = useState<"tr" | "en">("tr");
-  const [hasUsedFreeAnalysis, setHasUsedFreeAnalysis] = useState(false);
   const { toast } = useToast();
-
-  useEffect(() => {
-    const hasUsed = localStorage.getItem("hasUsedFreeAnalysis") === "true";
-    setHasUsedFreeAnalysis(hasUsed);
-  }, []);
 
   const uploadImageToStorage = async (blobUrl: string): Promise<string> => {
     try {
@@ -53,15 +46,6 @@ const InstagramAnalyzer = () => {
   };
 
   const analyzeImages = async () => {
-    if (hasUsedFreeAnalysis) {
-      toast({
-        title: "Premium Özellik",
-        description: "Ücretsiz denemenizi kullandınız. Daha fazla analiz için premium üyeliğe geçin.",
-        variant: "default",
-      });
-      return;
-    }
-
     if (selectedImages.length !== 2) {
       toast({
         title: "Hata",
@@ -84,9 +68,6 @@ const InstagramAnalyzer = () => {
       if (error) throw error;
 
       setResults(data);
-      setHasUsedFreeAnalysis(true);
-      localStorage.setItem("hasUsedFreeAnalysis", "true");
-      
       toast({
         title: "Başarılı",
         description: "Fotoğraflar başarıyla analiz edildi!",
@@ -102,10 +83,6 @@ const InstagramAnalyzer = () => {
       setIsAnalyzing(false);
     }
   };
-
-  if (hasUsedFreeAnalysis && results.length === 0) {
-    return <PremiumUpgrade />;
-  }
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6">

@@ -1,17 +1,9 @@
 import { useState } from "react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import DietPlanForm from "./diet-plan/DietPlanForm";
+import GeneratedPlan from "./diet-plan/GeneratedPlan";
 
 type ActivityLevel = Database["public"]["Enums"]["activity_level"];
 
@@ -28,6 +20,10 @@ const DietPlanGenerator = () => {
     fitnessGoals: "",
   });
   const [generatedPlan, setGeneratedPlan] = useState("");
+
+  const handleFormChange = (field: keyof typeof formData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,118 +88,19 @@ const DietPlanGenerator = () => {
     <div className="max-w-2xl mx-auto p-6 space-y-8">
       <div className="space-y-2">
         <h2 className="text-2xl font-bold">Diet Plan Generator</h2>
-        <p className="text-gray-500">Generate a personalized diet plan based on your goals and preferences.</p>
+        <p className="text-gray-500">
+          Generate a personalized diet plan based on your goals and preferences.
+        </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="age">Age</Label>
-            <Input
-              id="age"
-              type="number"
-              value={formData.age}
-              onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-              required
-            />
-          </div>
+      <DietPlanForm
+        formData={formData}
+        loading={loading}
+        onSubmit={handleSubmit}
+        onChange={handleFormChange}
+      />
 
-          <div className="space-y-2">
-            <Label htmlFor="gender">Gender</Label>
-            <Select
-              value={formData.gender}
-              onValueChange={(value) => setFormData({ ...formData, gender: value })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select gender" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="male">Male</SelectItem>
-                <SelectItem value="female">Female</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="height">Height (cm)</Label>
-            <Input
-              id="height"
-              type="number"
-              step="0.1"
-              value={formData.height}
-              onChange={(e) => setFormData({ ...formData, height: e.target.value })}
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="weight">Weight (kg)</Label>
-            <Input
-              id="weight"
-              type="number"
-              step="0.1"
-              value={formData.weight}
-              onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
-              required
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="activityLevel">Activity Level</Label>
-          <Select
-            value={formData.activityLevel}
-            onValueChange={(value) => setFormData({ ...formData, activityLevel: value as ActivityLevel })}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select activity level" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="sedentary">Sedentary</SelectItem>
-              <SelectItem value="moderately_active">Moderately Active</SelectItem>
-              <SelectItem value="very_active">Very Active</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="dietaryRestrictions">
-            Dietary Restrictions (comma-separated)
-          </Label>
-          <Input
-            id="dietaryRestrictions"
-            value={formData.dietaryRestrictions}
-            onChange={(e) =>
-              setFormData({ ...formData, dietaryRestrictions: e.target.value })
-            }
-            placeholder="e.g., vegetarian, gluten-free, dairy-free"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="fitnessGoals">Fitness Goals (comma-separated)</Label>
-          <Input
-            id="fitnessGoals"
-            value={formData.fitnessGoals}
-            onChange={(e) =>
-              setFormData({ ...formData, fitnessGoals: e.target.value })
-            }
-            placeholder="e.g., weight loss, muscle gain, maintenance"
-          />
-        </div>
-
-        <Button type="submit" disabled={loading}>
-          {loading ? "Generating..." : "Generate Diet Plan"}
-        </Button>
-      </form>
-
-      {generatedPlan && (
-        <div className="mt-8 p-6 border rounded-lg">
-          <h3 className="text-xl font-semibold mb-4">Your Diet Plan</h3>
-          <div className="whitespace-pre-wrap">{generatedPlan}</div>
-        </div>
-      )}
+      <GeneratedPlan plan={generatedPlan} />
     </div>
   );
 };

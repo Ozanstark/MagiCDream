@@ -3,7 +3,7 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
-import { AuthChangeEvent, Session } from "@supabase/supabase-js";
+import { AuthChangeEvent, Session, AuthError, AuthApiError } from "@supabase/supabase-js";
 
 export const LoginForm = () => {
   const { toast } = useToast();
@@ -25,7 +25,6 @@ export const LoginForm = () => {
         });
       }
       
-      // Hata yönetimi
       if (event === "USER_UPDATED" && !session) {
         toast({
           variant: "destructive",
@@ -37,6 +36,29 @@ export const LoginForm = () => {
 
     return () => subscription.unsubscribe();
   }, [toast]);
+
+  const handleAuthError = (error: AuthError) => {
+    let errorMessage = "Bir hata oluştu. Lütfen tekrar deneyin.";
+    
+    if (error instanceof AuthApiError) {
+      switch (error.status) {
+        case 400:
+          errorMessage = "E-posta veya şifre hatalı. Lütfen bilgilerinizi kontrol edip tekrar deneyin.";
+          break;
+        case 422:
+          errorMessage = "Geçersiz e-posta formatı. Lütfen geçerli bir e-posta adresi girin.";
+          break;
+        default:
+          errorMessage = "Giriş yapılırken bir hata oluştu. Lütfen tekrar deneyin.";
+      }
+    }
+    
+    toast({
+      variant: "destructive",
+      title: "Giriş hatası",
+      description: errorMessage,
+    });
+  };
 
   return (
     <div className="flex-1 flex items-center justify-center p-8">
@@ -95,6 +117,7 @@ export const LoginForm = () => {
                 }
               }
             }}
+            onError={handleAuthError}
           />
         </div>
       </div>

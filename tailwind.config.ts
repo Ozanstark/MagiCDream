@@ -71,12 +71,22 @@ export default {
           to: { height: '0' }
         },
         'glow': {
-          '0%, 100%': { boxShadow: '0 0 15px #FFD700' },
-          '50%': { boxShadow: '0 0 25px #FFD700' }
+          '0%, 100%': { 
+            boxShadow: '0 0 15px rgba(255, 215, 0, 0.7)' 
+          },
+          '50%': { 
+            boxShadow: '0 0 25px rgba(255, 215, 0, 0.9)' 
+          }
         },
         'sparkle': {
-          '0%, 100%': { opacity: '1', transform: 'scale(1)' },
-          '50%': { opacity: '0.5', transform: 'scale(1.2)' }
+          '0%, 100%': { 
+            transform: 'scale(1) rotate(0deg)',
+            opacity: '1'
+          },
+          '50%': { 
+            transform: 'scale(1.2) rotate(180deg)',
+            opacity: '0.8'
+          }
         }
       },
       animation: {

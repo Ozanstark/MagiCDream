@@ -117,10 +117,16 @@ export const MessageInputForm = ({ onMessageEncrypted, onSuccess }: MessageInput
           </SelectContent>
         </Select>
       </div>
-      <Button onClick={handleEncrypt} className="w-full bg-yellow-400 hover:bg-yellow-500 text-black relative group">
+      <Button 
+        onClick={handleEncrypt} 
+        className="w-full bg-yellow-400 hover:bg-yellow-500 text-black relative group"
+      >
         <Lock className="w-4 h-4 mr-2" />
         Mesajı Şifrele
-        <Flame className="absolute -top-2 -right-2 w-3 h-3 text-yellow-500 animate-sparkle" />
+        <Flame 
+          className="absolute -top-2 -right-2 w-5 h-5 text-yellow-600 animate-sparkle" 
+          strokeWidth={2.5}
+        />
         <div className="absolute inset-0 rounded-md animate-glow opacity-0 group-hover:opacity-100" />
       </Button>
     </div>

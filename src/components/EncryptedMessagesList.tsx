@@ -17,9 +17,10 @@ interface EncryptedMessagesListProps {
 
 export const EncryptedMessagesList = ({ messages }: EncryptedMessagesListProps) => {
   const [decryptInput, setDecryptInput] = useState("");
+  const [decryptedMessages, setDecryptedMessages] = useState<{ [key: string]: string }>({});
   const { toast } = useToast();
 
-  const handleDecrypt = (encrypted: string, key: string) => {
+  const handleDecrypt = (messageId: string, encrypted: string, key: string) => {
     if (key !== decryptInput) {
       toast({
         title: "Hata",
@@ -31,10 +32,10 @@ export const EncryptedMessagesList = ({ messages }: EncryptedMessagesListProps) 
 
     try {
       const decrypted = decryptMessage(encrypted, key);
-      toast({
-        title: "Mesaj çözüldü",
-        description: decrypted,
-      });
+      setDecryptedMessages(prev => ({
+        ...prev,
+        [messageId]: decrypted
+      }));
     } catch (error) {
       console.error("Decryption error:", error);
       toast({
@@ -62,12 +63,18 @@ export const EncryptedMessagesList = ({ messages }: EncryptedMessagesListProps) 
                 className="bg-[#1a1b26] border-gray-700 text-white"
               />
               <Button
-                onClick={() => handleDecrypt(msg.encrypted_content, msg.decryption_key)}
+                onClick={() => handleDecrypt(msg.id, msg.encrypted_content, msg.decryption_key)}
                 className="bg-yellow-400 hover:bg-yellow-500 text-black"
               >
                 Çöz
               </Button>
             </div>
+            {decryptedMessages[msg.id] && (
+              <div className="mt-2 p-3 bg-green-900/20 rounded-lg">
+                <p className="text-green-400 font-medium">Çözülmüş Mesaj:</p>
+                <p className="text-white">{decryptedMessages[msg.id]}</p>
+              </div>
+            )}
           </div>
         ))}
       </div>

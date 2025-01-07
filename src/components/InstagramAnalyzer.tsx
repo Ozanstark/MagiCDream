@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageUploader } from "./instagram/ImageUploader";
 import { AnalysisResults } from "./instagram/AnalysisResults";
+import ComponentHeader from "./shared/ComponentHeader";
 
 interface AnalysisResult {
   score: number;
@@ -86,12 +87,10 @@ const InstagramAnalyzer = () => {
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6">
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold text-center">Instagram Fotoğraf Analizi</h2>
-        <p className="text-center text-muted-foreground">
-          Karşılaştırmak istediğiniz 2 fotoğraf seçin
-        </p>
-      </div>
+      <ComponentHeader
+        title="Instagram Fotoğraf Analizi"
+        description="Fotoğraflarınızı yapay zeka ile analiz edin ve Instagram'da en iyi performansı gösterecek olanı seçin"
+      />
 
       <ImageUploader
         selectedImages={selectedImages}

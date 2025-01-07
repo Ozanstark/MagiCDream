@@ -4,6 +4,7 @@ import TweetHeader from "./tweet/TweetHeader";
 import TweetInput from "./tweet/TweetInput";
 import TweetOutput from "./tweet/TweetOutput";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const TweetGenerator = () => {
   const [topic, setTopic] = useState("");
@@ -24,24 +25,18 @@ const TweetGenerator = () => {
 
     setIsGenerating(true);
     try {
-      const response = await fetch("/api/generate-tweet", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const { data, error } = await supabase.functions.invoke('generate-tweet', {
+        body: {
           topic,
           description,
-        }),
+        },
       });
 
-      if (!response.ok) {
-        throw new Error("Tweet oluşturulamadı");
-      }
+      if (error) throw error;
 
-      const data = await response.json();
-      setGeneratedTweet(data.tweet || "Türk ekonomisinin son durumu hakkında detaylı bir analiz: Enflasyon, döviz kurları ve büyüme rakamları ışığında ekonomik görünüm. #Ekonomi #TürkEkonomisi");
+      setGeneratedTweet(data.tweet);
     } catch (error) {
+      console.error('Tweet generation error:', error);
       toast({
         title: "Hata",
         description: "Tweet oluşturulurken bir hata oluştu",

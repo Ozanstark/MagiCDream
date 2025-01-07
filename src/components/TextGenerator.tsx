@@ -3,10 +3,8 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Wand2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { HfInference } from "@huggingface/inference";
 import { useApiLimits } from "@/hooks/useApiLimits";
-
-const client = new HfInference("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");
+import { supabase } from "@/integrations/supabase/client";
 
 const TextGenerator = () => {
   const [prompt, setPrompt] = useState("");
@@ -36,22 +34,42 @@ const TextGenerator = () => {
 
     setIsLoading(true);
     try {
-      let output = "";
-      const stream = await client.textGenerationStream({
-        model: "mistralai/Mistral-7B-Instruct-v0.1",
-        inputs: prompt,
-        parameters: {
-          max_new_tokens: 500,
-          temperature: 0.7,
-          top_p: 0.95,
-          repetition_penalty: 1.1,
-        }
+      const response = await supabase.functions.invoke('generate-text', {
+        body: { prompt },
       });
 
-      for await (const chunk of stream) {
-        output += chunk.token.text;
+      if (response.error) throw response.error;
+
+      const reader = new ReadableStream({
+        start(controller) {
+          const text = new TextDecoder();
+          const lines = text.decode(response.data).split('\n');
+          
+          for (const line of lines) {
+            if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+              try {
+                const data = JSON.parse(line.slice(6));
+                if (data.choices?.[0]?.delta?.content) {
+                  controller.enqueue(data.choices[0].delta.content);
+                }
+              } catch (e) {
+                console.error('Error parsing SSE message:', e);
+              }
+            }
+          }
+          controller.close();
+        },
+      });
+
+      let output = '';
+      const reader2 = reader.getReader();
+      while (true) {
+        const { done, value } = await reader2.read();
+        if (done) break;
+        output += value;
         setResponse(output);
       }
+
       recordTextGeneration();
     } catch (error) {
       console.error("Text generation error:", error);

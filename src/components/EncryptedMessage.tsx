@@ -32,21 +32,22 @@ const EncryptedMessage = () => {
   };
 
   const handleMessageEncrypted = (key: string, message: string) => {
-    console.log("Message encrypted, setting state:", { key, message });
     setDecryptKey(key);
     setEncryptedMessage(message);
   };
 
-  const handleSuccess = () => {
-    // Do not clear the message and key immediately after success
-    console.log("Success handler called");
+  const handleMessageDecrypted = (messageId: string) => {
+    toast({
+      title: "Mesaj silindi",
+      description: "Görüntülenen mesaj başarıyla silindi",
+    });
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8 p-6">
+    <div className="max-w-6xl mx-auto space-y-8 p-6">
       <MessageInputForm
         onMessageEncrypted={handleMessageEncrypted}
-        onSuccess={handleSuccess}
+        onSuccess={() => {}}
       />
       
       {(decryptKey && encryptedMessage) && (
@@ -85,7 +86,7 @@ const EncryptedMessage = () => {
         </div>
       )}
 
-      <EncryptedMessagesList messages={[]} onMessageDecrypted={() => {}} />
+      <EncryptedMessagesList onMessageDecrypted={handleMessageDecrypted} messages={[]} />
     </div>
   );
 };

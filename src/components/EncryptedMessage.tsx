@@ -35,6 +35,10 @@ const EncryptedMessage = () => {
     <div className="max-w-2xl mx-auto space-y-8 p-6">
       <MessageInputForm
         onMessageEncrypted={setDecryptKey}
+        onSuccess={() => {
+          // Reset the decryption key after successful message encryption
+          setDecryptKey("");
+        }}
       />
       
       {decryptKey && (

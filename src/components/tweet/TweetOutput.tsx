@@ -16,7 +16,7 @@ const TweetOutput = ({ tweet, onTweetChange, onCopy }: TweetOutputProps) => {
         value={tweet}
         onChange={(e) => onTweetChange(e.target.value)}
         placeholder="Oluşturulan tweet burada görünecek..."
-        className="min-h-[100px] input-premium"
+        className="min-h-[100px] input-premium resize-none"
         maxLength={280}
       />
       <div className="flex justify-between items-center">
@@ -27,6 +27,7 @@ const TweetOutput = ({ tweet, onTweetChange, onCopy }: TweetOutputProps) => {
           onClick={onCopy}
           disabled={!tweet.trim()}
           className="button-primary"
+          variant="default"
         >
           <Copy className="w-4 h-4 mr-2" />
           Tweeti Kopyala

@@ -3,13 +3,14 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
+import { AuthChangeEvent } from "@supabase/supabase-js";
 
 export const LoginForm = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'USER_DELETED') {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
+      if (event === "DELETED") {
         toast({
           variant: "destructive",
           title: "Hesap silindi",
@@ -17,7 +18,7 @@ export const LoginForm = () => {
         });
       }
       
-      if (event === 'PASSWORD_RECOVERY') {
+      if (event === "PASSWORD_RECOVERY") {
         toast({
           title: "Şifre sıfırlama",
           description: "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.",
@@ -25,7 +26,7 @@ export const LoginForm = () => {
       }
       
       // Hata yönetimi
-      if (event === 'USER_UPDATED' && !session) {
+      if (event === "USER_UPDATED" && !session) {
         toast({
           variant: "destructive",
           title: "Giriş hatası",

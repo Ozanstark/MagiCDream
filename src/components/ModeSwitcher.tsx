@@ -49,7 +49,7 @@ const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
             <img 
               src="/lovable-uploads/bc1345ad-6865-4d80-a14d-5a8f5cbbd498.png"
               alt="Free feature"
-              className="w-6 h-6 transform rotate-12 opacity-50 group-hover:scale-110 transition-transform"
+              className="w-8 h-8 transform rotate-0 opacity-100 group-hover:scale-110 transition-transform"
             />
           )}
         </Button>

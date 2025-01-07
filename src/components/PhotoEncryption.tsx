@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card } from "./ui/card";
+import { Button } from "./ui/button";
+import { X } from "lucide-react";
 import PremiumFeature from "./PremiumFeature";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -50,7 +52,15 @@ const PhotoEncryption = () => {
             <DecryptPhotoForm onDecrypt={setDecryptedContent} />
             
             {decryptedContent && (
-              <Card className="p-4">
+              <Card className="p-4 relative">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-2 top-2"
+                  onClick={() => setDecryptedContent(null)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
                 <div className="flex justify-center items-center">
                   <img
                     src={`data:image/jpeg;base64,${decryptedContent}`}

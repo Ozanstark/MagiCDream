@@ -3,7 +3,7 @@ import { Card } from "../ui/card";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { Eye } from "lucide-react";
+import { Eye, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { decryptMessage } from "@/utils/encryption";
 
@@ -13,6 +13,7 @@ interface DecryptPhotoFormProps {
 
 const DecryptPhotoForm = ({ onDecrypt }: DecryptPhotoFormProps) => {
   const [decryptInput, setDecryptInput] = useState({ content: "", key: "" });
+  const [showPreview, setShowPreview] = useState(false);
   const { toast } = useToast();
 
   const handleDecrypt = async () => {
@@ -20,6 +21,7 @@ const DecryptPhotoForm = ({ onDecrypt }: DecryptPhotoFormProps) => {
       const decrypted = decryptMessage(decryptInput.content, decryptInput.key);
       onDecrypt(decrypted);
       setDecryptInput({ content: "", key: "" });
+      setShowPreview(true);
       
       toast({
         title: "Başarılı",
@@ -61,8 +63,16 @@ const DecryptPhotoForm = ({ onDecrypt }: DecryptPhotoFormProps) => {
           Fotoğrafı Çöz
         </Button>
       </Card>
-      {decryptInput.content && (
-        <Card className="p-4">
+      {decryptInput.content && showPreview && (
+        <Card className="p-4 relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-2 top-2"
+            onClick={() => setShowPreview(false)}
+          >
+            <X className="h-4 w-4" />
+          </Button>
           <div className="flex justify-center items-center">
             <img
               src={`data:image/jpeg;base64,${decryptInput.content}`}

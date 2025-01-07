@@ -11,32 +11,44 @@ export const useCredits = () => {
     fetchCredits();
     
     // Subscribe to realtime credits updates
-    const { data: { user } } = supabase.auth.getUser();
-    if (!user) return;
+    const setupRealtimeSubscription = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    const channel = supabase
-      .channel('credits_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'profiles',
-          filter: `id=eq.${user.id}`
-        },
-        (payload) => {
-          setCredits(payload.new.credits);
-        }
-      )
-      .subscribe();
+      const channel = supabase
+        .channel('credits_changes')
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'profiles',
+            filter: `id=eq.${user.id}`
+          },
+          (payload) => {
+            setCredits(payload.new.credits);
+          }
+        )
+        .subscribe();
+
+      return channel;
+    };
 
     // Auto refresh credits every 5 minutes
     const refreshInterval = setInterval(() => {
       fetchCredits();
     }, 5 * 60 * 1000); // 5 minutes
 
+    // Setup subscription and store cleanup function
+    let channel: ReturnType<typeof setupRealtimeSubscription>;
+    setupRealtimeSubscription().then(ch => {
+      channel = ch;
+    });
+
     return () => {
-      supabase.removeChannel(channel);
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
       clearInterval(refreshInterval);
     };
   }, []);

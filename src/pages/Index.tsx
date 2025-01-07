@@ -9,9 +9,10 @@ import EmailGenerator from "@/components/EmailGenerator";
 import ParagraphHumanizer from "@/components/ParagraphHumanizer";
 import Translator from "@/components/Translator";
 import BlogIntroGenerator from "@/components/BlogIntroGenerator";
+import EssayHumanizer from "@/components/EssayHumanizer";
 
 const Index = () => {
-  const [mode, setMode] = useState<'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator' | 'blog'>('image');
+  const [mode, setMode] = useState<'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator' | 'blog' | 'essay'>('image');
 
   const getComponent = () => {
     switch (mode) {
@@ -31,6 +32,8 @@ const Index = () => {
         return <Translator />;
       case 'blog':
         return <BlogIntroGenerator />;
+      case 'essay':
+        return <EssayHumanizer />;
       default:
         return <ImageGenerator />;
     }

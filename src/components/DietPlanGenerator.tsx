@@ -9,9 +9,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { Textarea } from "./ui/textarea";
-import { useToast } from "./ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
+
+type ActivityLevel = Database["public"]["Enums"]["activity_level"];
 
 const DietPlanGenerator = () => {
   const { toast } = useToast();
@@ -21,7 +23,7 @@ const DietPlanGenerator = () => {
     gender: "",
     height: "",
     weight: "",
-    activityLevel: "",
+    activityLevel: "" as ActivityLevel,
     dietaryRestrictions: "",
     fitnessGoals: "",
   });
@@ -35,17 +37,37 @@ const DietPlanGenerator = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
-      const { data, error } = await supabase.from("diet_plans").insert({
-        user_id: user.id,
-        age: parseInt(formData.age),
-        gender: formData.gender,
-        height: parseFloat(formData.height),
-        weight: parseFloat(formData.weight),
-        activity_level: formData.activityLevel,
-        dietary_restrictions: formData.dietaryRestrictions.split(",").map(item => item.trim()),
-        fitness_goals: formData.fitnessGoals.split(",").map(item => item.trim()),
-        plan_content: "Your personalized diet plan will appear here..."
-      }).select().single();
+      const response = await supabase.functions.invoke('generate-diet-plan', {
+        body: {
+          age: parseInt(formData.age),
+          gender: formData.gender,
+          height: parseFloat(formData.height),
+          weight: parseFloat(formData.weight),
+          activityLevel: formData.activityLevel,
+          dietaryRestrictions: formData.dietaryRestrictions.split(",").map(item => item.trim()),
+          fitnessGoals: formData.fitnessGoals.split(",").map(item => item.trim()),
+        },
+      });
+
+      if (response.error) throw response.error;
+
+      const { data: { plan } } = response;
+
+      const { data, error } = await supabase
+        .from('diet_plans')
+        .insert({
+          user_id: user.id,
+          age: parseInt(formData.age),
+          gender: formData.gender,
+          height: parseFloat(formData.height),
+          weight: parseFloat(formData.weight),
+          activity_level: formData.activityLevel,
+          dietary_restrictions: formData.dietaryRestrictions.split(",").map(item => item.trim()),
+          fitness_goals: formData.fitnessGoals.split(",").map(item => item.trim()),
+          plan_content: plan,
+        })
+        .select()
+        .single();
 
       if (error) throw error;
 
@@ -132,7 +154,7 @@ const DietPlanGenerator = () => {
           <Label htmlFor="activityLevel">Activity Level</Label>
           <Select
             value={formData.activityLevel}
-            onValueChange={(value) => setFormData({ ...formData, activityLevel: value })}
+            onValueChange={(value) => setFormData({ ...formData, activityLevel: value as ActivityLevel })}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select activity level" />

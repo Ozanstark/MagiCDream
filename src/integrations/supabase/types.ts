@@ -42,6 +42,48 @@ export type Database = {
         }
         Relationships: []
       }
+      diet_plans: {
+        Row: {
+          activity_level: Database["public"]["Enums"]["activity_level"]
+          age: number
+          created_at: string
+          dietary_restrictions: string[]
+          fitness_goals: string[]
+          gender: string
+          height: number
+          id: string
+          plan_content: string
+          user_id: string | null
+          weight: number
+        }
+        Insert: {
+          activity_level: Database["public"]["Enums"]["activity_level"]
+          age: number
+          created_at?: string
+          dietary_restrictions: string[]
+          fitness_goals: string[]
+          gender: string
+          height: number
+          id?: string
+          plan_content: string
+          user_id?: string | null
+          weight: number
+        }
+        Update: {
+          activity_level?: Database["public"]["Enums"]["activity_level"]
+          age?: number
+          created_at?: string
+          dietary_restrictions?: string[]
+          fitness_goals?: string[]
+          gender?: string
+          height?: number
+          id?: string
+          plan_content?: string
+          user_id?: string | null
+          weight?: number
+        }
+        Relationships: []
+      }
       generated_images: {
         Row: {
           created_at: string
@@ -215,6 +257,7 @@ export type Database = {
       }
     }
     Enums: {
+      activity_level: "sedentary" | "moderately_active" | "very_active"
       fitness_level: "beginner" | "intermediate" | "advanced"
       subscription_status: "free" | "premium"
     }

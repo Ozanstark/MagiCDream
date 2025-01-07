@@ -1,25 +1,24 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+};
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { age, gender, height, weight, activityLevel, dietaryRestrictions, fitnessGoals } = await req.json()
+    const { age, gender, height, weight, activityLevel, dietaryRestrictions, fitnessGoals } = await req.json();
 
     // Calculate BMR using Harris-Benedict equation
-    let bmr
+    let bmr;
     if (gender === 'male') {
-      bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age)
+      bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
     } else {
-      bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age)
+      bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
     }
 
     // Calculate TDEE based on activity level
@@ -27,8 +26,8 @@ serve(async (req) => {
       sedentary: 1.2,
       moderately_active: 1.55,
       very_active: 1.9,
-    }
-    const tdee = bmr * activityMultipliers[activityLevel as keyof typeof activityMultipliers]
+    };
+    const tdee = bmr * activityMultipliers[activityLevel as keyof typeof activityMultipliers];
 
     // Generate diet plan based on user inputs
     const plan = `
@@ -80,7 +79,7 @@ Notes:
 - Adjust portions based on hunger and energy levels
 - Consider supplementation based on dietary restrictions
 - Consult with a healthcare provider before starting any new diet plan
-`
+`;
 
     return new Response(
       JSON.stringify({ plan }),
@@ -88,7 +87,7 @@ Notes:
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
       },
-    )
+    );
   } catch (error) {
     return new Response(
       JSON.stringify({ error: error.message }),
@@ -96,6 +95,6 @@ Notes:
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400,
       },
-    )
+    );
   }
-})
+});

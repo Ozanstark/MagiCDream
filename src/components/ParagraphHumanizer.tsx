@@ -5,6 +5,7 @@ import { Card } from "./ui/card";
 import { useToast } from "./ui/use-toast";
 import TextModelSelector from "./TextModelSelector";
 import { AVAILABLE_TEXT_MODELS, TextModelType } from "@/types/text-models";
+import { supabase } from "@/integrations/supabase/client";
 
 const ParagraphHumanizer = () => {
   const [input, setInput] = useState("");
@@ -16,8 +17,8 @@ const ParagraphHumanizer = () => {
   const handleHumanize = async () => {
     if (!input.trim()) {
       toast({
-        title: "Error",
-        description: "Please enter some text to humanize",
+        title: "Hata",
+        description: "Lütfen insansılaştırmak için bir metin girin",
         variant: "destructive",
       });
       return;
@@ -25,23 +26,25 @@ const ParagraphHumanizer = () => {
 
     setIsLoading(true);
     try {
-      // Here we would integrate with an AI model to humanize the text
-      // For now, we'll just simulate the process
-      const humanizedText = input
-        .split(".")
-        .map(sentence => sentence.trim())
-        .filter(Boolean)
-        .join(". ");
+      const { data, error } = await supabase.functions.invoke('humanize-text', {
+        body: {
+          text: input,
+          model: selectedModel.id
+        }
+      });
+
+      if (error) throw error;
       
-      setOutput(humanizedText);
+      setOutput(data.humanizedText);
       toast({
-        title: "Success",
-        description: "Text has been humanized!",
+        title: "Başarılı",
+        description: "Metin başarıyla insansılaştırıldı!",
       });
     } catch (error) {
+      console.error('Error humanizing text:', error);
       toast({
-        title: "Error",
-        description: "Failed to humanize text",
+        title: "Hata",
+        description: "Metin insansılaştırılırken bir hata oluştu",
         variant: "destructive",
       });
     } finally {
@@ -59,7 +62,7 @@ const ParagraphHumanizer = () => {
             disabled={isLoading}
           />
           <Textarea
-            placeholder="Enter your text here..."
+            placeholder="Metninizi buraya girin..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             className="min-h-[200px]"
@@ -69,11 +72,11 @@ const ParagraphHumanizer = () => {
             disabled={isLoading}
             className="w-full"
           >
-            {isLoading ? "Humanizing..." : "Humanize Text"}
+            {isLoading ? "İnsansılaştırılıyor..." : "Metni İnsansılaştır"}
           </Button>
           {output && (
             <div className="mt-4">
-              <h3 className="text-lg font-semibold mb-2">Humanized Output:</h3>
+              <h3 className="text-lg font-semibold mb-2">İnsansılaştırılmış Çıktı:</h3>
               <Card className="p-4 bg-secondary/10">
                 <p className="whitespace-pre-wrap">{output}</p>
               </Card>

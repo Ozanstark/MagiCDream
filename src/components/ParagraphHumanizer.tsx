@@ -6,6 +6,7 @@ import { useToast } from "./ui/use-toast";
 import TextModelSelector from "./TextModelSelector";
 import { AVAILABLE_TEXT_MODELS, TextModelType } from "@/types/text-models";
 import { supabase } from "@/integrations/supabase/client";
+import ComponentHeader from "./shared/ComponentHeader";
 
 const ParagraphHumanizer = () => {
   const [input, setInput] = useState("");
@@ -54,6 +55,10 @@ const ParagraphHumanizer = () => {
 
   return (
     <div className="w-full max-w-4xl space-y-4">
+      <ComponentHeader
+        title="AI Metin İnsansılaştırıcı"
+        description="Yapay zeka tarafından üretilen metinleri doğal ve insan tarafından yazılmış gibi görünecek şekilde dönüştürün."
+      />
       <Card className="p-6">
         <div className="space-y-4">
           <TextModelSelector

@@ -84,6 +84,30 @@ export type Database = {
         }
         Relationships: []
       }
+      encrypted_messages: {
+        Row: {
+          created_at: string
+          decryption_key: string
+          encrypted_content: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          decryption_key: string
+          encrypted_content: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          decryption_key?: string
+          encrypted_content?: string
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       generated_images: {
         Row: {
           created_at: string

@@ -15,40 +15,60 @@ import LinkedInHeadlineGenerator from "@/components/LinkedInHeadlineGenerator";
 import WeddingSpeechGenerator from "@/components/WeddingSpeechGenerator";
 import DietPlanGenerator from "@/components/DietPlanGenerator";
 import WorkoutPlanGenerator from "@/components/WorkoutPlanGenerator";
+import EncryptedMessage from "@/components/EncryptedMessage";
 
 const Index = () => {
-  const [mode, setMode] = useState<'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator' | 'blog' | 'essay' | 'twitter-bio' | 'linkedin' | 'wedding-speech' | 'diet' | 'workout'>('image');
+  const [mode, setMode] = useState<
+    | "image"
+    | "text"
+    | "music"
+    | "tweet"
+    | "instagram"
+    | "email"
+    | "humanizer"
+    | "translator"
+    | "blog"
+    | "essay"
+    | "twitter-bio"
+    | "linkedin"
+    | "wedding-speech"
+    | "diet"
+    | "workout"
+    | "encrypt"
+  >("image");
 
   const getComponent = () => {
     switch (mode) {
-      case 'text':
+      case "text":
         return <TextGenerator />;
-      case 'music':
+      case "music":
         return <MusicGenerator />;
-      case 'tweet':
+      case "tweet":
         return <TweetGenerator />;
-      case 'instagram':
+      case "instagram":
         return <InstagramAnalyzer />;
-      case 'email':
+      case "email":
         return <EmailGenerator />;
-      case 'humanizer':
+      case "humanizer":
         return <ParagraphHumanizer />;
-      case 'translator':
+      case "translator":
         return <Translator />;
-      case 'blog':
+      case "blog":
         return <BlogIntroGenerator />;
-      case 'essay':
+      case "essay":
         return <EssayHumanizer />;
-      case 'twitter-bio':
+      case "twitter-bio":
         return <TwitterBioGenerator />;
-      case 'linkedin':
+      case "linkedin":
         return <LinkedInHeadlineGenerator />;
-      case 'wedding-speech':
+      case "wedding-speech":
         return <WeddingSpeechGenerator />;
-      case 'diet':
+      case "diet":
         return <DietPlanGenerator />;
-      case 'workout':
+      case "workout":
         return <WorkoutPlanGenerator />;
+      case "encrypt":
+        return <EncryptedMessage />;
       default:
         return <ImageGenerator />;
     }
@@ -57,9 +77,7 @@ const Index = () => {
   return (
     <div className="min-h-screen p-4 md:p-8 flex flex-col items-center gap-4 relative">
       <ModeSwitcher mode={mode} onModeChange={setMode} />
-      <div className="ml-64">
-        {getComponent()}
-      </div>
+      <div className="ml-64">{getComponent()}</div>
     </div>
   );
 };

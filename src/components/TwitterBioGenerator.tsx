@@ -28,7 +28,9 @@ const TwitterBioGenerator = () => {
       return;
     }
 
+    console.log('Checking credits before Twitter Bio generation...');
     const canProceed = await checkTwitterBio();
+    console.log('Credit check result:', canProceed);
     if (!canProceed) return;
 
     setIsLoading(true);
@@ -55,6 +57,7 @@ const TwitterBioGenerator = () => {
 
       if (typeof data === 'string') {
         setResponse(data.trim());
+        console.log('Bio generated successfully, credits should be deducted');
       } else {
         console.error('Unexpected response format:', data);
         throw new Error('Unexpected response format from server');

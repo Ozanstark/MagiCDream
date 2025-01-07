@@ -1,66 +1,35 @@
-import { Image, MessageSquareText, Music4, Twitter, Instagram, Mail } from "lucide-react";
+import { Image, MessageSquareText, Music4, Twitter, Instagram, Mail, FileText } from "lucide-react";
 import { Button } from "./ui/button";
 
 interface ModeSwitcherProps {
-  mode: 'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email';
-  onModeChange: (mode: 'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email') => void;
+  mode: 'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email' | 'humanizer';
+  onModeChange: (mode: 'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email' | 'humanizer') => void;
 }
 
 const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
+  const modes = [
+    { id: 'image', icon: Image, label: 'Image Generator' },
+    { id: 'text', icon: MessageSquareText, label: 'Text Generator' },
+    { id: 'music', icon: Music4, label: 'Music Generator' },
+    { id: 'tweet', icon: Twitter, label: 'Tweet Generator' },
+    { id: 'instagram', icon: Instagram, label: 'Instagram Analysis' },
+    { id: 'email', icon: Mail, label: 'Email Generator' },
+    { id: 'humanizer', icon: FileText, label: 'AI Paragraph Humanizer' },
+  ] as const;
+
   return (
-    <div className="flex gap-2 absolute left-4 top-4">
-      <Button
-        variant={mode === 'image' ? 'default' : 'outline'}
-        size="icon"
-        onClick={() => onModeChange('image')}
-        className="w-10 h-10"
-      >
-        <Image className="h-5 w-5" />
-      </Button>
-      <Button
-        variant={mode === 'text' ? 'default' : 'outline'}
-        size="icon"
-        onClick={() => onModeChange('text')}
-        className="w-10 h-10"
-      >
-        <MessageSquareText className="h-5 w-5" />
-      </Button>
-      <Button
-        variant={mode === 'music' ? 'default' : 'outline'}
-        size="icon"
-        onClick={() => onModeChange('music')}
-        className="w-10 h-10"
-        title="Generate Music"
-      >
-        <Music4 className="h-5 w-5" />
-      </Button>
-      <Button
-        variant={mode === 'tweet' ? 'default' : 'outline'}
-        size="icon"
-        onClick={() => onModeChange('tweet')}
-        className="w-10 h-10"
-        title="Generate Tweet"
-      >
-        <Twitter className="h-5 w-5" />
-      </Button>
-      <Button
-        variant={mode === 'instagram' ? 'default' : 'outline'}
-        size="icon"
-        onClick={() => onModeChange('instagram')}
-        className="w-10 h-10"
-        title="Instagram Analysis"
-      >
-        <Instagram className="h-5 w-5" />
-      </Button>
-      <Button
-        variant={mode === 'email' ? 'default' : 'outline'}
-        size="icon"
-        onClick={() => onModeChange('email')}
-        className="w-10 h-10"
-        title="Email Generator"
-      >
-        <Mail className="h-5 w-5" />
-      </Button>
+    <div className="fixed left-4 top-4 flex flex-col gap-2 bg-card p-4 rounded-lg shadow-lg">
+      {modes.map((item) => (
+        <Button
+          key={item.id}
+          variant={mode === item.id ? 'default' : 'outline'}
+          onClick={() => onModeChange(item.id)}
+          className="flex items-center justify-start gap-2 w-full"
+        >
+          <item.icon className="h-5 w-5" />
+          <span>{item.label}</span>
+        </Button>
+      ))}
     </div>
   );
 };

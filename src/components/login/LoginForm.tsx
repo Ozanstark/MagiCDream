@@ -3,14 +3,14 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
-import { AuthChangeEvent } from "@supabase/supabase-js";
+import { AuthChangeEvent, Session } from "@supabase/supabase-js";
 
 export const LoginForm = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
-      if (event === "DELETED") {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
+      if (event === "SIGNED_OUT") {
         toast({
           variant: "destructive",
           title: "Hesap silindi",

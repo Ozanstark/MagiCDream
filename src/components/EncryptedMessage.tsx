@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { MessageInputForm } from "./MessageInputForm";
 import { EncryptedMessagesList } from "./EncryptedMessagesList";
 import { useNavigate } from "react-router-dom";
+import ComponentHeader from "./shared/ComponentHeader";
 
 const EncryptedMessage = () => {
   const [decryptKey, setDecryptKey] = useState("");
@@ -45,6 +46,11 @@ const EncryptedMessage = () => {
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 p-6">
+      <ComponentHeader
+        title="Mesaj Şifreleme"
+        description="Mesajlarınızı güvenli bir şekilde şifreleyin ve paylaşın. Mesajlarınız sadece şifre anahtarına sahip kişiler tarafından okunabilir."
+      />
+      
       <MessageInputForm
         onMessageEncrypted={handleMessageEncrypted}
         onSuccess={() => {}}

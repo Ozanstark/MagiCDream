@@ -9,6 +9,7 @@ import { decryptMessage } from "@/utils/encryption";
 import type { EncryptedPhoto, DeletionType } from "@/types/encrypted-content";
 import DecryptPhotoForm from "./photo-encryption/DecryptPhotoForm";
 import PhotoList from "./photo-encryption/PhotoList";
+import ComponentHeader from "./shared/ComponentHeader";
 
 const PhotoEncryption = () => {
   const [encryptedPhotos, setEncryptedPhotos] = useState<EncryptedPhoto[]>([]);
@@ -61,6 +62,10 @@ const PhotoEncryption = () => {
   return (
     <PremiumFeature>
       <div className="space-y-4">
+        <ComponentHeader
+          title="Fotoğraf Şifreleme"
+          description="Fotoğraflarınızı güvenli bir şekilde şifreleyin ve paylaşın. Fotoğraflarınız sadece şifre anahtarına sahip kişiler tarafından görüntülenebilir."
+        />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Left Column - Decrypt Form */}
           <div className="space-y-4">

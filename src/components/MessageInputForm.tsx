@@ -26,6 +26,18 @@ export const MessageInputForm = ({ onMessageEncrypted, onSuccess }: MessageInput
     }
 
     try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: "Hata",
+          description: "Mesaj göndermek için giriş yapmalısınız",
+          variant: "destructive",
+        });
+        return;
+      }
+
       // Generate a random key
       const key = Math.random().toString(36).substring(7);
       console.log("Generated key:", key);
@@ -37,6 +49,7 @@ export const MessageInputForm = ({ onMessageEncrypted, onSuccess }: MessageInput
       const { error } = await supabase.from("encrypted_messages").insert({
         encrypted_content: encrypted,
         decryption_key: key,
+        user_id: user.id // Set the user_id when inserting
       });
 
       if (error) {

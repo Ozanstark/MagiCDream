@@ -13,40 +13,15 @@ const EncryptedMessage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Check if user is authenticated
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/login");
-    }
-  };
-
-  // Call checkAuth when component mounts
   useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const { data: messages, refetch } = useQuery({
-    queryKey: ["encrypted-messages"],
-    queryFn: async () => {
+    const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         navigate("/login");
-        return [];
       }
-
-      const { data, error } = await supabase
-        .from("encrypted_messages")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        console.error("Error fetching messages:", error);
-        throw error;
-      }
-      return data;
-    },
-  });
+    };
+    checkAuth();
+  }, [navigate]);
 
   const copyKey = () => {
     navigator.clipboard.writeText(decryptKey);
@@ -56,15 +31,10 @@ const EncryptedMessage = () => {
     });
   };
 
-  const handleMessageDecrypted = (messageId: string) => {
-    refetch();
-  };
-
   return (
     <div className="max-w-2xl mx-auto space-y-8 p-6">
       <MessageInputForm
         onMessageEncrypted={setDecryptKey}
-        onSuccess={refetch}
       />
       
       {decryptKey && (
@@ -79,12 +49,7 @@ const EncryptedMessage = () => {
         </div>
       )}
 
-      {messages && messages.length > 0 && (
-        <EncryptedMessagesList 
-          messages={messages}
-          onMessageDecrypted={handleMessageDecrypted}
-        />
-      )}
+      <EncryptedMessagesList messages={[]} onMessageDecrypted={() => {}} />
     </div>
   );
 };

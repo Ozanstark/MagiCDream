@@ -19,6 +19,8 @@ serve(async (req) => {
       throw new Error('OpenAI API key not found');
     }
 
+    console.log('Sending prompt to OpenAI:', prompt);
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -41,12 +43,18 @@ serve(async (req) => {
     });
 
     const data = await response.json();
+    console.log('OpenAI response:', data);
+
+    if (!data.choices?.[0]?.message?.content) {
+      throw new Error('Invalid response from OpenAI');
+    }
+
     const generatedText = data.choices[0].message.content;
 
     return new Response(
-      JSON.stringify({ generatedText }),
+      generatedText,
       {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, 'Content-Type': 'text/plain' },
       }
     );
   } catch (error) {

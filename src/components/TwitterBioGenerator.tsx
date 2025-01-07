@@ -40,14 +40,21 @@ const TwitterBioGenerator = () => {
       
       Make it engaging, concise, and memorable. Include relevant emojis if appropriate.`;
 
+      console.log('Sending prompt:', prompt);
+
       const { data, error } = await supabase.functions.invoke('generate-text', {
         body: { prompt },
       });
 
-      if (error) throw error;
+      console.log('Response from edge function:', { data, error });
 
-      if (data && typeof data === 'string') {
-        setResponse(data);
+      if (error) {
+        console.error('Edge function error:', error);
+        throw error;
+      }
+
+      if (typeof data === 'string') {
+        setResponse(data.trim());
       } else {
         console.error('Unexpected response format:', data);
         throw new Error('Unexpected response format from server');

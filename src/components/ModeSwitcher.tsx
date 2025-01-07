@@ -33,13 +33,20 @@ const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
           key={item.id}
           variant={mode === item.id ? 'default' : 'outline'}
           onClick={() => onModeChange(item.id)}
-          className="flex items-center justify-start gap-2 w-full"
+          className="flex items-center justify-start gap-2 w-full relative group"
         >
           <item.icon className="h-5 w-5" />
           <span className="flex items-center gap-2">
             {item.label}
             {item.isPremium && (
-              <Crown className="h-4 w-4 text-yellow-500" />
+              <div className="relative">
+                <Crown className="h-4 w-4 text-yellow-500" />
+                <img 
+                  src="/lovable-uploads/6e858f00-7860-4b5f-b35a-7a25c98a71ff.png"
+                  alt="WOW effect"
+                  className="absolute -top-3 -right-3 w-6 h-6 transform rotate-12 opacity-90 group-hover:scale-110 transition-transform"
+                />
+              </div>
             )}
           </span>
         </Button>

@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
 import { Wand2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useApiLimits } from "@/hooks/useApiLimits";
 import { supabase } from "@/integrations/supabase/client";
+import BioForm from "./twitter-bio/BioForm";
+import GeneratedBio from "./twitter-bio/GeneratedBio";
 
 const TwitterBioGenerator = () => {
   const [username, setUsername] = useState("");
@@ -96,35 +96,14 @@ const TwitterBioGenerator = () => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <label className="text-lg font-semibold">Name/Username</label>
-          <Input
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="@techexpert"
-            className="input-premium"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-lg font-semibold">Interests/Expertise</label>
-          <Textarea
-            value={interests}
-            onChange={(e) => setInterests(e.target.value)}
-            placeholder="Software engineering, AI, tech entrepreneurship"
-            className="input-premium min-h-[100px]"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-lg font-semibold">Tone of voice</label>
-          <Input
-            value={tone}
-            onChange={(e) => setTone(e.target.value)}
-            placeholder="professional, friendly, tech-savvy"
-            className="input-premium"
-          />
-        </div>
+        <BioForm
+          username={username}
+          interests={interests}
+          tone={tone}
+          onUsernameChange={setUsername}
+          onInterestsChange={setInterests}
+          onToneChange={setTone}
+        />
 
         <Button
           type="submit"
@@ -142,25 +121,7 @@ const TwitterBioGenerator = () => {
         </Button>
       </form>
 
-      {response && (
-        <div className="mt-6 p-4 bg-card rounded-lg border border-primary/20">
-          <h2 className="text-lg font-semibold mb-2">Generated Bio:</h2>
-          <p className="whitespace-pre-wrap">{response}</p>
-          <Button
-            onClick={() => {
-              navigator.clipboard.writeText(response);
-              toast({
-                title: "Copied!",
-                description: "Bio copied to clipboard",
-              });
-            }}
-            variant="outline"
-            className="mt-4"
-          >
-            Copy to Clipboard
-          </Button>
-        </div>
-      )}
+      <GeneratedBio bio={response} />
     </div>
   );
 };

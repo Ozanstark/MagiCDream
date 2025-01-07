@@ -1,9 +1,9 @@
-import { Image, MessageSquareText, Music4, Twitter, Instagram, Mail, FileText, Globe, Crown, BookOpen, PenTool } from "lucide-react";
+import { Image, MessageSquareText, Music4, Twitter, Instagram, Mail, FileText, Globe, Crown, BookOpen, PenTool, UserCircle } from "lucide-react";
 import { Button } from "./ui/button";
 
 interface ModeSwitcherProps {
-  mode: 'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator' | 'blog' | 'essay';
-  onModeChange: (mode: 'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator' | 'blog' | 'essay') => void;
+  mode: 'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator' | 'blog' | 'essay' | 'twitter-bio';
+  onModeChange: (mode: 'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator' | 'blog' | 'essay' | 'twitter-bio') => void;
 }
 
 const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
@@ -12,6 +12,7 @@ const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
     { id: 'text', icon: MessageSquareText, label: 'Text Generator', isPremium: true },
     { id: 'blog', icon: BookOpen, label: 'Blog Intro Generator', isPremium: true },
     { id: 'essay', icon: PenTool, label: 'Essay Humanizer', isPremium: true },
+    { id: 'twitter-bio', icon: UserCircle, label: 'Twitter Bio Generator', isPremium: true },
     { id: 'music', icon: Music4, label: 'Music Generator', isPremium: false },
     { id: 'tweet', icon: Twitter, label: 'Tweet Generator', isPremium: true },
     { id: 'instagram', icon: Instagram, label: 'Instagram Analysis', isPremium: false },

@@ -4,11 +4,13 @@ import { Textarea } from "./ui/textarea";
 import { Card } from "./ui/card";
 import { useToast } from "./ui/use-toast";
 import TextModelSelector from "./TextModelSelector";
+import { AVAILABLE_TEXT_MODELS, TextModelType } from "@/types/text-models";
 
 const ParagraphHumanizer = () => {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<TextModelType>(AVAILABLE_TEXT_MODELS[0]);
   const { toast } = useToast();
 
   const handleHumanize = async () => {
@@ -51,7 +53,11 @@ const ParagraphHumanizer = () => {
     <div className="w-full max-w-4xl space-y-4">
       <Card className="p-6">
         <div className="space-y-4">
-          <TextModelSelector />
+          <TextModelSelector
+            selectedModel={selectedModel}
+            onModelChange={setSelectedModel}
+            disabled={isLoading}
+          />
           <Textarea
             placeholder="Enter your text here..."
             value={input}

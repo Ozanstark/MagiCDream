@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Copy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,7 +22,7 @@ const EncryptedMessage = () => {
   };
 
   // Call checkAuth when component mounts
-  useState(() => {
+  useEffect(() => {
     checkAuth();
   }, []);
 

@@ -117,6 +117,39 @@ export type Database = {
         }
         Relationships: []
       }
+      encrypted_photos: {
+        Row: {
+          created_at: string
+          decryption_count: number | null
+          decryption_key: string
+          deletion_time: string | null
+          deletion_type: string
+          encrypted_content: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          decryption_count?: number | null
+          decryption_key: string
+          deletion_time?: string | null
+          deletion_type?: string
+          encrypted_content: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          decryption_count?: number | null
+          decryption_key?: string
+          deletion_time?: string | null
+          deletion_type?: string
+          encrypted_content?: string
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       generated_images: {
         Row: {
           created_at: string

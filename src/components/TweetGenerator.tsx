@@ -5,17 +5,26 @@ import TweetInput from "./tweet/TweetInput";
 import TweetOutput from "./tweet/TweetOutput";
 
 const TweetGenerator = () => {
-  const [tweetContent, setTweetContent] = useState("");
+  const [topic, setTopic] = useState("");
+  const [description, setDescription] = useState("");
   const [generatedTweet, setGeneratedTweet] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const handleGenerateTweet = async () => {
-    setIsLoading(true);
+    setIsGenerating(true);
     // Simulate an API call to generate a tweet
     setTimeout(() => {
-      setGeneratedTweet(`Generated Tweet: ${tweetContent}`);
-      setIsLoading(false);
+      setGeneratedTweet(`Generated Tweet based on topic: ${topic} and description: ${description}`);
+      setIsGenerating(false);
     }, 1000);
+  };
+
+  const handleTweetChange = (value: string) => {
+    setGeneratedTweet(value);
+  };
+
+  const handleCopyTweet = () => {
+    navigator.clipboard.writeText(generatedTweet);
   };
 
   return (
@@ -27,12 +36,18 @@ const TweetGenerator = () => {
       
       <TweetHeader />
       <TweetInput 
-        value={tweetContent} 
-        onChange={(e) => setTweetContent(e.target.value)} 
-        onGenerate={handleGenerateTweet} 
-        isLoading={isLoading} 
+        topic={topic}
+        description={description}
+        isGenerating={isGenerating}
+        onTopicChange={(e) => setTopic(e.target.value)}
+        onDescriptionChange={(e) => setDescription(e.target.value)}
+        onGenerate={handleGenerateTweet}
       />
-      <TweetOutput generatedTweet={generatedTweet} />
+      <TweetOutput 
+        tweet={generatedTweet}
+        onTweetChange={handleTweetChange}
+        onCopy={handleCopyTweet}
+      />
     </div>
   );
 };

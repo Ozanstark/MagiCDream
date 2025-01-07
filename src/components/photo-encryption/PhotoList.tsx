@@ -1,4 +1,5 @@
 import { Card } from "../ui/card";
+import { Eye } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { EncryptedPhoto } from "@/types/encrypted-content";
@@ -41,7 +42,10 @@ const PhotoList = ({ photos, onPhotoDeleted, onPhotoEncrypted }: PhotoListProps)
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold text-white">Fotoğraflarım</h2>
+      <div className="flex items-center gap-2">
+        <h2 className="text-2xl font-bold text-white">Fotoğraflarım</h2>
+        <Eye className="w-6 h-6 text-primary animate-pulse" />
+      </div>
       <Card className="p-4 space-y-4">
         <PhotoUploadForm onPhotoEncrypted={onPhotoEncrypted} />
       </Card>

@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const TextGenerator = () => {
   const [prompt, setPrompt] = useState("");
+  const [generatedText, setGeneratedText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -29,8 +30,7 @@ const TextGenerator = () => {
 
       if (error) throw error;
 
-      // Handle the generated text (e.g., display it)
-      console.log(data);
+      setGeneratedText(data.generatedText);
       toast({
         title: "Success!",
         description: "Text generated successfully.",
@@ -63,6 +63,20 @@ const TextGenerator = () => {
       <Button onClick={handleGenerate} disabled={isLoading} className="w-full">
         {isLoading ? "Generating..." : "Generate Text"}
       </Button>
+
+      {generatedText && (
+        <div className="mt-6 p-4 bg-card rounded-lg border border-border/20">
+          <h2 className="text-lg font-semibold mb-2">Generated Text:</h2>
+          <p className="whitespace-pre-wrap">{generatedText}</p>
+          <Button
+            onClick={() => navigator.clipboard.writeText(generatedText)}
+            variant="outline"
+            className="mt-4"
+          >
+            Copy to Clipboard
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

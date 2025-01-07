@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import PremiumFeature from "./PremiumFeature";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { decryptMessage } from "@/utils/encryption";
 import type { EncryptedPhoto, DeletionType } from "@/types/encrypted-content";
 import DecryptPhotoForm from "./photo-encryption/DecryptPhotoForm";
 import PhotoList from "./photo-encryption/PhotoList";
@@ -44,31 +45,17 @@ const PhotoEncryption = () => {
   }, []);
 
   const handlePhotoView = (content: string, key: string) => {
-    setDecryptedContent(null); // Reset any existing decrypted content
-    const formData = new FormData();
-    formData.append('encryptedContent', content);
-    formData.append('decryptionKey', key);
-    
-    // Use the existing DecryptPhotoForm's onDecrypt functionality
-    fetch('/api/decrypt-photo', {
-      method: 'POST',
-      body: formData,
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data.error) {
-          throw new Error(data.error);
-        }
-        setDecryptedContent(data.decryptedContent);
-      })
-      .catch(error => {
-        console.error('Decryption error:', error);
-        toast({
-          title: "Hata",
-          description: "Fotoğraf çözümlenirken bir hata oluştu",
-          variant: "destructive",
-        });
+    try {
+      const decrypted = decryptMessage(content, key);
+      setDecryptedContent(decrypted);
+    } catch (error) {
+      console.error('Decryption error:', error);
+      toast({
+        title: "Hata",
+        description: "Fotoğraf çözümlenirken bir hata oluştu",
+        variant: "destructive",
       });
+    }
   };
 
   return (

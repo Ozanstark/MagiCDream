@@ -11,7 +11,7 @@ const TextGenerator = () => {
   const [response, setResponse] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { checkTextGenerationLimit, recordTextGeneration } = useApiLimits();
+  const { checkTextGeneration } = useApiLimits();
 
   const generateText = async () => {
     if (!prompt.trim()) {
@@ -23,14 +23,8 @@ const TextGenerator = () => {
       return;
     }
 
-    if (!checkTextGenerationLimit()) {
-      toast({
-        title: "Rate Limit",
-        description: "Dakikada en fazla 5 metin oluşturabilirsiniz. Lütfen biraz bekleyin.",
-        variant: "destructive",
-      });
-      return;
-    }
+    const canProceed = await checkTextGeneration();
+    if (!canProceed) return;
 
     setIsLoading(true);
     try {
@@ -69,8 +63,6 @@ const TextGenerator = () => {
         output += value;
         setResponse(output);
       }
-
-      recordTextGeneration();
     } catch (error) {
       console.error("Text generation error:", error);
       toast({

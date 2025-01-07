@@ -62,7 +62,11 @@ export const useApiLimits = () => {
       const hasEnoughCredits = await checkCredits(amount);
       if (!hasEnoughCredits) return false;
 
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
       const { error } = await supabase.rpc('update_user_credits', {
+        user_id: user.id,
         amount: -amount,
         action_type: actionType,
         description: `Used ${amount} credits for ${actionType}`

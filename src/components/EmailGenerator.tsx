@@ -18,7 +18,7 @@ const EmailGenerator = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedModel, setSelectedModel] = useState<TextModelType>(AVAILABLE_TEXT_MODELS[0]);
   const { toast } = useToast();
-  const { checkTextGenerationLimit, recordTextGeneration } = useApiLimits();
+  const { checkEmailGeneration } = useApiLimits();
 
   const generateEmail = async () => {
     if (!content.trim()) {
@@ -30,14 +30,8 @@ const EmailGenerator = () => {
       return;
     }
 
-    if (!checkTextGenerationLimit()) {
-      toast({
-        title: "Rate Limit",
-        description: "Dakikada en fazla 5 metin oluşturabilirsiniz. Lütfen biraz bekleyin.",
-        variant: "destructive",
-      });
-      return;
-    }
+    const canProceed = await checkEmailGeneration();
+    if (!canProceed) return;
 
     setIsLoading(true);
     try {
@@ -69,7 +63,6 @@ Lütfen aşağıdaki formatta düzenle:
           setResponse(output);
         }
       }
-      recordTextGeneration();
     } catch (error) {
       toast({
         title: "Hata",

@@ -5,7 +5,6 @@ import { Textarea } from "./ui/textarea";
 import { Wand2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useApiLimits } from "@/hooks/useApiLimits";
-import { supabase } from "@/integrations/supabase/client";
 
 const TwitterBioGenerator = () => {
   const [username, setUsername] = useState("");
@@ -14,7 +13,7 @@ const TwitterBioGenerator = () => {
   const [response, setResponse] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { recordTextGeneration } = useApiLimits();
+  const { checkTwitterBio } = useApiLimits();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,6 +25,9 @@ const TwitterBioGenerator = () => {
       });
       return;
     }
+
+    const canProceed = await checkTwitterBio();
+    if (!canProceed) return;
 
     setIsLoading(true);
     try {
@@ -71,8 +73,6 @@ const TwitterBioGenerator = () => {
         output += value;
         setResponse(output);
       }
-
-      recordTextGeneration();
     } catch (error) {
       console.error("Bio generation error:", error);
       toast({

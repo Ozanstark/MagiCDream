@@ -14,7 +14,7 @@ const BlogIntroGenerator = () => {
   const [response, setResponse] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { recordTextGeneration } = useApiLimits();
+  const { checkBlogIntro } = useApiLimits();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,6 +26,9 @@ const BlogIntroGenerator = () => {
       });
       return;
     }
+
+    const canProceed = await checkBlogIntro();
+    if (!canProceed) return;
 
     setIsLoading(true);
     try {
@@ -71,8 +74,6 @@ const BlogIntroGenerator = () => {
         output += value;
         setResponse(output);
       }
-
-      recordTextGeneration();
     } catch (error) {
       console.error("Blog intro generation error:", error);
       toast({

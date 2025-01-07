@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { encryptMessage } from "@/utils/encryption";
 
 interface MessageInputFormProps {
-  onMessageEncrypted: (key: string) => void;
+  onMessageEncrypted: (key: string, message: string) => void;
   onSuccess: () => void;
 }
 
@@ -59,11 +59,11 @@ export const MessageInputForm = ({ onMessageEncrypted, onSuccess }: MessageInput
 
       toast({
         title: "Başarılı",
-        description: "Mesajınız şifrelendi ve kaydedildi",
+        description: "Mesajınız şifrelendi",
       });
 
       setMessage("");
-      onMessageEncrypted(key);
+      onMessageEncrypted(key, encrypted);
       onSuccess();
     } catch (error) {
       console.error("Encryption error:", error);

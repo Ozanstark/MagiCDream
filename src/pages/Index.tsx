@@ -17,6 +17,7 @@ import DietPlanGenerator from "@/components/DietPlanGenerator";
 import WorkoutPlanGenerator from "@/components/WorkoutPlanGenerator";
 import EncryptedMessage from "@/components/EncryptedMessage";
 import PhotoEncryption from "@/components/PhotoEncryption";
+import Credits from "@/components/Credits";
 
 const Index = () => {
   const [mode, setMode] = useState<
@@ -80,6 +81,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen p-4 md:p-8 flex flex-col items-center gap-4 relative">
+      <div className="fixed top-4 right-4 z-50">
+        <Credits />
+      </div>
       <ModeSwitcher mode={mode} onModeChange={setMode} />
       <div className="ml-64">{getComponent()}</div>
     </div>

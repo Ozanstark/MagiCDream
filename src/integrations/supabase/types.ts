@@ -42,6 +42,33 @@ export type Database = {
         }
         Relationships: []
       }
+      credits_log: {
+        Row: {
+          action_type: string
+          amount: number
+          created_at: string
+          description: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          amount: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          amount?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       diet_plans: {
         Row: {
           activity_level: Database["public"]["Enums"]["activity_level"]
@@ -189,18 +216,21 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
+          credits: number
           id: string
           subscription_status: Database["public"]["Enums"]["subscription_status"]
           updated_at: string
         }
         Insert: {
           created_at?: string
+          credits?: number
           id: string
           subscription_status?: Database["public"]["Enums"]["subscription_status"]
           updated_at?: string
         }
         Update: {
           created_at?: string
+          credits?: number
           id?: string
           subscription_status?: Database["public"]["Enums"]["subscription_status"]
           updated_at?: string
@@ -320,6 +350,15 @@ export type Database = {
           num_tweets?: number
         }
         Returns: string[]
+      }
+      update_user_credits: {
+        Args: {
+          user_id: string
+          amount: number
+          action_type: string
+          description?: string
+        }
+        Returns: number
       }
     }
     Enums: {

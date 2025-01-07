@@ -2,7 +2,6 @@ import { useState } from "react";
 import ModeSwitcher from "@/components/ModeSwitcher";
 import TextGenerator from "@/components/TextGenerator";
 import ImageGenerator from "@/components/ImageGenerator";
-import MusicGenerator from "@/components/MusicGenerator";
 import TweetGenerator from "@/components/TweetGenerator";
 import InstagramAnalyzer from "@/components/InstagramAnalyzer";
 import EmailGenerator from "@/components/EmailGenerator";
@@ -23,7 +22,6 @@ const Index = () => {
   const [mode, setMode] = useState<
     | "image"
     | "text"
-    | "music"
     | "tweet"
     | "instagram"
     | "email"
@@ -44,8 +42,6 @@ const Index = () => {
     switch (mode) {
       case "text":
         return <TextGenerator />;
-      case "music":
-        return <MusicGenerator />;
       case "tweet":
         return <TweetGenerator />;
       case "instagram":

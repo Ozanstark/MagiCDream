@@ -1,9 +1,9 @@
-import { Image, MessageSquareText, Music4, Twitter, Instagram, Mail, FileText, Globe, Crown, BookOpen, PenTool, UserCircle, Linkedin, Heart, Salad, Dumbbell, Lock } from "lucide-react";
+import { Image, MessageSquareText, Twitter, Instagram, Mail, FileText, Globe, Crown, BookOpen, PenTool, UserCircle, Linkedin, Heart, Salad, Dumbbell, Lock } from "lucide-react";
 import { Button } from "./ui/button";
 
 interface ModeSwitcherProps {
-  mode: 'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator' | 'blog' | 'essay' | 'twitter-bio' | 'linkedin' | 'wedding-speech' | 'diet' | 'workout' | 'encrypt' | 'photo-encrypt';
-  onModeChange: (mode: 'image' | 'text' | 'music' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator' | 'blog' | 'essay' | 'twitter-bio' | 'linkedin' | 'wedding-speech' | 'diet' | 'workout' | 'encrypt' | 'photo-encrypt') => void;
+  mode: 'image' | 'text' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator' | 'blog' | 'essay' | 'twitter-bio' | 'linkedin' | 'wedding-speech' | 'diet' | 'workout' | 'encrypt' | 'photo-encrypt';
+  onModeChange: (mode: 'image' | 'text' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator' | 'blog' | 'essay' | 'twitter-bio' | 'linkedin' | 'wedding-speech' | 'diet' | 'workout' | 'encrypt' | 'photo-encrypt') => void;
 }
 
 const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
@@ -17,7 +17,6 @@ const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
     { id: 'wedding-speech', icon: Heart, label: 'Wedding Speech Generator', showWow: false, isPremium: false },
     { id: 'diet', icon: Salad, label: 'Diet Plan Generator', showWow: true, isPremium: true },
     { id: 'workout', icon: Dumbbell, label: 'Workout Plan Generator', showWow: true, isPremium: true },
-    { id: 'music', icon: Music4, label: 'Music Generator', showWow: false, isPremium: false },
     { id: 'tweet', icon: Twitter, label: 'Tweet Generator', showWow: false, isPremium: false },
     { id: 'instagram', icon: Instagram, label: 'Instagram Analysis', showWow: true, isPremium: true },
     { id: 'email', icon: Mail, label: 'Email Generator', showWow: false, isPremium: false },

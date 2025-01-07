@@ -6,6 +6,7 @@ import { useApiLimits } from "@/hooks/useApiLimits";
 import { supabase } from "@/integrations/supabase/client";
 import BioForm from "./twitter-bio/BioForm";
 import GeneratedBio from "./twitter-bio/GeneratedBio";
+import ComponentHeader from "./shared/ComponentHeader";
 
 const TwitterBioGenerator = () => {
   const [username, setUsername] = useState("");
@@ -88,12 +89,10 @@ const TwitterBioGenerator = () => {
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6">
-      <div className="space-y-2">
-        <h1 className="text-4xl font-bold text-center mb-4">Twitter Bio Generator</h1>
-        <p className="text-muted-foreground text-center">
-          Create a compelling Twitter bio that captures your essence in 160 characters.
-        </p>
-      </div>
+      <ComponentHeader
+        title="Twitter Bio Generator"
+        description="Create a compelling Twitter bio that captures your essence in 160 characters."
+      />
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <BioForm

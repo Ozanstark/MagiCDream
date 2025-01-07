@@ -8,6 +8,7 @@ import { uploadImageToStorage } from "@/utils/imageStorage";
 import GeneratorHeader from "./generator/GeneratorHeader";
 import GeneratorControls from "./generator/GeneratorControls";
 import { useGeneratedImages } from "@/hooks/useGeneratedImages";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AdvancedSettingsConfig {
   guidance_scale?: number;
@@ -53,6 +54,27 @@ const ImageGenerator = () => {
     }
   };
 
+  const consumeCredits = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await supabase.rpc('update_user_credits', {
+      user_id: user.id,
+      amount: -20, // Deduct 20 credits for image generation
+      action_type: 'image_generation',
+      description: `Generated image with prompt: ${prompt}`
+    });
+
+    if (error) {
+      console.error('Error consuming credits:', error);
+      toast({
+        title: "Error",
+        description: "Failed to consume credits",
+        variant: "destructive",
+      });
+    }
+  };
+
   const generateImage = async () => {
     if (!prompt.trim()) {
       toast({
@@ -93,6 +115,9 @@ const ImageGenerator = () => {
       const isNSFW = false;
 
       const { publicUrl } = await uploadImageToStorage(blob, prompt, selectedModel.id, isNSFW);
+
+      // Consume credits after successful generation
+      await consumeCredits();
 
       const newImage = {
         url: publicUrl,

@@ -61,6 +61,17 @@ const DecryptPhotoForm = ({ onDecrypt }: DecryptPhotoFormProps) => {
           Fotoğrafı Çöz
         </Button>
       </Card>
+      {decryptInput.content && (
+        <Card className="p-4">
+          <div className="flex justify-center items-center">
+            <img
+              src={`data:image/jpeg;base64,${decryptInput.content}`}
+              alt="Decrypted"
+              className="max-w-[400px] max-h-[400px] w-auto h-auto object-contain rounded-lg"
+            />
+          </div>
+        </Card>
+      )}
     </div>
   );
 };

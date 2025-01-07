@@ -51,11 +51,13 @@ const PhotoEncryption = () => {
             
             {decryptedContent && (
               <Card className="p-4">
-                <img
-                  src={`data:image/jpeg;base64,${decryptedContent}`}
-                  alt="Decrypted"
-                  className="w-full h-auto rounded-lg"
-                />
+                <div className="flex justify-center items-center">
+                  <img
+                    src={`data:image/jpeg;base64,${decryptedContent}`}
+                    alt="Decrypted"
+                    className="max-w-[400px] max-h-[400px] w-auto h-auto object-contain rounded-lg"
+                  />
+                </div>
               </Card>
             )}
           </div>

@@ -8,22 +8,22 @@ interface ModeSwitcherProps {
 
 const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
   const modes = [
-    { id: 'image', icon: Image, label: 'Image Generator', isPremium: false },
-    { id: 'text', icon: MessageSquareText, label: 'Text Generator', isPremium: true },
-    { id: 'blog', icon: BookOpen, label: 'Blog Intro Generator', isPremium: true },
-    { id: 'essay', icon: PenTool, label: 'Essay Humanizer', isPremium: true },
-    { id: 'twitter-bio', icon: UserCircle, label: 'Twitter Bio Generator', isPremium: true },
-    { id: 'linkedin', icon: Linkedin, label: 'LinkedIn Headline Generator', isPremium: true },
-    { id: 'wedding-speech', icon: Heart, label: 'Wedding Speech Generator', isPremium: true },
-    { id: 'diet', icon: Salad, label: 'Diet Plan Generator', isPremium: true },
-    { id: 'workout', icon: Dumbbell, label: 'Workout Plan Generator', isPremium: true },
-    { id: 'music', icon: Music4, label: 'Music Generator', isPremium: false },
-    { id: 'tweet', icon: Twitter, label: 'Tweet Generator', isPremium: true },
-    { id: 'instagram', icon: Instagram, label: 'Instagram Analysis', isPremium: false },
-    { id: 'email', icon: Mail, label: 'Email Generator', isPremium: true },
-    { id: 'humanizer', icon: FileText, label: 'AI Paragraph Humanizer', isPremium: true },
-    { id: 'translator', icon: Globe, label: 'AI Translator', isPremium: true },
-    { id: 'encrypt', icon: Lock, label: 'Message Encryption', isPremium: true },
+    { id: 'image', icon: Image, label: 'Image Generator', showWow: true },
+    { id: 'text', icon: MessageSquareText, label: 'Text Generator', showWow: false },
+    { id: 'blog', icon: BookOpen, label: 'Blog Intro Generator', showWow: false },
+    { id: 'essay', icon: PenTool, label: 'Essay Humanizer', showWow: false },
+    { id: 'twitter-bio', icon: UserCircle, label: 'Twitter Bio Generator', showWow: false },
+    { id: 'linkedin', icon: Linkedin, label: 'LinkedIn Headline Generator', showWow: false },
+    { id: 'wedding-speech', icon: Heart, label: 'Wedding Speech Generator', showWow: false },
+    { id: 'diet', icon: Salad, label: 'Diet Plan Generator', showWow: true },
+    { id: 'workout', icon: Dumbbell, label: 'Workout Plan Generator', showWow: true },
+    { id: 'music', icon: Music4, label: 'Music Generator', showWow: false },
+    { id: 'tweet', icon: Twitter, label: 'Tweet Generator', showWow: false },
+    { id: 'instagram', icon: Instagram, label: 'Instagram Analysis', showWow: true },
+    { id: 'email', icon: Mail, label: 'Email Generator', showWow: false },
+    { id: 'humanizer', icon: FileText, label: 'AI Paragraph Humanizer', showWow: false },
+    { id: 'translator', icon: Globe, label: 'AI Translator', showWow: false },
+    { id: 'encrypt', icon: Lock, label: 'Message Encryption', showWow: true },
   ] as const;
 
   return (
@@ -38,7 +38,7 @@ const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
           <item.icon className="h-5 w-5" />
           <span className="flex items-center gap-2">
             {item.label}
-            {item.isPremium && (
+            {item.showWow && (
               <img 
                 src="/lovable-uploads/6e858f00-7860-4b5f-b35a-7a25c98a71ff.png"
                 alt="WOW effect"

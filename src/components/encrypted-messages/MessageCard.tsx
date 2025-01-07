@@ -24,6 +24,7 @@ interface MessageCardProps {
 export const MessageCard = ({ message, onDelete }: MessageCardProps) => {
   const { toast } = useToast();
   const [decryptedContent, setDecryptedContent] = useState<string | null>(null);
+  const [showDecrypted, setShowDecrypted] = useState(false);
 
   const copyToClipboard = (text: string, type: "message" | "key") => {
     navigator.clipboard.writeText(text);
@@ -62,16 +63,21 @@ export const MessageCard = ({ message, onDelete }: MessageCardProps) => {
 
   const handleDecrypt = async () => {
     try {
-      const decrypted = decryptMessage(message.encrypted_content, message.decryption_key);
-      setDecryptedContent(decrypted);
+      if (!decryptedContent) {
+        const decrypted = decryptMessage(message.encrypted_content, message.decryption_key);
+        setDecryptedContent(decrypted);
+        setShowDecrypted(true);
 
-      // Update decryption count
-      const { error } = await supabase
-        .from("encrypted_messages")
-        .update({ decryption_count: (message.decryption_count || 0) + 1 })
-        .eq("id", message.id);
+        // Update decryption count
+        const { error } = await supabase
+          .from("encrypted_messages")
+          .update({ decryption_count: (message.decryption_count || 0) + 1 })
+          .eq("id", message.id);
 
-      if (error) throw error;
+        if (error) throw error;
+      } else {
+        setShowDecrypted(!showDecrypted);
+      }
     } catch (error) {
       console.error("Error decrypting message:", error);
       toast({
@@ -129,13 +135,13 @@ export const MessageCard = ({ message, onDelete }: MessageCardProps) => {
       <div className="space-y-2">
         <div>
           <p className="text-sm text-gray-400">Şifreli Mesaj:</p>
-          <p className="text-white break-all font-mono text-sm">{message.encrypted_content}</p>
+          <p className="text-white font-mono text-sm">Mesaj {message.id.slice(-4)}</p>
         </div>
         <div>
           <p className="text-sm text-gray-400">Şifre Çözme Anahtarı:</p>
           <p className="text-white break-all font-mono text-sm">{message.decryption_key}</p>
         </div>
-        {decryptedContent && (
+        {decryptedContent && showDecrypted && (
           <div className="p-3 bg-green-900/20 rounded-lg">
             <p className="text-sm text-gray-400">Çözülmüş Mesaj:</p>
             <p className="text-green-400">{decryptedContent}</p>

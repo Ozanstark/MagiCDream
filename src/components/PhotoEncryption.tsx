@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -114,7 +114,7 @@ const PhotoEncryption = () => {
   };
 
   // Fetch encrypted photos on component mount
-  useState(() => {
+  useEffect(() => {
     fetchEncryptedPhotos();
   }, []);
 

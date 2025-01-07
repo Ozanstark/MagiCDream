@@ -6,26 +6,39 @@ import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { MessageInputForm } from "./MessageInputForm";
 import { EncryptedMessagesList } from "./EncryptedMessagesList";
-import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const EncryptedMessage = () => {
   const [decryptKey, setDecryptKey] = useState("");
   const { toast } = useToast();
-  const { shareId } = useParams();
+  const navigate = useNavigate();
+
+  // Check if user is authenticated
+  const checkAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate("/login");
+    }
+  };
+
+  // Call checkAuth when component mounts
+  useState(() => {
+    checkAuth();
+  }, []);
 
   const { data: messages, refetch } = useQuery({
-    queryKey: ["encrypted-messages", shareId],
+    queryKey: ["encrypted-messages"],
     queryFn: async () => {
-      let query = supabase
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate("/login");
+        return [];
+      }
+
+      const { data, error } = await supabase
         .from("encrypted_messages")
         .select("*")
         .order("created_at", { ascending: false });
-
-      if (shareId) {
-        query = query.eq("share_id", shareId);
-      }
-
-      const { data, error } = await query;
 
       if (error) {
         console.error("Error fetching messages:", error);
@@ -43,16 +56,18 @@ const EncryptedMessage = () => {
     });
   };
 
+  const handleMessageDecrypted = (messageId: string) => {
+    refetch();
+  };
+
   return (
     <div className="max-w-2xl mx-auto space-y-8 p-6">
-      {!shareId && (
-        <MessageInputForm
-          onMessageEncrypted={setDecryptKey}
-          onSuccess={refetch}
-        />
-      )}
+      <MessageInputForm
+        onMessageEncrypted={setDecryptKey}
+        onSuccess={refetch}
+      />
       
-      {decryptKey && !shareId && (
+      {decryptKey && (
         <div className="flex items-center gap-2 p-4 bg-[#1a1b26] rounded-lg border border-gray-700">
           <div className="flex-1">
             <p className="text-sm font-medium text-white">Şifre Çözme Anahtarı:</p>
@@ -65,7 +80,10 @@ const EncryptedMessage = () => {
       )}
 
       {messages && messages.length > 0 && (
-        <EncryptedMessagesList messages={messages} />
+        <EncryptedMessagesList 
+          messages={messages}
+          onMessageDecrypted={handleMessageDecrypted}
+        />
       )}
     </div>
   );

@@ -27,9 +27,9 @@ export const MessageInputForm = ({ onMessageEncrypted, onSuccess }: MessageInput
 
     try {
       // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
       
-      if (!user) {
+      if (!session) {
         toast({
           title: "Hata",
           description: "Mesaj göndermek için giriş yapmalısınız",
@@ -49,7 +49,7 @@ export const MessageInputForm = ({ onMessageEncrypted, onSuccess }: MessageInput
       const { error } = await supabase.from("encrypted_messages").insert({
         encrypted_content: encrypted,
         decryption_key: key,
-        user_id: user.id // Set the user_id when inserting
+        user_id: session.user.id
       });
 
       if (error) {

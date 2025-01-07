@@ -90,7 +90,6 @@ export type Database = {
           decryption_key: string
           encrypted_content: string
           id: string
-          share_id: string | null
           user_id: string | null
         }
         Insert: {
@@ -98,7 +97,6 @@ export type Database = {
           decryption_key: string
           encrypted_content: string
           id?: string
-          share_id?: string | null
           user_id?: string | null
         }
         Update: {
@@ -106,7 +104,6 @@ export type Database = {
           decryption_key?: string
           encrypted_content?: string
           id?: string
-          share_id?: string | null
           user_id?: string | null
         }
         Relationships: []

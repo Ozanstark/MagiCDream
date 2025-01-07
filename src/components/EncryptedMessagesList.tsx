@@ -3,26 +3,26 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { decryptMessage } from "@/utils/encryption";
-import { Copy, Share2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Message {
   id: string;
   encrypted_content: string;
   decryption_key: string;
   created_at: string;
-  share_id: string;
 }
 
 interface EncryptedMessagesListProps {
   messages: Message[];
+  onMessageDecrypted: (messageId: string) => void;
 }
 
-export const EncryptedMessagesList = ({ messages }: EncryptedMessagesListProps) => {
+export const EncryptedMessagesList = ({ messages, onMessageDecrypted }: EncryptedMessagesListProps) => {
   const [decryptInput, setDecryptInput] = useState("");
   const [decryptedMessages, setDecryptedMessages] = useState<{ [key: string]: string }>({});
   const { toast } = useToast();
 
-  const handleDecrypt = (messageId: string, encrypted: string, key: string) => {
+  const handleDecrypt = async (messageId: string, encrypted: string, key: string) => {
     if (key !== decryptInput) {
       toast({
         title: "Hata",
@@ -38,6 +38,29 @@ export const EncryptedMessagesList = ({ messages }: EncryptedMessagesListProps) 
         ...prev,
         [messageId]: decrypted
       }));
+
+      // Delete the message after successful decryption
+      const { error } = await supabase
+        .from("encrypted_messages")
+        .delete()
+        .eq("id", messageId);
+
+      if (error) {
+        console.error("Error deleting message:", error);
+        toast({
+          title: "Hata",
+          description: "Mesaj silinirken bir hata oluştu",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      onMessageDecrypted(messageId);
+      
+      toast({
+        title: "Başarılı",
+        description: "Mesaj başarıyla çözüldü ve silindi",
+      });
     } catch (error) {
       console.error("Decryption error:", error);
       toast({
@@ -48,34 +71,15 @@ export const EncryptedMessagesList = ({ messages }: EncryptedMessagesListProps) 
     }
   };
 
-  const copyShareLink = (shareId: string) => {
-    const shareUrl = `${window.location.origin}/share/${shareId}`;
-    navigator.clipboard.writeText(shareUrl);
-    toast({
-      title: "Kopyalandı",
-      description: "Paylaşım linki panoya kopyalandı",
-    });
-  };
-
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold text-white">Şifreli Mesajlar</h2>
+      <h2 className="text-2xl font-bold text-white">Şifreli Mesaj Çöz</h2>
       <div className="space-y-4">
         {messages.map((msg) => (
           <div key={msg.id} className="p-4 border border-gray-700 rounded-lg space-y-2 bg-[#1a1b26]">
-            <div className="flex justify-between items-start gap-4">
-              <p className="font-mono text-sm break-all text-white flex-1">
-                {msg.encrypted_content}
-              </p>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => copyShareLink(msg.share_id)}
-                className="border-gray-700 text-white hover:text-white shrink-0"
-              >
-                <Share2 className="w-4 h-4" />
-              </Button>
-            </div>
+            <p className="font-mono text-sm break-all text-white">
+              {msg.encrypted_content}
+            </p>
             <div className="flex gap-2">
               <Input
                 type="text"

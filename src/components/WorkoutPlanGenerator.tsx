@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useApiLimits } from "@/hooks/useApiLimits";
 
 const WorkoutPlanGenerator = () => {
   const [goal, setGoal] = useState("");
@@ -12,6 +13,7 @@ const WorkoutPlanGenerator = () => {
   const [generatedPlan, setGeneratedPlan] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { checkWorkoutPlan } = useApiLimits();
 
   const generatePlan = async () => {
     if (!goal || !duration || !intensity) {
@@ -25,6 +27,13 @@ const WorkoutPlanGenerator = () => {
 
     setIsLoading(true);
     try {
+      // Check if user has enough credits
+      const hasCredits = await checkWorkoutPlan();
+      if (!hasCredits) {
+        setIsLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke("generate-workout-plan", {
         body: {
           goal,

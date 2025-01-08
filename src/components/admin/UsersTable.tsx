@@ -4,15 +4,37 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+interface UserProfile {
+  id: string;
+  subscription_status: string;
+  credits: number;
+  created_at: string;
+  email?: string;
+}
+
 export const UsersTable = () => {
-  const { data: users } = useQuery({
+  const { data: users } = useQuery<UserProfile[]>({
     queryKey: ['admin-users'],
     queryFn: async () => {
-      const { data } = await supabase
+      // Fetch profiles
+      const { data: profiles } = await supabase
         .from('profiles')
         .select('*')
         .order('created_at', { ascending: false });
-      return data;
+
+      // Fetch users from auth.users using service role
+      const { data: authUsers } = await supabase.auth.admin.listUsers();
+      
+      // Combine profile data with email addresses
+      const usersWithEmail = profiles?.map(profile => {
+        const authUser = authUsers?.users.find(user => user.id === profile.id);
+        return {
+          ...profile,
+          email: authUser?.email
+        };
+      });
+
+      return usersWithEmail || [];
     }
   });
 
@@ -22,6 +44,7 @@ export const UsersTable = () => {
         <TableHeader>
           <TableRow>
             <TableHead>ID</TableHead>
+            <TableHead>E-posta</TableHead>
             <TableHead>Üyelik</TableHead>
             <TableHead>Krediler</TableHead>
             <TableHead>Kayıt Tarihi</TableHead>
@@ -31,6 +54,7 @@ export const UsersTable = () => {
           {users?.map((user) => (
             <TableRow key={user.id}>
               <TableCell className="font-medium">{user.id}</TableCell>
+              <TableCell>{user.email || '-'}</TableCell>
               <TableCell>
                 <Badge variant={user.subscription_status === 'premium' ? 'default' : 'secondary'}>
                   {user.subscription_status}

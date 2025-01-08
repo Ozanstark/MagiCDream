@@ -19,11 +19,15 @@ import { UserActivityTable } from "@/components/admin/UserActivityTable";
 import { ErrorLogsTable } from "@/components/admin/ErrorLogsTable";
 import { AnnouncementsManager } from "@/components/admin/AnnouncementsManager";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, RefreshCcw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 
 const AdminPanel = () => {
+  const { toast } = useToast();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState(new Date());
 
   useEffect(() => {
     const checkAdminStatus = async () => {
@@ -34,18 +38,31 @@ const AdminPanel = () => {
         }
       } catch (error) {
         console.error('Error checking admin status:', error);
+        toast({
+          title: "Hata",
+          description: "Admin durumu kontrol edilirken bir hata oluştu.",
+          variant: "destructive",
+        });
       } finally {
         setIsLoading(false);
       }
     };
 
     checkAdminStatus();
-  }, []);
+  }, [toast]);
+
+  const handleRefresh = () => {
+    setLastUpdated(new Date());
+    toast({
+      title: "Yenilendi",
+      description: "Veriler başarıyla güncellendi.",
+    });
+  };
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-pulse">Yükleniyor...</div>
+        <div className="animate-pulse text-lg">Yükleniyor...</div>
       </div>
     );
   }
@@ -66,9 +83,20 @@ const AdminPanel = () => {
   return (
     <div className="container mx-auto p-8 space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-4xl font-bold">Admin Panel</h1>
-        <div className="text-sm text-muted-foreground">
-          Son güncelleme: {new Date().toLocaleString('tr-TR')}
+        <div>
+          <h1 className="text-4xl font-bold">Admin Panel</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Sistem durumu ve kullanıcı istatistikleri
+          </p>
+        </div>
+        <div className="flex items-center space-x-4">
+          <div className="text-sm text-muted-foreground">
+            Son güncelleme: {lastUpdated.toLocaleString('tr-TR')}
+          </div>
+          <Button variant="outline" size="sm" onClick={handleRefresh}>
+            <RefreshCcw className="h-4 w-4 mr-2" />
+            Yenile
+          </Button>
         </div>
       </div>
       

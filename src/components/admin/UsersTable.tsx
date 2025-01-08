@@ -18,7 +18,7 @@ interface AuthUser {
 }
 
 export const UsersTable = () => {
-  const { data: users } = useQuery<UserProfile[]>({
+  const { data: users, isLoading, error } = useQuery<UserProfile[]>({
     queryKey: ['admin-users'],
     queryFn: async () => {
       // Fetch profiles
@@ -28,14 +28,9 @@ export const UsersTable = () => {
         .order('created_at', { ascending: false });
 
       // Fetch users from auth.users using edge function
-      const { data: authData } = await fetch(
-        'https://trglajrtkmquwnuxwckk.supabase.co/functions/v1/list-users',
-        {
-          headers: {
-            Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
-          },
-        }
-      ).then(res => res.json());
+      const { data: authData } = await supabase.functions.invoke('list-users', {
+        method: 'GET',
+      });
 
       const authUsers = (authData?.users || []) as AuthUser[];
       
@@ -51,6 +46,15 @@ export const UsersTable = () => {
       return usersWithEmail || [];
     }
   });
+
+  if (isLoading) {
+    return <div>Yükleniyor...</div>;
+  }
+
+  if (error) {
+    console.error('Error fetching users:', error);
+    return <div>Kullanıcılar yüklenirken bir hata oluştu.</div>;
+  }
 
   return (
     <ScrollArea className="h-[400px] w-full rounded-md border">

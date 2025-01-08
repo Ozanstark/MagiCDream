@@ -353,6 +353,65 @@ export type Database = {
         }
         Relationships: []
       }
+      photo_contest_votes: {
+        Row: {
+          contest_id: string
+          created_at: string
+          id: string
+          selected_photo: number
+          voter_ip: string
+        }
+        Insert: {
+          contest_id: string
+          created_at?: string
+          id?: string
+          selected_photo: number
+          voter_ip: string
+        }
+        Update: {
+          contest_id?: string
+          created_at?: string
+          id?: string
+          selected_photo?: number
+          voter_ip?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "photo_contest_votes_contest_id_fkey"
+            columns: ["contest_id"]
+            isOneToOne: false
+            referencedRelation: "photo_contests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      photo_contests: {
+        Row: {
+          created_at: string
+          id: string
+          photo1_url: string
+          photo2_url: string
+          share_code: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          photo1_url: string
+          photo2_url: string
+          share_code?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          photo1_url?: string
+          photo2_url?: string
+          share_code?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

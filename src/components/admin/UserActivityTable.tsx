@@ -3,18 +3,35 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+interface CreditLog {
+  id: string;
+  user_id: string;
+  action_type: string;
+  amount: number;
+  created_at: string;
+  profiles: {
+    subscription_status: string;
+  };
+}
+
 export const UserActivityTable = () => {
-  const { data: activities } = useQuery({
+  const { data: activities } = useQuery<CreditLog[]>({
     queryKey: ['user-activities'],
     queryFn: async () => {
-      const { data: creditLogs } = await supabase
+      const { data: creditLogs, error } = await supabase
         .from('credits_log')
         .select(`
           *,
-          profiles!credits_log_user_id_fkey(subscription_status)
+          profiles:user_id(subscription_status)
         `)
         .order('created_at', { ascending: false })
         .limit(100);
+
+      if (error) {
+        console.error('Error fetching credit logs:', error);
+        throw error;
+      }
+
       return creditLogs;
     }
   });

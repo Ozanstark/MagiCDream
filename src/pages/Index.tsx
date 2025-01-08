@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ModeSwitcher from "@/components/ModeSwitcher";
+import AdminModeSwitcher from "@/components/AdminModeSwitcher";
 import TextGenerator from "@/components/TextGenerator";
 import ImageGenerator from "@/components/ImageGenerator";
 import TweetGenerator from "@/components/TweetGenerator";
@@ -81,6 +82,7 @@ const Index = () => {
         <Credits />
       </div>
       <ModeSwitcher mode={mode} onModeChange={setMode} />
+      <AdminModeSwitcher mode={mode} onModeChange={setMode} />
       <div className="ml-64">{getComponent()}</div>
     </div>
   );

@@ -28,7 +28,7 @@ export const UserActivityTable = () => {
           amount,
           created_at,
           description,
-          profiles:profiles!credits_log_user_id_fkey(subscription_status)
+          profiles:profiles(subscription_status)
         `)
         .order('created_at', { ascending: false })
         .limit(100);

@@ -44,9 +44,11 @@ const AdminPanel = () => {
       </div>
 
       <Tabs defaultValue="users" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="users">Kullanıcılar</TabsTrigger>
           <TabsTrigger value="activities">Kullanıcı Hareketleri</TabsTrigger>
+          <TabsTrigger value="errors">Hata Logları</TabsTrigger>
+          <TabsTrigger value="announcements">Duyurular</TabsTrigger>
         </TabsList>
 
         <TabsContent value="users">
@@ -69,6 +71,30 @@ const AdminPanel = () => {
             </CardHeader>
             <CardContent>
               <UserActivityTable />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="errors">
+          <Card>
+            <CardHeader>
+              <CardTitle>Hata Logları</CardTitle>
+              <CardDescription>Sistem hataları ve kullanıcı sorunları</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ErrorLogsTable />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="announcements">
+          <Card>
+            <CardHeader>
+              <CardTitle>Duyurular</CardTitle>
+              <CardDescription>Sistem duyuruları ve bildirimler</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AnnouncementsManager />
             </CardContent>
           </Card>
         </TabsContent>

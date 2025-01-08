@@ -42,6 +42,36 @@ export type Database = {
         }
         Relationships: []
       }
+      announcements: {
+        Row: {
+          content: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          is_active: boolean | null
+          title: string
+          type: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          title: string
+          type?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          title?: string
+          type?: string
+        }
+        Relationships: []
+      }
       credits_log: {
         Row: {
           action_type: string
@@ -185,6 +215,54 @@ export type Database = {
         }
         Relationships: []
       }
+      error_logs: {
+        Row: {
+          created_at: string | null
+          error_message: string
+          error_stack: string | null
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          error_message: string
+          error_stack?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string
+          error_stack?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      feature_usage: {
+        Row: {
+          credits_used: number
+          feature_name: string
+          id: string
+          used_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          credits_used?: number
+          feature_name: string
+          id?: string
+          used_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          credits_used?: number
+          feature_name?: string
+          id?: string
+          used_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       generated_images: {
         Row: {
           created_at: string
@@ -226,6 +304,7 @@ export type Database = {
           created_at: string
           credits: number
           id: string
+          is_active: boolean | null
           subscription_status: Database["public"]["Enums"]["subscription_status"]
           updated_at: string
         }
@@ -233,6 +312,7 @@ export type Database = {
           created_at?: string
           credits?: number
           id: string
+          is_active?: boolean | null
           subscription_status?: Database["public"]["Enums"]["subscription_status"]
           updated_at?: string
         }
@@ -240,6 +320,7 @@ export type Database = {
           created_at?: string
           credits?: number
           id?: string
+          is_active?: boolean | null
           subscription_status?: Database["public"]["Enums"]["subscription_status"]
           updated_at?: string
         }
@@ -310,6 +391,27 @@ export type Database = {
         }
         Relationships: []
       }
+      system_metrics: {
+        Row: {
+          id: string
+          metric_name: string
+          metric_value: Json
+          recorded_at: string | null
+        }
+        Insert: {
+          id?: string
+          metric_name: string
+          metric_value: Json
+          recorded_at?: string | null
+        }
+        Update: {
+          id?: string
+          metric_name?: string
+          metric_value?: Json
+          recorded_at?: string | null
+        }
+        Relationships: []
+      }
       workout_plans: {
         Row: {
           created_at: string
@@ -351,6 +453,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      bulk_credit_update: {
+        Args: {
+          user_ids: string[]
+          credit_amount: number
+          action_type?: string
+          description?: string
+        }
+        Returns: {
+          user_id: string
+          new_credits: number
+          status: string
+        }[]
+      }
       distribute_daily_tweets: {
         Args: {
           start_hour?: number

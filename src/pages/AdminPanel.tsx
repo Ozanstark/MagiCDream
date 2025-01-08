@@ -19,12 +19,14 @@ import { UserActivityTable } from "@/components/admin/UserActivityTable";
 import { ErrorLogsTable } from "@/components/admin/ErrorLogsTable";
 import { AnnouncementsManager } from "@/components/admin/AnnouncementsManager";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, RefreshCcw } from "lucide-react";
+import { AlertCircle, Home, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const AdminPanel = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(new Date());
@@ -96,6 +98,15 @@ const AdminPanel = () => {
           <Button variant="outline" size="sm" onClick={handleRefresh}>
             <RefreshCcw className="h-4 w-4 mr-2" />
             Yenile
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => navigate('/')}
+            className="bg-primary text-primary-foreground hover:bg-primary/90"
+          >
+            <Home className="h-4 w-4 mr-2" />
+            Ana Sayfaya Dön
           </Button>
         </div>
       </div>

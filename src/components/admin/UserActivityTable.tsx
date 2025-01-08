@@ -9,9 +9,9 @@ interface CreditLog {
   action_type: string;
   amount: number;
   created_at: string;
-  profiles: {
+  profiles?: {
     subscription_status: string;
-  };
+  } | null;
 }
 
 export const UserActivityTable = () => {
@@ -22,7 +22,7 @@ export const UserActivityTable = () => {
         .from('credits_log')
         .select(`
           *,
-          profiles!credits_log_user_id_fkey(subscription_status)
+          profiles(subscription_status)
         `)
         .order('created_at', { ascending: false })
         .limit(100);
@@ -32,7 +32,7 @@ export const UserActivityTable = () => {
         throw error;
       }
 
-      return creditLogs as CreditLog[];
+      return creditLogs || [];
     }
   });
 
@@ -55,7 +55,7 @@ export const UserActivityTable = () => {
               <TableCell>{activity.action_type}</TableCell>
               <TableCell>{activity.amount}</TableCell>
               <TableCell>{new Date(activity.created_at).toLocaleString('tr-TR')}</TableCell>
-              <TableCell>{activity.profiles?.subscription_status}</TableCell>
+              <TableCell>{activity.profiles?.subscription_status || '-'}</TableCell>
             </TableRow>
           ))}
         </TableBody>

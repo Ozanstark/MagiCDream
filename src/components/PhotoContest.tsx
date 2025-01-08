@@ -20,10 +20,10 @@ const PhotoContest = () => {
 
   const handleCreateContest = async () => {
     try {
-      if (selectedImages.length < 1) {
+      if (selectedImages.length < 2) {
         toast({
           title: "Hata",
-          description: "En az 1 fotoğraf seçmelisiniz",
+          description: "En az 2 fotoğraf seçmelisiniz",
           variant: "destructive",
         });
         return;
@@ -33,7 +33,7 @@ const PhotoContest = () => {
         .from('photo_contests')
         .insert({
           photo1_url: selectedImages[0],
-          photo2_url: selectedImages[1] || selectedImages[0], // If only one photo, use it twice
+          photo2_url: selectedImages[1],
           user_id: (await supabase.auth.getUser()).data.user?.id
         })
         .select('share_code')
@@ -71,7 +71,7 @@ const PhotoContest = () => {
       <div className="space-y-4">
         <h2 className="text-2xl font-bold">Anlık Fotoğraf Yarışması</h2>
         <p className="text-muted-foreground">
-          Bir veya daha fazla fotoğraf yükleyin ve arkadaşlarınızın hangisini daha çok beğendiğini öğrenin!
+          2-10 arası fotoğraf yükleyin ve arkadaşlarınızın hangisini daha çok beğendiğini öğrenin!
         </p>
       </div>
 
@@ -80,12 +80,13 @@ const PhotoContest = () => {
         onImageUpload={handleImageUpload}
         onImageRemove={handleImageRemove}
         maxImages={10}
+        minImages={2}
       />
 
       {!shareCode ? (
         <Button
           onClick={handleCreateContest}
-          disabled={selectedImages.length === 0}
+          disabled={selectedImages.length < 2}
           className="w-full"
         >
           Yarışma Oluştur

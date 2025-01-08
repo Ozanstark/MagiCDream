@@ -18,8 +18,8 @@ const WorkoutPlanGenerator = () => {
   const generatePlan = async () => {
     if (!goal || !duration || !intensity) {
       toast({
-        title: "Missing Information",
-        description: "Please fill in all fields to generate a workout plan.",
+        title: "Eksik Bilgi",
+        description: "Lütfen antrenman planı oluşturmak için tüm alanları doldurun.",
         variant: "destructive",
       });
       return;
@@ -46,13 +46,13 @@ const WorkoutPlanGenerator = () => {
 
       setGeneratedPlan(data.plan);
       toast({
-        title: "Success!",
-        description: "Your workout plan has been generated.",
+        title: "Başarılı!",
+        description: "Antrenman planınız oluşturuldu.",
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to generate workout plan. Please try again.",
+        title: "Hata",
+        description: "Antrenman planı oluşturulamadı. Lütfen tekrar deneyin.",
         variant: "destructive",
       });
     } finally {
@@ -63,37 +63,37 @@ const WorkoutPlanGenerator = () => {
   return (
     <div className="w-full max-w-2xl mx-auto space-y-4 px-4 sm:px-6 sm:space-y-8">
       <ComponentHeader
-        title="Achieve Your Fitness Goals"
-        description="Get customized workout plans that match your fitness level and goals. Transform your body with expert-designed exercise routines."
+        title="Fitness Hedeflerinize Ulaşın"
+        description="Fitness seviyenize ve hedeflerinize uygun özelleştirilmiş antrenman planları alın. Uzman tasarımlı egzersiz rutinleriyle vücudunuzu şekillendirin."
       />
 
       <div className="space-y-4">
         <Textarea
           value={goal}
           onChange={(e) => setGoal(e.target.value)}
-          placeholder="Enter your fitness goal..."
+          placeholder="Fitness hedefinizi girin..."
           className="min-h-[100px] bg-card text-foreground border-border"
         />
         <Textarea
           value={duration}
           onChange={(e) => setDuration(e.target.value)}
-          placeholder="Enter the duration of your workout..."
+          placeholder="Antrenman sürenizi girin..."
           className="min-h-[100px] bg-card text-foreground border-border"
         />
         <Textarea
           value={intensity}
           onChange={(e) => setIntensity(e.target.value)}
-          placeholder="Enter the intensity level (e.g., low, medium, high)..."
+          placeholder="Yoğunluk seviyesini girin (örn: düşük, orta, yüksek)..."
           className="min-h-[100px] bg-card text-foreground border-border"
         />
         <Button onClick={generatePlan} disabled={isLoading} className="w-full">
-          {isLoading ? "Generating..." : "Generate Workout Plan"}
+          {isLoading ? "Oluşturuluyor..." : "Antrenman Planı Oluştur"}
         </Button>
       </div>
 
       {generatedPlan && (
         <div className="mt-4 p-4 bg-card border border-border rounded-lg">
-          <h2 className="text-lg font-bold">Generated Workout Plan</h2>
+          <h2 className="text-lg font-bold">Oluşturulan Antrenman Planı</h2>
           <p>{generatedPlan}</p>
         </div>
       )}

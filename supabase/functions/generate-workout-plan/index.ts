@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 import { corsHeaders } from '../_shared/cors.ts';
 
 serve(async (req) => {
@@ -18,32 +17,32 @@ serve(async (req) => {
 
     // Generate a workout plan based on the inputs
     const workoutPlan = `
-Here's your personalized workout plan:
+İşte size özel antrenman planınız:
 
-Goal: ${goal}
-Duration: ${duration}
-Intensity: ${intensity}
+Hedef: ${goal}
+Süre: ${duration}
+Yoğunluk: ${intensity}
 
-Warm-up (10 minutes):
-- Light cardio (jogging in place, jumping jacks)
-- Dynamic stretching
+Isınma (10 dakika):
+- Hafif kardio (yerinde koşu, jumping jack)
+- Dinamik germe hareketleri
 
-Main Workout (${duration}):
-${intensity === 'high' ? '- High-intensity interval training (HIIT)' : 
-  intensity === 'medium' ? '- Circuit training with moderate weights' : 
-  '- Low-impact exercises with body weight'}
-- Focus on ${goal.toLowerCase()} through targeted exercises
-- Rest periods adjusted for ${intensity.toLowerCase()} intensity
+Ana Antrenman (${duration}):
+${intensity === 'yüksek' || intensity === 'high' ? '- Yüksek yoğunluklu interval antrenmanı (HIIT)' : 
+  intensity === 'orta' || intensity === 'medium' ? '- Orta ağırlıklarla devre antrenmanı' : 
+  '- Vücut ağırlığıyla düşük tempolu egzersizler'}
+- ${goal.toLowerCase()} hedefine yönelik özel egzersizler
+- ${intensity.toLowerCase()} yoğunluğa göre ayarlanmış dinlenme süreleri
 
-Cool-down (5 minutes):
-- Light stretching
-- Deep breathing exercises
+Soğuma (5 dakika):
+- Hafif germe hareketleri
+- Derin nefes egzersizleri
 
-Remember to:
-- Stay hydrated
-- Maintain proper form
-- Listen to your body
-- Adjust intensity as needed
+Unutmayın:
+- Bol su için
+- Doğru form kullanın
+- Vücudunuzu dinleyin
+- Yoğunluğu ihtiyacınıza göre ayarlayın
     `;
 
     console.log('Generated workout plan successfully');

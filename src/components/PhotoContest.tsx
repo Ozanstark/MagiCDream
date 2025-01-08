@@ -3,7 +3,7 @@ import { ImageUploader } from "./instagram/ImageUploader";
 import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Share2 } from "lucide-react";
+import { Share2, Trash2 } from "lucide-react";
 
 const PhotoContest = () => {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
@@ -36,7 +36,7 @@ const PhotoContest = () => {
           photo2_url: selectedImages[1],
           user_id: (await supabase.auth.getUser()).data.user?.id
         })
-        .select('share_code')
+        .select('share_code, id')
         .single();
 
       if (error) throw error;
@@ -51,6 +51,32 @@ const PhotoContest = () => {
       toast({
         title: "Hata",
         description: "Yarışma oluşturulurken bir hata oluştu",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteContest = async () => {
+    try {
+      const { error } = await supabase
+        .from('photo_contests')
+        .delete()
+        .eq('share_code', shareCode);
+
+      if (error) throw error;
+
+      setShareCode(null);
+      setSelectedImages([]);
+      
+      toast({
+        title: "Başarılı",
+        description: "Yarışma silindi!",
+      });
+    } catch (error) {
+      console.error('Error deleting contest:', error);
+      toast({
+        title: "Hata",
+        description: "Yarışma silinirken bir hata oluştu",
         variant: "destructive",
       });
     }
@@ -92,14 +118,25 @@ const PhotoContest = () => {
           Yarışma Oluştur
         </Button>
       ) : (
-        <Button
-          onClick={copyShareLink}
-          className="w-full"
-          variant="outline"
-        >
-          <Share2 className="w-4 h-4 mr-2" />
-          Paylaşım Linkini Kopyala
-        </Button>
+        <div className="space-y-4">
+          <Button
+            onClick={copyShareLink}
+            className="w-full"
+            variant="outline"
+          >
+            <Share2 className="w-4 h-4 mr-2" />
+            Paylaşım Linkini Kopyala
+          </Button>
+          
+          <Button
+            onClick={handleDeleteContest}
+            className="w-full"
+            variant="destructive"
+          >
+            <Trash2 className="w-4 h-4 mr-2" />
+            Yarışmayı Sil
+          </Button>
+        </div>
       )}
     </div>
   );

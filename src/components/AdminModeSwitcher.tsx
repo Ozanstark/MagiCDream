@@ -32,7 +32,7 @@ const AdminModeSwitcher = ({ mode, onModeChange }: AdminModeSwitcherProps) => {
   ] as const;
 
   return (
-    <div className="fixed right-4 top-4 flex flex-col gap-2 bg-card p-4 rounded-lg shadow-lg border-2 border-red-500">
+    <div className="flex flex-col gap-2 bg-card p-4 rounded-lg shadow-lg border-2 border-red-500">
       <div className="text-sm font-semibold text-red-500 mb-2">Admin Panel</div>
       {modes.map((item) => (
         <Button

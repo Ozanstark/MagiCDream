@@ -81,8 +81,10 @@ const Index = () => {
       <div className="fixed top-4 right-4 z-50">
         <Credits />
       </div>
-      <ModeSwitcher mode={mode} onModeChange={setMode} />
-      <AdminModeSwitcher mode={mode} onModeChange={setMode} />
+      <div className="flex gap-4">
+        <ModeSwitcher mode={mode} onModeChange={setMode} />
+        <AdminModeSwitcher mode={mode} onModeChange={setMode} />
+      </div>
       <div className="ml-64">{getComponent()}</div>
     </div>
   );

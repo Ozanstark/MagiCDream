@@ -24,21 +24,20 @@ const DietPlanGenerator = () => {
   const generateDietPlan = async () => {
     if (!Object.values(formData).every(value => value)) {
       toast({
-        title: "Missing Information",
-        description: "Please fill in all fields to generate a diet plan.",
+        title: "Eksik Bilgi",
+        description: "Lütfen diyet planı oluşturmak için tüm alanları doldurun.",
         variant: "destructive",
       });
       return;
     }
 
-    console.log('Checking credits before Diet Plan generation...');
+    console.log('Diyet Planı oluşturmadan önce krediler kontrol ediliyor...');
     const canProceed = await checkDietPlan();
-    console.log('Credit check result:', canProceed);
+    console.log('Kredi kontrol sonucu:', canProceed);
     if (!canProceed) return;
 
     setIsLoading(true);
     try {
-      // Convert comma-separated strings to arrays
       const dietaryRestrictionsArray = formData.dietaryRestrictions
         .split(',')
         .map(item => item.trim())
@@ -65,20 +64,20 @@ const DietPlanGenerator = () => {
 
       if (data?.plan) {
         setGeneratedPlan(data.plan);
-        console.log('Diet plan generated successfully, 200 credits should be deducted');
+        console.log('Diyet planı başarıyla oluşturuldu, 200 kredi düşülecek');
         toast({
-          title: "Success!",
-          description: "Your diet plan has been generated.",
+          title: "Başarılı!",
+          description: "Diyet planınız oluşturuldu.",
         });
       } else {
-        console.error('Unexpected response format:', data);
-        throw new Error('Unexpected response format from server');
+        console.error('Beklenmeyen yanıt formatı:', data);
+        throw new Error('Sunucudan beklenmeyen yanıt formatı');
       }
     } catch (error) {
-      console.error('Error generating diet plan:', error);
+      console.error('Diyet planı oluşturulurken hata:', error);
       toast({
-        title: "Error",
-        description: "Failed to generate diet plan. Please try again.",
+        title: "Hata",
+        description: "Diyet planı oluşturulamadı. Lütfen tekrar deneyin.",
         variant: "destructive",
       });
     } finally {
@@ -96,8 +95,8 @@ const DietPlanGenerator = () => {
   return (
     <div className="w-full max-w-2xl mx-auto space-y-4 px-4 sm:px-6 sm:space-y-8">
       <ComponentHeader
-        title="Transform Your Health"
-        description="Get personalized diet plans tailored to your goals. Your journey to a healthier lifestyle starts with the right nutrition plan."
+        title="Sağlığınızı Dönüştürün"
+        description="Hedeflerinize uygun kişiselleştirilmiş diyet planları alın. Daha sağlıklı bir yaşam tarzına giden yolculuğunuz doğru beslenme planıyla başlar."
       />
       
       <div className="space-y-4">
@@ -105,54 +104,54 @@ const DietPlanGenerator = () => {
           <Textarea
             value={formData.age}
             onChange={(e) => handleInputChange("age", e.target.value)}
-            placeholder="Enter your age..."
+            placeholder="Yaşınızı girin..."
             className="min-h-[100px] bg-card text-foreground border-gray-700 resize-none"
           />
           <Textarea
             value={formData.gender}
             onChange={(e) => handleInputChange("gender", e.target.value)}
-            placeholder="Enter your gender..."
+            placeholder="Cinsiyetinizi girin..."
             className="min-h-[100px] bg-card text-foreground border-gray-700 resize-none"
           />
           <Textarea
             value={formData.height}
             onChange={(e) => handleInputChange("height", e.target.value)}
-            placeholder="Enter your height (cm)..."
+            placeholder="Boyunuzu girin (cm)..."
             className="min-h-[100px] bg-card text-foreground border-gray-700 resize-none"
           />
           <Textarea
             value={formData.weight}
             onChange={(e) => handleInputChange("weight", e.target.value)}
-            placeholder="Enter your weight (kg)..."
+            placeholder="Kilonuzu girin (kg)..."
             className="min-h-[100px] bg-card text-foreground border-gray-700 resize-none"
           />
         </div>
         <Textarea
           value={formData.activityLevel}
           onChange={(e) => handleInputChange("activityLevel", e.target.value)}
-          placeholder="Enter your activity level (sedentary, moderately_active, very_active)..."
+          placeholder="Aktivite seviyenizi girin (sedentary, moderately_active, very_active)..."
           className="min-h-[100px] bg-card text-foreground border-gray-700 resize-none"
         />
         <Textarea
           value={formData.dietaryRestrictions}
           onChange={(e) => handleInputChange("dietaryRestrictions", e.target.value)}
-          placeholder="Enter your dietary restrictions (comma-separated)..."
+          placeholder="Diyet kısıtlamalarınızı girin (virgülle ayırın)..."
           className="min-h-[100px] bg-card text-foreground border-gray-700 resize-none"
         />
         <Textarea
           value={formData.fitnessGoals}
           onChange={(e) => handleInputChange("fitnessGoals", e.target.value)}
-          placeholder="Enter your fitness goals (comma-separated)..."
+          placeholder="Fitness hedeflerinizi girin (virgülle ayırın)..."
           className="min-h-[100px] bg-card text-foreground border-gray-700 resize-none"
         />
         <Button onClick={generateDietPlan} disabled={isLoading} className="w-full">
-          {isLoading ? "Generating..." : "Generate Diet Plan"}
+          {isLoading ? "Oluşturuluyor..." : "Diyet Planı Oluştur"}
         </Button>
       </div>
 
       {generatedPlan && (
         <div className="mt-4 p-4 bg-muted rounded-lg">
-          <h2 className="text-lg font-bold">Generated Diet Plan</h2>
+          <h2 className="text-lg font-bold">Oluşturulan Diyet Planı</h2>
           <p className="whitespace-pre-wrap">{generatedPlan}</p>
         </div>
       )}

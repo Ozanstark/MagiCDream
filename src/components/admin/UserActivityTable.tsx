@@ -9,6 +9,7 @@ interface CreditLog {
   action_type: string;
   amount: number;
   created_at: string;
+  description: string | null;
   profiles?: {
     subscription_status: string;
   } | null;
@@ -22,7 +23,7 @@ export const UserActivityTable = () => {
         .from('credits_log')
         .select(`
           *,
-          profiles(subscription_status)
+          profiles!credits_log_user_id_fkey(subscription_status)
         `)
         .order('created_at', { ascending: false })
         .limit(100);

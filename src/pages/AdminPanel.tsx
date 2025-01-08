@@ -16,6 +16,8 @@ import {
 import { StatsOverview } from "@/components/admin/StatsOverview";
 import { UsersTable } from "@/components/admin/UsersTable";
 import { UserActivityTable } from "@/components/admin/UserActivityTable";
+import { ErrorLogsTable } from "@/components/admin/ErrorLogsTable";
+import { AnnouncementsManager } from "@/components/admin/AnnouncementsManager";
 
 const AdminPanel = () => {
   const [isAdmin, setIsAdmin] = useState(false);

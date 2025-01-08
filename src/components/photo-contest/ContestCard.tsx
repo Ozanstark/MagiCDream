@@ -62,11 +62,11 @@ export const ContestCard = ({ contest, onDelete }: ContestCardProps) => {
     <div className="border rounded-lg p-4 space-y-4 bg-card">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <div className="aspect-square w-full bg-black/5 rounded-lg overflow-hidden flex items-center justify-center">
+          <div className="w-48 h-48 mx-auto bg-black/5 rounded-lg overflow-hidden flex items-center justify-center">
             <img 
               src={contest.photo1_url} 
               alt="Photo 1" 
-              className="max-w-full max-h-full object-contain" 
+              className="w-auto h-auto max-w-[90%] max-h-[90%] object-contain" 
             />
           </div>
           <Progress value={photo1Percentage} className="h-2" />
@@ -75,11 +75,11 @@ export const ContestCard = ({ contest, onDelete }: ContestCardProps) => {
           </p>
         </div>
         <div className="space-y-2">
-          <div className="aspect-square w-full bg-black/5 rounded-lg overflow-hidden flex items-center justify-center">
+          <div className="w-48 h-48 mx-auto bg-black/5 rounded-lg overflow-hidden flex items-center justify-center">
             <img 
               src={contest.photo2_url} 
               alt="Photo 2" 
-              className="max-w-full max-h-full object-contain" 
+              className="w-auto h-auto max-w-[90%] max-h-[90%] object-contain" 
             />
           </div>
           <Progress value={photo2Percentage} className="h-2" />

@@ -78,12 +78,12 @@ const Index = () => {
 
   return (
     <div className="min-h-screen p-4 md:p-8 flex flex-col items-center gap-4 relative">
-      <div className="fixed top-4 right-4 z-50">
+      <div className="fixed top-4 right-4 z-50 flex flex-col gap-4">
         <Credits />
-      </div>
-      <div className="fixed left-4 top-4 flex flex-col gap-4">
-        <ModeSwitcher mode={mode} onModeChange={setMode} />
         <AdminModeSwitcher mode={mode} onModeChange={setMode} />
+      </div>
+      <div className="fixed left-4 top-4">
+        <ModeSwitcher mode={mode} onModeChange={setMode} />
       </div>
       <div className="ml-64">{getComponent()}</div>
     </div>

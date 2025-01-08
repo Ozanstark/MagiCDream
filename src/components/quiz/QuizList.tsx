@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { supabase } from "@/integrations/supabase/client";
-import { List, Trophy, Users } from "lucide-react";
+import { List, Trophy, Users, Loader2 } from "lucide-react";
 import { Input } from "../ui/input";
 import { useToast } from "../ui/use-toast";
 
@@ -21,6 +21,8 @@ interface Quiz {
 const QuizList = ({ onQuizSelect }: { onQuizSelect: (quizId: string) => void }) => {
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [shareCode, setShareCode] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isJoining, setIsJoining] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -28,42 +30,54 @@ const QuizList = ({ onQuizSelect }: { onQuizSelect: (quizId: string) => void }) 
   }, []);
 
   const loadQuizzes = async () => {
-    const { data: session } = await supabase.auth.getSession();
-    
-    if (!session?.session?.user) {
-      console.log("No authenticated user");
-      setQuizzes([]);
-      return;
-    }
+    setIsLoading(true);
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      
+      if (!session?.session?.user) {
+        console.log("No authenticated user");
+        setQuizzes([]);
+        return;
+      }
 
-    const { data, error } = await supabase
-      .from("follower_quizzes")
-      .select(`
-        *,
-        quiz_questions (count),
-        quiz_results (count)
-      `)
-      .or(`user_id.eq.${session.session.user.id},share_code.neq.null`);
+      const { data, error } = await supabase
+        .from("follower_quizzes")
+        .select(`
+          *,
+          quiz_questions (count),
+          quiz_results (count)
+        `)
+        .or(`user_id.eq.${session.session.user.id},share_code.neq.null`);
 
-    if (error) {
-      console.error("Error loading quizzes:", error);
+      if (error) {
+        console.error("Error loading quizzes:", error);
+        toast({
+          title: "Hata",
+          description: "Testler yüklenirken bir hata oluştu.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (data) {
+        const formattedQuizzes = data.map(quiz => ({
+          ...quiz,
+          _count: {
+            questions: quiz.quiz_questions[0]?.count || 0,
+            results: quiz.quiz_results[0]?.count || 0
+          }
+        }));
+        setQuizzes(formattedQuizzes);
+      }
+    } catch (error) {
+      console.error("Error:", error);
       toast({
         title: "Hata",
         description: "Testler yüklenirken bir hata oluştu.",
         variant: "destructive",
       });
-      return;
-    }
-
-    if (data) {
-      const formattedQuizzes = data.map(quiz => ({
-        ...quiz,
-        _count: {
-          questions: quiz.quiz_questions[0]?.count || 0,
-          results: quiz.quiz_results[0]?.count || 0
-        }
-      }));
-      setQuizzes(formattedQuizzes);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -77,27 +91,63 @@ const QuizList = ({ onQuizSelect }: { onQuizSelect: (quizId: string) => void }) 
       return;
     }
 
-    const { data, error } = await supabase
-      .from("follower_quizzes")
-      .select()
-      .eq('share_code', shareCode.trim())
-      .single();
+    setIsJoining(true);
+    try {
+      const { data, error } = await supabase
+        .from("follower_quizzes")
+        .select()
+        .eq('share_code', shareCode.trim())
+        .maybeSingle();
 
-    if (error || !data) {
+      if (error || !data) {
+        toast({
+          title: "Hata",
+          description: "Geçersiz davet kodu. Lütfen tekrar deneyin.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Başarılı",
+        description: "Teste katılıyorsunuz...",
+      });
+      onQuizSelect(data.id);
+    } catch (error) {
+      console.error("Error:", error);
       toast({
         title: "Hata",
-        description: "Geçersiz davet kodu. Lütfen tekrar deneyin.",
+        description: "Teste katılırken bir hata oluştu.",
         variant: "destructive",
       });
-      return;
+    } finally {
+      setIsJoining(false);
     }
-
-    toast({
-      title: "Başarılı",
-      description: "Teste katılıyorsunuz...",
-    });
-    onQuizSelect(data.id);
   };
+
+  const handleQuizJoin = (quizId: string) => {
+    setIsJoining(true);
+    try {
+      onQuizSelect(quizId);
+    } catch (error) {
+      console.error("Error joining quiz:", error);
+      toast({
+        title: "Hata",
+        description: "Teste katılırken bir hata oluştu.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsJoining(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -111,8 +161,12 @@ const QuizList = ({ onQuizSelect }: { onQuizSelect: (quizId: string) => void }) 
           placeholder="Davet kodunu girin"
           value={shareCode}
           onChange={(e) => setShareCode(e.target.value)}
+          disabled={isJoining}
         />
-        <Button onClick={handleJoinWithCode}>
+        <Button onClick={handleJoinWithCode} disabled={isJoining}>
+          {isJoining ? (
+            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+          ) : null}
           Katıl
         </Button>
       </div>
@@ -135,7 +189,13 @@ const QuizList = ({ onQuizSelect }: { onQuizSelect: (quizId: string) => void }) 
                     {quiz._count?.results || 0} katılımcı
                   </span>
                 </div>
-                <Button onClick={() => onQuizSelect(quiz.id)}>
+                <Button 
+                  onClick={() => handleQuizJoin(quiz.id)}
+                  disabled={isJoining}
+                >
+                  {isJoining ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : null}
                   Teste Katıl
                 </Button>
               </div>

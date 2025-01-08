@@ -1,25 +1,31 @@
 export const encryptMessage = (message: string, key: string): string => {
   try {
-    // Convert message to UTF-8 bytes, then to base64
-    const encoder = new TextEncoder();
-    const messageBytes = encoder.encode(message);
-    const messageBase64 = btoa(String.fromCharCode(...messageBytes));
+    // Convert message to chunks to handle large files
+    const chunkSize = 1024 * 1024; // 1MB chunks
+    const messageChunks: string[] = [];
     
-    // Convert the base64 message and key to arrays for processing
-    const messageArray = Array.from(messageBase64);
-    const keyArray = Array.from(key);
-    const keyLength = keyArray.length;
+    for (let i = 0; i < message.length; i += chunkSize) {
+      messageChunks.push(message.slice(i, i + chunkSize));
+    }
     
-    // XOR encryption
-    const encryptedArray = messageArray.map((char, index) => {
-      const keyChar = keyArray[index % keyLength];
-      return String.fromCharCode(
-        char.charCodeAt(0) ^ keyChar.charCodeAt(0)
-      );
+    // Encrypt each chunk
+    const encryptedChunks = messageChunks.map(chunk => {
+      const messageArray = Array.from(chunk);
+      const keyArray = Array.from(key);
+      const keyLength = keyArray.length;
+      
+      const encryptedArray = messageArray.map((char, index) => {
+        const keyChar = keyArray[index % keyLength];
+        return String.fromCharCode(
+          char.charCodeAt(0) ^ keyChar.charCodeAt(0)
+        );
+      });
+      
+      return encryptedArray.join('');
     });
     
-    // Convert to base64 for safe storage
-    return btoa(encryptedArray.join(''));
+    // Join chunks and convert to base64
+    return btoa(encryptedChunks.join(''));
   } catch (error) {
     console.error("Encryption error:", error);
     throw new Error("Mesaj şifrelenirken bir hata oluştu");
@@ -28,28 +34,34 @@ export const encryptMessage = (message: string, key: string): string => {
 
 export const decryptMessage = (encrypted: string, key: string): string => {
   try {
-    // Decode the base64 encrypted message
+    // Decode base64
     const encryptedStr = atob(encrypted);
-    const encryptedArray = Array.from(encryptedStr);
-    const keyArray = Array.from(key);
-    const keyLength = keyArray.length;
     
-    // XOR decryption
-    const decryptedArray = encryptedArray.map((char, index) => {
-      const keyChar = keyArray[index % keyLength];
-      return String.fromCharCode(
-        char.charCodeAt(0) ^ keyChar.charCodeAt(0)
-      );
+    // Split into chunks
+    const chunkSize = 1024 * 1024; // 1MB chunks
+    const encryptedChunks: string[] = [];
+    
+    for (let i = 0; i < encryptedStr.length; i += chunkSize) {
+      encryptedChunks.push(encryptedStr.slice(i, i + chunkSize));
+    }
+    
+    // Decrypt each chunk
+    const decryptedChunks = encryptedChunks.map(chunk => {
+      const encryptedArray = Array.from(chunk);
+      const keyArray = Array.from(key);
+      const keyLength = keyArray.length;
+      
+      const decryptedArray = encryptedArray.map((char, index) => {
+        const keyChar = keyArray[index % keyLength];
+        return String.fromCharCode(
+          char.charCodeAt(0) ^ keyChar.charCodeAt(0)
+        );
+      });
+      
+      return decryptedArray.join('');
     });
     
-    // Convert from base64 back to original message
-    const decryptedBase64 = decryptedArray.join('');
-    const decoded = atob(decryptedBase64);
-    
-    // Convert from UTF-8 bytes back to string
-    const decoder = new TextDecoder();
-    const decodedBytes = new Uint8Array([...decoded].map(c => c.charCodeAt(0)));
-    return decoder.decode(decodedBytes);
+    return decryptedChunks.join('');
   } catch (error) {
     console.error("Decryption error:", error);
     throw new Error("Mesaj çözülürken bir hata oluştu");

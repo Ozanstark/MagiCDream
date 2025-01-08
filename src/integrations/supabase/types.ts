@@ -299,6 +299,33 @@ export type Database = {
         }
         Relationships: []
       }
+      generated_music: {
+        Row: {
+          audio_url: string
+          created_at: string
+          id: string
+          model_id: string
+          prompt: string
+          user_id: string | null
+        }
+        Insert: {
+          audio_url: string
+          created_at?: string
+          id?: string
+          model_id: string
+          prompt: string
+          user_id?: string | null
+        }
+        Update: {
+          audio_url?: string
+          created_at?: string
+          id?: string
+          model_id?: string
+          prompt?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

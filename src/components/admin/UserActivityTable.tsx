@@ -58,8 +58,8 @@ export const UserActivityTable = () => {
           amount,
           created_at,
           description,
-          profiles:profiles(subscription_status),
-          users:user_id(email)
+          profiles (subscription_status),
+          users:profiles!credits_log_user_id_profiles_fkey (email)
         `)
         .order('created_at', { ascending: false })
         .limit(100);

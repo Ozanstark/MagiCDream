@@ -28,7 +28,7 @@ export const UserActivityTable = () => {
           amount,
           created_at,
           description,
-          profiles:user_id(subscription_status)
+          profiles:profiles!credits_log_user_id_fkey(subscription_status)
         `)
         .order('created_at', { ascending: false })
         .limit(100);
@@ -38,7 +38,7 @@ export const UserActivityTable = () => {
         throw error;
       }
 
-      return creditLogs as CreditLog[];
+      return (creditLogs || []) as CreditLog[];
     }
   });
 

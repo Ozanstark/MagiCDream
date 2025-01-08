@@ -28,15 +28,34 @@ const QuizList = ({ onQuizSelect }: { onQuizSelect: (quizId: string) => void }) 
   }, []);
 
   const loadQuizzes = async () => {
+    const { data: session } = await supabase.auth.getSession();
+    
+    if (!session?.session?.user) {
+      console.log("No authenticated user");
+      setQuizzes([]);
+      return;
+    }
+
     const { data, error } = await supabase
       .from("follower_quizzes")
       .select(`
         *,
         quiz_questions (count),
         quiz_results (count)
-      `);
+      `)
+      .or(`user_id.eq.${session.session.user.id},share_code.not.is.null`);
 
-    if (!error && data) {
+    if (error) {
+      console.error("Error loading quizzes:", error);
+      toast({
+        title: "Hata",
+        description: "Testler yüklenirken bir hata oluştu.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (data) {
       const formattedQuizzes = data.map(quiz => ({
         ...quiz,
         _count: {

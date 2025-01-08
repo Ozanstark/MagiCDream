@@ -82,12 +82,19 @@ const Index = () => {
       <div className="fixed top-4 right-4 z-50 flex flex-col gap-4">
         <Credits />
         <AdminModeSwitcher />
-        <AnnouncementsBanner />
       </div>
       <div className="fixed left-4 top-4">
         <ModeSwitcher mode={mode} onModeChange={setMode} />
       </div>
-      <div className="ml-64">{getComponent()}</div>
+      <div className="ml-64 w-full max-w-4xl">
+        <h1 className="text-4xl font-bold text-center mb-2 rainbow-text">
+          Unleash Your Imagination
+        </h1>
+        <div className="flex justify-center mb-4">
+          <AnnouncementsBanner />
+        </div>
+        {getComponent()}
+      </div>
     </div>
   );
 };

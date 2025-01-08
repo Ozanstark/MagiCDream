@@ -154,7 +154,7 @@ const AdminPanel = () => {
                         <p className="font-medium">{tweet.content}</p>
                         <p className="text-sm text-gray-500">Category: {tweet.category}</p>
                       </div>
-                      <Badge variant={tweet.status === 'pending' ? "secondary" : "success"}>
+                      <Badge variant={tweet.status === 'pending' ? "secondary" : "secondary"}>
                         {tweet.status}
                       </Badge>
                     </div>

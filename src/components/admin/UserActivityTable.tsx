@@ -22,7 +22,7 @@ export const UserActivityTable = () => {
         .from('credits_log')
         .select(`
           *,
-          profiles:user_id(subscription_status)
+          profiles!credits_log_user_id_fkey(subscription_status)
         `)
         .order('created_at', { ascending: false })
         .limit(100);
@@ -32,7 +32,7 @@ export const UserActivityTable = () => {
         throw error;
       }
 
-      return creditLogs;
+      return creditLogs as CreditLog[];
     }
   });
 

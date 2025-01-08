@@ -1,9 +1,9 @@
-import { Image, MessageSquareText, Twitter, Instagram, Mail, FileText, Globe, Crown, BookOpen, PenTool, UserCircle, Linkedin, Heart, Salad, Dumbbell, Lock, Vote } from "lucide-react";
+import { Image, MessageSquareText, Twitter, Instagram, Mail, FileText, Globe, Crown, BookOpen, PenTool, UserCircle, Linkedin, Salad, Dumbbell, Lock, Vote } from "lucide-react";
 import { Button } from "./ui/button";
 
 interface ModeSwitcherProps {
-  mode: 'image' | 'text' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator' | 'blog' | 'essay' | 'twitter-bio' | 'linkedin' | 'wedding-speech' | 'diet' | 'workout' | 'encrypt' | 'photo-encrypt' | 'photo-contest';
-  onModeChange: (mode: 'image' | 'text' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator' | 'blog' | 'essay' | 'twitter-bio' | 'linkedin' | 'wedding-speech' | 'diet' | 'workout' | 'encrypt' | 'photo-encrypt' | 'photo-contest') => void;
+  mode: 'image' | 'text' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator' | 'blog' | 'essay' | 'twitter-bio' | 'linkedin' | 'diet' | 'workout' | 'encrypt' | 'photo-encrypt' | 'photo-contest';
+  onModeChange: (mode: 'image' | 'text' | 'tweet' | 'instagram' | 'email' | 'humanizer' | 'translator' | 'blog' | 'essay' | 'twitter-bio' | 'linkedin' | 'diet' | 'workout' | 'encrypt' | 'photo-encrypt' | 'photo-contest') => void;
 }
 
 const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
@@ -14,7 +14,6 @@ const ModeSwitcher = ({ mode, onModeChange }: ModeSwitcherProps) => {
     { id: 'essay', icon: PenTool, label: 'Essay Humanizer', showWow: false, isPremium: false },
     { id: 'twitter-bio', icon: UserCircle, label: 'Twitter Bio Generator', showWow: false, isPremium: false },
     { id: 'linkedin', icon: Linkedin, label: 'LinkedIn Headline Generator', showWow: false, isPremium: false },
-    { id: 'wedding-speech', icon: Heart, label: 'Wedding Speech Generator', showWow: false, isPremium: false },
     { id: 'diet', icon: Salad, label: 'Diet Plan Generator', showWow: true, isPremium: true },
     { id: 'workout', icon: Dumbbell, label: 'Workout Plan Generator', showWow: true, isPremium: true },
     { id: 'tweet', icon: Twitter, label: 'Tweet Generator', showWow: false, isPremium: false },

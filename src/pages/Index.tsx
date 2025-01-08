@@ -12,7 +12,6 @@ import BlogIntroGenerator from "@/components/BlogIntroGenerator";
 import EssayHumanizer from "@/components/EssayHumanizer";
 import TwitterBioGenerator from "@/components/TwitterBioGenerator";
 import LinkedInHeadlineGenerator from "@/components/LinkedInHeadlineGenerator";
-import WeddingSpeechGenerator from "@/components/WeddingSpeechGenerator";
 import DietPlanGenerator from "@/components/DietPlanGenerator";
 import WorkoutPlanGenerator from "@/components/WorkoutPlanGenerator";
 import EncryptedMessage from "@/components/EncryptedMessage";
@@ -36,7 +35,6 @@ const Index = () => {
     | "essay"
     | "twitter-bio"
     | "linkedin"
-    | "wedding-speech"
     | "diet"
     | "workout"
     | "encrypt"
@@ -84,8 +82,6 @@ const Index = () => {
         return <TwitterBioGenerator />;
       case "linkedin":
         return <LinkedInHeadlineGenerator />;
-      case "wedding-speech":
-        return <WeddingSpeechGenerator />;
       case "diet":
         return <DietPlanGenerator />;
       case "workout":

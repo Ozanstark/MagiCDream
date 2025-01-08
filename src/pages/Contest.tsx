@@ -5,18 +5,26 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { ImagePlus } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 
 const Contest = () => {
   const { shareCode } = useParams();
   const [contest, setContest] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [votingDisabled, setVotingDisabled] = useState(false);
+  const [voteStats, setVoteStats] = useState({ photo1: 0, photo2: 0, total: 0 });
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchContest();
   }, [shareCode]);
+
+  useEffect(() => {
+    if (contest) {
+      fetchVoteStats();
+    }
+  }, [contest, votingDisabled]);
 
   const fetchContest = async () => {
     try {
@@ -40,6 +48,29 @@ const Contest = () => {
     }
   };
 
+  const fetchVoteStats = async () => {
+    try {
+      const { data: votes, error } = await supabase
+        .from('photo_contest_votes')
+        .select('selected_photo')
+        .eq('contest_id', contest.id);
+
+      if (error) throw error;
+
+      const photo1Votes = votes.filter(v => v.selected_photo === 1).length;
+      const photo2Votes = votes.filter(v => v.selected_photo === 2).length;
+      const totalVotes = votes.length;
+
+      setVoteStats({
+        photo1: totalVotes > 0 ? (photo1Votes / totalVotes) * 100 : 0,
+        photo2: totalVotes > 0 ? (photo2Votes / totalVotes) * 100 : 0,
+        total: totalVotes
+      });
+    } catch (error) {
+      console.error('Error fetching vote stats:', error);
+    }
+  };
+
   const handleVote = async (selectedPhoto: number) => {
     try {
       const { error } = await supabase
@@ -59,6 +90,9 @@ const Contest = () => {
         title: "Başarılı",
         description: "Oyunuz kaydedildi!",
       });
+      
+      // Fetch updated stats immediately after voting
+      fetchVoteStats();
     } catch (error) {
       console.error('Error voting:', error);
       toast({
@@ -98,6 +132,11 @@ const Contest = () => {
           <p className="text-muted-foreground">
             Hangi fotoğrafı daha çok beğendiniz? Oy verin!
           </p>
+          {voteStats.total > 0 && (
+            <p className="text-sm text-muted-foreground">
+              Toplam {voteStats.total} oy kullanıldı
+            </p>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -110,6 +149,14 @@ const Contest = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
+              {(votingDisabled || contest.user_id) && (
+                <div className="space-y-2">
+                  <Progress value={index === 0 ? voteStats.photo1 : voteStats.photo2} />
+                  <p className="text-center text-sm text-muted-foreground">
+                    {Math.round(index === 0 ? voteStats.photo1 : voteStats.photo2)}%
+                  </p>
+                </div>
+              )}
               <Button
                 onClick={() => handleVote(index + 1)}
                 disabled={votingDisabled}

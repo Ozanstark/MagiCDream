@@ -36,7 +36,6 @@ export const ContestCard = ({ contest, onDelete }: ContestCardProps) => {
 
     fetchVotes();
 
-    // Subscribe to realtime votes
     const channel = supabase
       .channel('contest-votes')
       .on('postgres_changes', {
@@ -63,22 +62,26 @@ export const ContestCard = ({ contest, onDelete }: ContestCardProps) => {
     <div className="border rounded-lg p-4 space-y-4 bg-card">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <img 
-            src={contest.photo1_url} 
-            alt="Photo 1" 
-            className="w-full h-40 object-cover rounded" 
-          />
+          <div className="w-full h-32 md:h-48 relative rounded-lg overflow-hidden">
+            <img 
+              src={contest.photo1_url} 
+              alt="Photo 1" 
+              className="w-full h-full object-contain bg-black/5" 
+            />
+          </div>
           <Progress value={photo1Percentage} className="h-2" />
           <p className="text-center text-sm">
             {votes.photo1} oy ({photo1Percentage.toFixed(1)}%)
           </p>
         </div>
         <div className="space-y-2">
-          <img 
-            src={contest.photo2_url} 
-            alt="Photo 2" 
-            className="w-full h-40 object-cover rounded" 
-          />
+          <div className="w-full h-32 md:h-48 relative rounded-lg overflow-hidden">
+            <img 
+              src={contest.photo2_url} 
+              alt="Photo 2" 
+              className="w-full h-full object-contain bg-black/5" 
+            />
+          </div>
           <Progress value={photo2Percentage} className="h-2" />
           <p className="text-center text-sm">
             {votes.photo2} oy ({photo2Percentage.toFixed(1)}%)

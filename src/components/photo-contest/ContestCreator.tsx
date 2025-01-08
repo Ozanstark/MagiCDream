@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { ImageUploader } from "../instagram/ImageUploader";
 import { Button } from "../ui/button";
-import { Plus } from "lucide-react";
+import { ImageUploader } from "../instagram/ImageUploader";
+import { Card } from "../ui/card";
 
 interface ContestCreatorProps {
-  onCreateContest: (images: string[]) => void;
+  onCreateContest: (selectedImages: string[]) => void;
   isCreating: boolean;
   setIsCreating: (value: boolean) => void;
 }
@@ -20,42 +20,58 @@ export const ContestCreator = ({ onCreateContest, isCreating, setIsCreating }: C
     setSelectedImages(prev => prev.filter((_, i) => i !== index));
   };
 
-  return !isCreating ? (
-    <Button onClick={() => setIsCreating(true)} className="w-full bg-primary hover:bg-primary/90">
-      <Plus className="w-4 h-4 mr-2" />
-      Yeni Yarışma Oluştur
-    </Button>
-  ) : (
-    <div className="space-y-4">
-      <ImageUploader
-        selectedImages={selectedImages}
-        onImageUpload={handleImageUpload}
-        onImageRemove={handleImageRemove}
-        maxImages={2}
-        minImages={2}
-      />
+  const handleSubmit = () => {
+    if (selectedImages.length === 2) {
+      onCreateContest(selectedImages);
+      setSelectedImages([]);
+    }
+  };
+
+  if (!isCreating) {
+    return (
+      <Button onClick={() => setIsCreating(true)}>
+        Yeni Yarışma Başlat
+      </Button>
+    );
+  }
+
+  return (
+    <Card className="p-4 space-y-4">
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold">Fotoğrafları Seç</h3>
+        <p className="text-sm text-muted-foreground">
+          Yarışma için 2 fotoğraf seçin
+        </p>
+      </div>
+
+      <div className="w-full">
+        <ImageUploader
+          selectedImages={selectedImages}
+          onImageUpload={handleImageUpload}
+          onImageRemove={handleImageRemove}
+          maxImages={2}
+          minImages={2}
+        />
+      </div>
 
       <div className="flex gap-2">
         <Button
-          onClick={() => {
-            onCreateContest(selectedImages);
-            setSelectedImages([]);
-          }}
-          disabled={selectedImages.length < 2}
+          onClick={handleSubmit}
+          disabled={selectedImages.length !== 2}
           className="flex-1"
         >
-          Yarışma Oluştur
+          Yarışmayı Başlat
         </Button>
         <Button
+          variant="outline"
           onClick={() => {
             setIsCreating(false);
             setSelectedImages([]);
           }}
-          variant="outline"
         >
           İptal
         </Button>
       </div>
-    </div>
+    </Card>
   );
 };

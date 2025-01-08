@@ -18,6 +18,7 @@ import WorkoutPlanGenerator from "@/components/WorkoutPlanGenerator";
 import EncryptedMessage from "@/components/EncryptedMessage";
 import PhotoEncryption from "@/components/PhotoEncryption";
 import Credits from "@/components/Credits";
+import { AnnouncementsBanner } from "@/components/AnnouncementsBanner";
 
 const Index = () => {
   const [mode, setMode] = useState<
@@ -81,6 +82,7 @@ const Index = () => {
       <div className="fixed top-4 right-4 z-50 flex flex-col gap-4">
         <Credits />
         <AdminModeSwitcher />
+        <AnnouncementsBanner />
       </div>
       <div className="fixed left-4 top-4">
         <ModeSwitcher mode={mode} onModeChange={setMode} />

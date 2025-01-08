@@ -13,37 +13,7 @@ interface CreditLog {
   profiles: {
     subscription_status: string;
   } | null;
-  users: {
-    email: string;
-  } | null;
 }
-
-const getActionLabel = (actionType: string): string => {
-  const actionLabels: Record<string, string> = {
-    'image': 'Görsel Oluşturma',
-    'text': 'Metin Oluşturma',
-    'blog': 'Blog Giriş Yazısı',
-    'essay': 'Makale İnsanlaştırma',
-    'twitter-bio': 'Twitter Profil Yazısı',
-    'linkedin': 'LinkedIn Başlık',
-    'wedding-speech': 'Düğün Konuşması',
-    'diet': 'Diyet Planı',
-    'workout': 'Antrenman Planı',
-    'tweet': 'Tweet Oluşturma',
-    'instagram': 'Instagram Analizi',
-    'email': 'E-posta Oluşturma',
-    'humanizer': 'Metin İnsanlaştırma',
-    'translator': 'Çeviri',
-    'encrypt': 'Mesaj Şifreleme',
-    'photo-encrypt': 'Fotoğraf Şifreleme',
-    'admin_bulk_add': 'Toplu Kredi Yükleme',
-    'admin_add': 'Admin Kredi Yükleme',
-    'signup_bonus': 'Kayıt Bonusu',
-    'credit_consumption': 'Kredi Kullanımı'
-  };
-
-  return actionLabels[actionType] || actionType;
-};
 
 export const UserActivityTable = () => {
   const { data: activities } = useQuery<CreditLog[]>({
@@ -58,8 +28,7 @@ export const UserActivityTable = () => {
           amount,
           created_at,
           description,
-          profiles (subscription_status),
-          users:profiles!credits_log_user_id_profiles_fkey (email)
+          profiles:profiles(subscription_status)
         `)
         .order('created_at', { ascending: false })
         .limit(100);
@@ -78,7 +47,7 @@ export const UserActivityTable = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>E-posta</TableHead>
+            <TableHead>Kullanıcı ID</TableHead>
             <TableHead>İşlem</TableHead>
             <TableHead>Miktar</TableHead>
             <TableHead>Tarih</TableHead>
@@ -88,8 +57,8 @@ export const UserActivityTable = () => {
         <TableBody>
           {activities?.map((activity) => (
             <TableRow key={activity.id}>
-              <TableCell className="font-medium">{activity.users?.email || activity.user_id}</TableCell>
-              <TableCell>{getActionLabel(activity.action_type)}</TableCell>
+              <TableCell className="font-medium">{activity.user_id}</TableCell>
+              <TableCell>{activity.action_type}</TableCell>
               <TableCell>{activity.amount}</TableCell>
               <TableCell>{new Date(activity.created_at).toLocaleString('tr-TR')}</TableCell>
               <TableCell>{activity.profiles?.subscription_status || '-'}</TableCell>

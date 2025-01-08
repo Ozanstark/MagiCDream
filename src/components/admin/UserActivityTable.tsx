@@ -15,6 +15,31 @@ interface CreditLog {
   } | null;
 }
 
+const getActionLabel = (actionType: string): string => {
+  const actionLabels: Record<string, string> = {
+    'image': 'Image Generator',
+    'text': 'Text Generator',
+    'blog': 'Blog Intro Generator',
+    'essay': 'Essay Humanizer',
+    'twitter-bio': 'Twitter Bio Generator',
+    'linkedin': 'LinkedIn Headline Generator',
+    'wedding-speech': 'Wedding Speech Generator',
+    'diet': 'Diet Plan Generator',
+    'workout': 'Workout Plan Generator',
+    'tweet': 'Tweet Generator',
+    'instagram': 'Instagram Analysis',
+    'email': 'Email Generator',
+    'humanizer': 'AI Paragraph Humanizer',
+    'translator': 'AI Translator',
+    'encrypt': 'Message Encryption',
+    'photo-encrypt': 'Photo Encryption',
+    'admin_bulk_add': 'Admin Kredi Yükleme',
+    'signup_bonus': 'Kayıt Bonusu',
+  };
+
+  return actionLabels[actionType] || actionType;
+};
+
 export const UserActivityTable = () => {
   const { data: activities } = useQuery<CreditLog[]>({
     queryKey: ['user-activities'],
@@ -58,7 +83,7 @@ export const UserActivityTable = () => {
           {activities?.map((activity) => (
             <TableRow key={activity.id}>
               <TableCell className="font-medium">{activity.user_id}</TableCell>
-              <TableCell>{activity.action_type}</TableCell>
+              <TableCell>{getActionLabel(activity.action_type)}</TableCell>
               <TableCell>{activity.amount}</TableCell>
               <TableCell>{new Date(activity.created_at).toLocaleString('tr-TR')}</TableCell>
               <TableCell>{activity.profiles?.subscription_status || '-'}</TableCell>

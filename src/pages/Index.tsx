@@ -92,7 +92,7 @@ const Index = () => {
       </div>
       <div className="ml-64 w-full max-w-4xl">
         <h1 className="text-4xl font-bold text-center mb-2 rainbow-text">
-          Unleash Your Imagination
+          Magic Dream
         </h1>
         <div className="flex justify-center mb-4">
           <AnnouncementsBanner />

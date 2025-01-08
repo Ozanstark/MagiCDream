@@ -17,7 +17,6 @@ import DietPlanGenerator from "@/components/DietPlanGenerator";
 import WorkoutPlanGenerator from "@/components/WorkoutPlanGenerator";
 import EncryptedMessage from "@/components/EncryptedMessage";
 import PhotoEncryption from "@/components/PhotoEncryption";
-import FollowerQuiz from "@/components/FollowerQuiz";
 import Credits from "@/components/Credits";
 import { AnnouncementsBanner } from "@/components/AnnouncementsBanner";
 
@@ -39,13 +38,10 @@ const Index = () => {
     | "workout"
     | "encrypt"
     | "photo-encrypt"
-    | "quiz"
   >("image");
 
   const getComponent = () => {
     switch (mode) {
-      case "quiz":
-        return <FollowerQuiz />;
       case "text":
         return <TextGenerator />;
       case "tweet":

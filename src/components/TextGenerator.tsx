@@ -25,6 +25,17 @@ const TextGenerator = () => {
 
     setIsLoading(true);
     try {
+      // Check credits before making the API call
+      const canProceed = await checkTextGeneration();
+      if (!canProceed) {
+        toast({
+          title: "Error",
+          description: "Insufficient credits to generate text",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke("generate-text", {
         body: { prompt },
       });
@@ -32,24 +43,13 @@ const TextGenerator = () => {
       if (error) throw error;
 
       if (data?.generatedText) {
-        // Check and deduct credits only after successful generation
-        const canProceed = await checkTextGeneration();
-        if (!canProceed) {
-          toast({
-            title: "Error",
-            description: "Insufficient credits to generate text",
-            variant: "destructive",
-          });
-          return;
-        }
-
         setGeneratedText(data.generatedText);
         toast({
           title: "Success!",
           description: "Text generated successfully.",
         });
       } else {
-        throw new Error("No text was generated");
+        throw new Error("Failed to generate text");
       }
     } catch (error) {
       console.error("Error generating text:", error);

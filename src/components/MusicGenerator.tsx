@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Wand2 } from "lucide-react";
 import { useToast } from "./ui/use-toast";
-import { pipeline } from "@huggingface/transformers";
+import { pipeline, TextToAudioPipeline } from "@huggingface/transformers";
 import GeneratorHeader from "./generator/GeneratorHeader";
 import { useCredits } from "@/hooks/useCredits";
 import { supabase } from "@/integrations/supabase/client";
@@ -33,15 +33,14 @@ const MusicGenerator = () => {
       const synthesizer = await pipeline(
         "text-to-audio",
         "facebook/musicgen-small"
-      );
+      ) as TextToAudioPipeline;
 
       // Generate music
-      const audioData = await synthesizer(prompt, {
-        max_new_tokens: 256,
-      });
+      const audioData = await synthesizer(prompt);
 
-      // Convert audio data to blob and create URL
-      const blob = new Blob([audioData], { type: "audio/wav" });
+      // Convert audio data to blob
+      const audioArrayBuffer = await audioData.arrayBuffer();
+      const blob = new Blob([audioArrayBuffer], { type: "audio/wav" });
       const audioUrl = URL.createObjectURL(blob);
 
       // Save to Supabase

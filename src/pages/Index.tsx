@@ -17,6 +17,7 @@ import DietPlanGenerator from "@/components/DietPlanGenerator";
 import WorkoutPlanGenerator from "@/components/WorkoutPlanGenerator";
 import EncryptedMessage from "@/components/EncryptedMessage";
 import PhotoEncryption from "@/components/PhotoEncryption";
+import MusicGenerator from "@/components/MusicGenerator";
 import Credits from "@/components/Credits";
 
 const Index = () => {
@@ -37,6 +38,7 @@ const Index = () => {
     | "workout"
     | "encrypt"
     | "photo-encrypt"
+    | "music"
   >("image");
 
   const getComponent = () => {
@@ -71,6 +73,8 @@ const Index = () => {
         return <EncryptedMessage />;
       case "photo-encrypt":
         return <PhotoEncryption />;
+      case "music":
+        return <MusicGenerator />;
       default:
         return <ImageGenerator />;
     }

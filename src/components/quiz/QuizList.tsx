@@ -43,7 +43,7 @@ const QuizList = ({ onQuizSelect }: { onQuizSelect: (quizId: string) => void }) 
         quiz_questions (count),
         quiz_results (count)
       `)
-      .or(`user_id.eq.${session.session.user.id},share_code.not.is.null`);
+      .or('user_id.eq.' + session.session.user.id + ',share_code.not.is.null');
 
     if (error) {
       console.error("Error loading quizzes:", error);

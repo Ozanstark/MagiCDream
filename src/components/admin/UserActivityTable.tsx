@@ -10,7 +10,7 @@ interface CreditLog {
   amount: number;
   created_at: string;
   description: string | null;
-  profiles?: {
+  profiles: {
     subscription_status: string;
   } | null;
 }
@@ -22,8 +22,13 @@ export const UserActivityTable = () => {
       const { data: creditLogs, error } = await supabase
         .from('credits_log')
         .select(`
-          *,
-          profiles!credits_log_user_id_fkey(subscription_status)
+          id,
+          user_id,
+          action_type,
+          amount,
+          created_at,
+          description,
+          profiles:user_id(subscription_status)
         `)
         .order('created_at', { ascending: false })
         .limit(100);
@@ -33,7 +38,7 @@ export const UserActivityTable = () => {
         throw error;
       }
 
-      return creditLogs || [];
+      return creditLogs as CreditLog[];
     }
   });
 

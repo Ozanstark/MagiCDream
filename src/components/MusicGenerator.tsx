@@ -37,7 +37,8 @@ const MusicGenerator = () => {
 
       // Generate music
       const audioData = await synthesizer(prompt, {
-        audio_length_in_seconds: 30
+        max_new_tokens: 512,
+        temperature: 0.9,
       });
 
       // Convert audio data to blob

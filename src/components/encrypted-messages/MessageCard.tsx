@@ -35,29 +35,8 @@ export const MessageCard = ({ message, onDelete }: MessageCardProps) => {
   };
 
   const handleDelete = async () => {
-    try {
-      const { error } = await supabase
-        .from("encrypted_messages")
-        .delete()
-        .eq("id", message.id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Başarılı",
-        description: "Mesaj başarıyla silindi",
-      });
-
-      if (onDelete) {
-        onDelete(message.id);
-      }
-    } catch (error) {
-      console.error("Error deleting message:", error);
-      toast({
-        title: "Hata",
-        description: "Mesaj silinirken bir hata oluştu",
-        variant: "destructive",
-      });
+    if (onDelete) {
+      onDelete(message.id);
     }
   };
 
@@ -135,7 +114,7 @@ export const MessageCard = ({ message, onDelete }: MessageCardProps) => {
       <div className="space-y-2">
         <div>
           <p className="text-sm text-gray-400">Şifreli Mesaj:</p>
-          <p className="text-white font-mono text-sm">Mesaj {message.id.slice(-4)}</p>
+          <p className="text-white font-mono text-sm break-all">{message.encrypted_content}</p>
         </div>
         <div>
           <p className="text-sm text-gray-400">Şifre Çözme Anahtarı:</p>

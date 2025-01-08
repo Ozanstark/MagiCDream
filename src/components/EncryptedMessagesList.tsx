@@ -29,9 +29,13 @@ export const EncryptedMessagesList = ({ onMessageDecrypted }: EncryptedMessagesL
   }, []);
 
   const fetchUserMessages = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
     const { data: messages, error } = await supabase
       .from("encrypted_messages")
       .select("*")
+      .eq('user_id', session.user.id)
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -51,8 +55,28 @@ export const EncryptedMessagesList = ({ onMessageDecrypted }: EncryptedMessagesL
     setDecryptedMessage(decrypted);
   };
 
-  const handleMessageDelete = (messageId: string) => {
-    setUserMessages(prevMessages => prevMessages.filter(msg => msg.id !== messageId));
+  const handleMessageDelete = async (messageId: string) => {
+    try {
+      const { error } = await supabase
+        .from("encrypted_messages")
+        .delete()
+        .eq('id', messageId);
+
+      if (error) throw error;
+
+      setUserMessages(prevMessages => prevMessages.filter(msg => msg.id !== messageId));
+      toast({
+        title: "Başarılı",
+        description: "Mesaj başarıyla silindi",
+      });
+    } catch (error) {
+      console.error("Error deleting message:", error);
+      toast({
+        title: "Hata",
+        description: "Mesaj silinirken bir hata oluştu",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -83,6 +107,9 @@ export const EncryptedMessagesList = ({ onMessageDecrypted }: EncryptedMessagesL
                 onDelete={handleMessageDelete}
               />
             ))}
+            {userMessages.length === 0 && (
+              <p className="text-gray-400 text-center py-4">Henüz hiç mesajınız yok</p>
+            )}
           </div>
         </div>
       </div>

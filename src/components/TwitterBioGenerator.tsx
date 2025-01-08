@@ -55,8 +55,8 @@ const TwitterBioGenerator = () => {
         throw error;
       }
 
-      if (data) {
-        setResponse(data);
+      if (data?.data) {
+        setResponse(data.data);
         console.log('Bio generated successfully, credits should be deducted');
       } else {
         console.error('Unexpected response format:', data);

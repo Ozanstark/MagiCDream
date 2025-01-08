@@ -7,12 +7,14 @@ interface ImageUploaderProps {
   selectedImages: string[];
   onImageUpload: (images: string[]) => void;
   onImageRemove: (index: number) => void;
+  maxImages?: number;
 }
 
 export const ImageUploader = ({
   selectedImages,
   onImageUpload,
   onImageRemove,
+  maxImages = 10
 }: ImageUploaderProps) => {
   const { toast } = useToast();
 
@@ -21,10 +23,10 @@ export const ImageUploader = ({
     if (!files) return;
 
     const newImages = Array.from(files).map(file => URL.createObjectURL(file));
-    if (selectedImages.length + newImages.length > 2) {
+    if (selectedImages.length + newImages.length > maxImages) {
       toast({
         title: "Hata",
-        description: "En fazla 2 fotoğraf seçebilirsiniz.",
+        description: `En fazla ${maxImages} fotoğraf seçebilirsiniz.`,
         variant: "destructive",
       });
       return;
@@ -33,7 +35,7 @@ export const ImageUploader = ({
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
       {selectedImages.map((image, index) => (
         <div key={index} className="relative">
           <img
@@ -51,7 +53,7 @@ export const ImageUploader = ({
           </Button>
         </div>
       ))}
-      {selectedImages.length < 2 && (
+      {selectedImages.length < maxImages && (
         <div className="aspect-square flex items-center justify-center border-2 border-dashed rounded-lg">
           <Input
             type="file"
@@ -59,6 +61,7 @@ export const ImageUploader = ({
             onChange={handleImageUpload}
             className="hidden"
             id="image-upload"
+            multiple
           />
           <label
             htmlFor="image-upload"

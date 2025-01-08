@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { ImageUploader } from "./instagram/ImageUploader";
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Share2 } from "lucide-react";
@@ -21,10 +20,10 @@ const PhotoContest = () => {
 
   const handleCreateContest = async () => {
     try {
-      if (selectedImages.length !== 2) {
+      if (selectedImages.length < 1) {
         toast({
           title: "Hata",
-          description: "Lütfen 2 fotoğraf seçin",
+          description: "En az 1 fotoğraf seçmelisiniz",
           variant: "destructive",
         });
         return;
@@ -34,7 +33,7 @@ const PhotoContest = () => {
         .from('photo_contests')
         .insert({
           photo1_url: selectedImages[0],
-          photo2_url: selectedImages[1],
+          photo2_url: selectedImages[1] || selectedImages[0], // If only one photo, use it twice
           user_id: (await supabase.auth.getUser()).data.user?.id
         })
         .select('share_code')
@@ -72,7 +71,7 @@ const PhotoContest = () => {
       <div className="space-y-4">
         <h2 className="text-2xl font-bold">Anlık Fotoğraf Yarışması</h2>
         <p className="text-muted-foreground">
-          İki fotoğraf yükleyin ve arkadaşlarınızın hangisini daha çok beğendiğini öğrenin!
+          Bir veya daha fazla fotoğraf yükleyin ve arkadaşlarınızın hangisini daha çok beğendiğini öğrenin!
         </p>
       </div>
 
@@ -80,12 +79,13 @@ const PhotoContest = () => {
         selectedImages={selectedImages}
         onImageUpload={handleImageUpload}
         onImageRemove={handleImageRemove}
+        maxImages={10}
       />
 
       {!shareCode ? (
         <Button
           onClick={handleCreateContest}
-          disabled={selectedImages.length !== 2}
+          disabled={selectedImages.length === 0}
           className="w-full"
         >
           Yarışma Oluştur

@@ -1,4 +1,4 @@
-import { Image, MessageSquareText, Twitter, Instagram, Mail, FileText, Globe, Crown, BookOpen, PenTool, UserCircle, Linkedin, Heart, Salad, Dumbbell, Lock } from "lucide-react";
+import { Image, MessageSquareText, BookOpen, PenTool } from "lucide-react";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -46,7 +46,11 @@ const AdminModeSwitcher = ({ mode, onModeChange }: AdminModeSwitcherProps) => {
             <span>{item.label}</span>
           </div>
           {item.isPremium && (
-            <Crown className="h-4 w-4 text-yellow-500" />
+            <img 
+              src="/lovable-uploads/6e858f00-7860-4b5f-b35a-7a25c98a71ff.png"
+              alt="WOW effect"
+              className="w-12 h-12 transform rotate-12 opacity-90 group-hover:scale-110 transition-transform"
+            />
           )}
         </Button>
       ))}

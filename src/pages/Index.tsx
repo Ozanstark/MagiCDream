@@ -81,7 +81,7 @@ const Index = () => {
       <div className="fixed top-4 right-4 z-50">
         <Credits />
       </div>
-      <div className="flex gap-4">
+      <div className="fixed left-4 top-4 flex flex-col gap-4">
         <ModeSwitcher mode={mode} onModeChange={setMode} />
         <AdminModeSwitcher mode={mode} onModeChange={setMode} />
       </div>

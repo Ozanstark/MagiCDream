@@ -36,11 +36,12 @@ const MusicGenerator = () => {
       ) as TextToAudioPipeline;
 
       // Generate music
-      const audioData = await synthesizer(prompt);
+      const audioData = await synthesizer(prompt, {
+        audio_length_in_seconds: 30
+      });
 
       // Convert audio data to blob
-      const audioArrayBuffer = await audioData.arrayBuffer();
-      const blob = new Blob([audioArrayBuffer], { type: "audio/wav" });
+      const blob = new Blob([audioData.audio], { type: "audio/wav" });
       const audioUrl = URL.createObjectURL(blob);
 
       // Save to Supabase

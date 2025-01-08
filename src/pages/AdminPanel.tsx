@@ -18,28 +18,59 @@ import { UsersTable } from "@/components/admin/UsersTable";
 import { UserActivityTable } from "@/components/admin/UserActivityTable";
 import { ErrorLogsTable } from "@/components/admin/ErrorLogsTable";
 import { AnnouncementsManager } from "@/components/admin/AnnouncementsManager";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 const AdminPanel = () => {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkAdminStatus = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user?.email === 'ozansurel@gmail.com') {
-        setIsAdmin(true);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user?.email === 'ozansurel@gmail.com') {
+          setIsAdmin(true);
+        }
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     checkAdminStatus();
   }, []);
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-pulse">Yükleniyor...</div>
+      </div>
+    );
+  }
+
   if (!isAdmin) {
-    return <div className="p-8">Yetkisiz erişim</div>;
+    return (
+      <div className="container mx-auto p-8">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Bu sayfaya erişim yetkiniz bulunmamaktadır.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
   }
 
   return (
-    <div className="container mx-auto p-8">
-      <h1 className="text-4xl font-bold mb-8">Admin Panel</h1>
+    <div className="container mx-auto p-8 space-y-8">
+      <div className="flex items-center justify-between">
+        <h1 className="text-4xl font-bold">Admin Panel</h1>
+        <div className="text-sm text-muted-foreground">
+          Son güncelleme: {new Date().toLocaleString('tr-TR')}
+        </div>
+      </div>
       
       <div className="mb-8">
         <StatsOverview />
@@ -57,7 +88,9 @@ const AdminPanel = () => {
           <Card>
             <CardHeader>
               <CardTitle>Kullanıcılar</CardTitle>
-              <CardDescription>Tüm kayıtlı kullanıcılar ve profilleri</CardDescription>
+              <CardDescription>
+                Tüm kayıtlı kullanıcılar ve profil bilgileri
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <UsersTable />
@@ -69,7 +102,9 @@ const AdminPanel = () => {
           <Card>
             <CardHeader>
               <CardTitle>Kullanıcı Hareketleri</CardTitle>
-              <CardDescription>Son kullanıcı işlemleri ve kredi hareketleri</CardDescription>
+              <CardDescription>
+                Son kullanıcı işlemleri ve kredi hareketleri
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <UserActivityTable />
@@ -81,7 +116,9 @@ const AdminPanel = () => {
           <Card>
             <CardHeader>
               <CardTitle>Hata Logları</CardTitle>
-              <CardDescription>Sistem hataları ve kullanıcı sorunları</CardDescription>
+              <CardDescription>
+                Sistem hataları ve kullanıcı sorunları
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <ErrorLogsTable />
@@ -93,7 +130,9 @@ const AdminPanel = () => {
           <Card>
             <CardHeader>
               <CardTitle>Duyurular</CardTitle>
-              <CardDescription>Sistem duyuruları ve bildirimler</CardDescription>
+              <CardDescription>
+                Sistem duyuruları ve bildirimler
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <AnnouncementsManager />

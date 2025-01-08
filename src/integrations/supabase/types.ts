@@ -263,6 +263,33 @@ export type Database = {
         }
         Relationships: []
       }
+      follower_quizzes: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          share_code: string | null
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          share_code?: string | null
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          share_code?: string | null
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       generated_images: {
         Row: {
           created_at: string
@@ -352,6 +379,73 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      quiz_questions: {
+        Row: {
+          correct_answer: string
+          created_at: string
+          id: string
+          question: string
+          quiz_id: string | null
+          wrong_answers: string[]
+        }
+        Insert: {
+          correct_answer: string
+          created_at?: string
+          id?: string
+          question: string
+          quiz_id?: string | null
+          wrong_answers: string[]
+        }
+        Update: {
+          correct_answer?: string
+          created_at?: string
+          id?: string
+          question?: string
+          quiz_id?: string | null
+          wrong_answers?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "follower_quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_results: {
+        Row: {
+          completed_at: string
+          id: string
+          quiz_id: string | null
+          score: number
+          user_id: string | null
+        }
+        Insert: {
+          completed_at?: string
+          id?: string
+          quiz_id?: string | null
+          score: number
+          user_id?: string | null
+        }
+        Update: {
+          completed_at?: string
+          id?: string
+          quiz_id?: string | null
+          score?: number
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_results_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "follower_quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reference_images: {
         Row: {

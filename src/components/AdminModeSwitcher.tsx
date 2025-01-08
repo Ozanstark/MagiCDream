@@ -2,9 +2,11 @@ import { Shield } from "lucide-react";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 const AdminModeSwitcher = () => {
   const [isAdmin, setIsAdmin] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkAdminStatus = async () => {
@@ -24,6 +26,7 @@ const AdminModeSwitcher = () => {
       <Button
         variant="outline"
         className="flex items-center gap-2 text-red-500 hover:text-red-400 transition-colors"
+        onClick={() => navigate('/admin')}
       >
         <Shield className="h-5 w-5" />
         <span>Admin Panel</span>

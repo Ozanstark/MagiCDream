@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ModeSwitcher from "@/components/ModeSwitcher";
 import AdminModeSwitcher from "@/components/AdminModeSwitcher";
 import TextGenerator from "@/components/TextGenerator";
@@ -20,6 +20,8 @@ import PhotoEncryption from "@/components/PhotoEncryption";
 import PhotoContest from "@/components/PhotoContest";
 import Credits from "@/components/Credits";
 import { AnnouncementsBanner } from "@/components/AnnouncementsBanner";
+import { supabase } from "@/integrations/supabase/client";
+import AuthRequiredMessage from "@/components/shared/AuthRequiredMessage";
 
 const Index = () => {
   const [mode, setMode] = useState<
@@ -41,8 +43,26 @@ const Index = () => {
     | "photo-encrypt"
     | "photo-contest"
   >("image");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+
+      supabase.auth.onAuthStateChange((_event, session) => {
+        setIsAuthenticated(!!session);
+      });
+    };
+
+    checkAuth();
+  }, []);
 
   const getComponent = () => {
+    if (!isAuthenticated) {
+      return <AuthRequiredMessage />;
+    }
+
     switch (mode) {
       case "text":
         return <TextGenerator />;

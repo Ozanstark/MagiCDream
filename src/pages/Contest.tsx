@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Card } from "@/components/ui/card";
+import { ImagePlus } from "lucide-react";
 
 const Contest = () => {
   const { shareCode } = useParams();
@@ -10,6 +12,7 @@ const Contest = () => {
   const [loading, setLoading] = useState(true);
   const [votingDisabled, setVotingDisabled] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchContest();
@@ -117,6 +120,25 @@ const Contest = () => {
             </div>
           ))}
         </div>
+
+        {votingDisabled && (
+          <Card className="p-6 bg-primary/5 border-primary/20">
+            <div className="text-center space-y-4">
+              <h2 className="text-xl font-semibold">Siz de bir yarışma başlatın!</h2>
+              <p className="text-muted-foreground">
+                Kendi fotoğraf yarışmanızı oluşturun ve arkadaşlarınızın oylarını toplayın.
+                Hangi fotoğrafınızın daha çok beğenileceğini öğrenin!
+              </p>
+              <Button
+                onClick={() => navigate("/")}
+                className="bg-primary hover:bg-primary/90"
+              >
+                <ImagePlus className="w-5 h-5 mr-2" />
+                Yarışma Oluştur
+              </Button>
+            </div>
+          </Card>
+        )}
       </div>
     </div>
   );

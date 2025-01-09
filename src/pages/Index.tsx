@@ -18,7 +18,6 @@ import EncryptedMessage from "@/components/EncryptedMessage";
 import PhotoEncryption from "@/components/PhotoEncryption";
 import PhotoContest from "@/components/PhotoContest";
 import Credits from "@/components/Credits";
-import { AnnouncementsBanner } from "@/components/AnnouncementsBanner";
 import { supabase } from "@/integrations/supabase/client";
 import AuthRequiredMessage from "@/components/shared/AuthRequiredMessage";
 
@@ -110,9 +109,6 @@ const Index = () => {
         <h1 className="text-4xl font-bold text-center mb-2 rainbow-text">
           Magic Dream
         </h1>
-        <div className="flex justify-center mb-4">
-          <AnnouncementsBanner />
-        </div>
         {getComponent()}
       </div>
     </div>

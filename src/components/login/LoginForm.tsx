@@ -75,12 +75,24 @@ export const LoginForm = () => {
                 label: 'text-foreground',
               }
             }}
-            view="sign_in"
-            showLinks={false}
             localization={{
               variables: {
                 sign_in: {
+                  email_label: "E-posta",
+                  password_label: "Şifre",
+                  button_label: "Giriş Yap",
+                  loading_button_label: "Giriş yapılıyor...",
+                  password_input_placeholder: "Şifreniz",
+                  email_input_placeholder: "E-posta adresiniz",
                   social_provider_text: "Twitter ile devam et"
+                },
+                sign_up: {
+                  email_label: "E-posta",
+                  password_label: "Şifre",
+                  button_label: "Kayıt Ol",
+                  loading_button_label: "Kayıt olunuyor...",
+                  password_input_placeholder: "Şifreniz",
+                  email_input_placeholder: "E-posta adresiniz",
                 }
               }
             }}

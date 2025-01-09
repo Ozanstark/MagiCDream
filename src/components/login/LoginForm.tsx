@@ -53,7 +53,6 @@ export const LoginForm = () => {
           <h2 className="text-2xl font-semibold mb-6 text-center text-white">Giriş Yap</h2>
           <Auth
             supabaseClient={supabase}
-            providers={["twitter"]}
             appearance={{
               theme: ThemeSupa,
               variables: {
@@ -86,8 +85,7 @@ export const LoginForm = () => {
                   button_label: "Giriş Yap",
                   loading_button_label: "Giriş yapılıyor...",
                   password_input_placeholder: "Şifreniz",
-                  email_input_placeholder: "E-posta adresiniz",
-                  social_provider_text: "Twitter ile devam et"
+                  email_input_placeholder: "E-posta adresiniz"
                 },
                 sign_up: {
                   email_label: "E-posta",

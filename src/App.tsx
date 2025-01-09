@@ -3,6 +3,7 @@ import Index from './pages/Index';
 import Login from './pages/Login';
 import Terms from './pages/Terms';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import AdminPanel from './pages/AdminPanel';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/admin" element={<AdminPanel />} />
       </Routes>
     </Router>
   );

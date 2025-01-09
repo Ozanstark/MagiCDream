@@ -3,7 +3,6 @@ import Index from './pages/Index';
 import Login from './pages/Login';
 import Terms from './pages/Terms';
 import PrivacyPolicy from './pages/PrivacyPolicy';
-import SomeOtherComponent from './components/SomeOtherComponent'; // Example of existing import
 
 function App() {
   return (
@@ -13,7 +12,6 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
-        <Route path="/some-other-route" element={<SomeOtherComponent />} /> {/* Example of existing route */}
       </Routes>
     </Router>
   );

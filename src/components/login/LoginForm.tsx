@@ -93,7 +93,7 @@ export const LoginForm = () => {
                   button_label: "Kayıt Ol",
                   loading_button_label: "Kayıt olunuyor...",
                   password_input_placeholder: "Şifreniz",
-                  email_input_placeholder: "E-posta adresiniz",
+                  email_input_placeholder: "E-posta adresiniz"
                 }
               }
             }}

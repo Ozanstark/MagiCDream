@@ -77,6 +77,7 @@ export const LoginForm = () => {
                 anchor: 'text-[#9b87f5] hover:text-[#7E69AB] transition-colors',
               }
             }}
+            providers={[]}
             localization={{
               variables: {
                 sign_in: {

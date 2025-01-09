@@ -8,10 +8,23 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Hash fragment'ı kontrol et ve işle
+    const handleHashFragment = async () => {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      if (hashParams.has('access_token')) {
+        // Hash varsa ana sayfaya yönlendir, Supabase otomatik olarak session'ı işleyecek
+        navigate('/', { replace: true });
+        return;
+      }
+    };
+
+    handleHashFragment();
+
+    // Normal session kontrolü
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate('/');
+        navigate('/', { replace: true });
       }
     };
 
@@ -19,7 +32,7 @@ const Login = () => {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
-        navigate('/');
+        navigate('/', { replace: true });
       }
     });
 
@@ -28,18 +41,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex">
-      <div className="flex-1 hidden lg:flex bg-muted items-center justify-center p-8">
-        <div className="max-w-2xl">
-          <h1 className="text-4xl font-bold rainbow-text mb-8">
-            CreativeMind Studio
-          </h1>
-          <p className="text-xl text-muted-foreground mb-12">
-            Yapay zeka destekli içerik üretim platformu
-          </p>
-          <FeaturesList />
-        </div>
-      </div>
-      
+      <FeaturesList />
       <LoginForm />
     </div>
   );

@@ -49,8 +49,8 @@ export const LoginForm = () => {
           </p>
         </div>
         
-        <div className="bg-card p-8 rounded-lg border border-border shadow-lg">
-          <h2 className="text-2xl font-semibold mb-6 text-center">Giriş Yap</h2>
+        <div className="bg-[#1A1F2C] p-8 rounded-lg border border-[#9b87f5]/20 shadow-xl">
+          <h2 className="text-2xl font-semibold mb-6 text-center text-white">Giriş Yap</h2>
           <Auth
             supabaseClient={supabase}
             providers={["twitter"]}
@@ -59,20 +59,23 @@ export const LoginForm = () => {
               variables: {
                 default: {
                   colors: {
-                    brand: 'hsl(var(--primary))',
-                    brandAccent: 'hsl(var(--primary))',
-                    inputBackground: 'hsl(var(--background))',
-                    inputText: 'hsl(var(--foreground))',
-                    inputBorder: 'hsl(var(--border))',
-                    inputBorderFocus: 'hsl(var(--ring))',
-                    inputBorderHover: 'hsl(var(--border))',
+                    brand: '#FFD700',
+                    brandAccent: '#F5C518',
+                    inputBackground: '#221F26',
+                    inputText: '#FFFFFF',
+                    inputBorder: '#403E43',
+                    inputBorderFocus: '#9b87f5',
+                    inputBorderHover: '#7E69AB',
                   }
                 }
               },
               className: {
-                button: 'button-primary',
-                input: 'input-premium',
-                label: 'text-foreground',
+                button: 'button-primary w-full py-3',
+                input: 'input-premium bg-[#221F26] border-[#403E43] text-white',
+                label: 'text-[#C8C8C9] mb-2',
+                container: 'space-y-4',
+                divider: 'bg-[#403E43]',
+                anchor: 'text-[#9b87f5] hover:text-[#7E69AB] transition-colors',
               }
             }}
             localization={{

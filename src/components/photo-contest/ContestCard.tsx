@@ -16,9 +16,39 @@ interface ContestCardProps {
 
 export const ContestCard = ({ contest, onDelete }: ContestCardProps) => {
   const [votes, setVotes] = useState({ photo1: 0, photo2: 0 });
+  const [photo1Url, setPhoto1Url] = useState<string | null>(null);
+  const [photo2Url, setPhoto2Url] = useState<string | null>(null);
+  
   const totalVotes = votes.photo1 + votes.photo2;
   const photo1Percentage = totalVotes > 0 ? (votes.photo1 / totalVotes) * 100 : 0;
   const photo2Percentage = totalVotes > 0 ? (votes.photo2 / totalVotes) * 100 : 0;
+
+  useEffect(() => {
+    const loadImages = async () => {
+      try {
+        // Get public URLs for both photos
+        const { data: publicUrl1 } = await supabase.storage
+          .from('generated-images')
+          .getPublicUrl(contest.photo1_url);
+          
+        const { data: publicUrl2 } = await supabase.storage
+          .from('generated-images')
+          .getPublicUrl(contest.photo2_url);
+
+        setPhoto1Url(publicUrl1?.publicUrl || contest.photo1_url);
+        setPhoto2Url(publicUrl2?.publicUrl || contest.photo2_url);
+        
+        console.log("Photo URLs loaded:", {
+          photo1: publicUrl1?.publicUrl || contest.photo1_url,
+          photo2: publicUrl2?.publicUrl || contest.photo2_url
+        });
+      } catch (error) {
+        console.error("Error loading image URLs:", error);
+      }
+    };
+
+    loadImages();
+  }, [contest.photo1_url, contest.photo2_url]);
 
   useEffect(() => {
     const fetchVotes = async () => {
@@ -62,12 +92,15 @@ export const ContestCard = ({ contest, onDelete }: ContestCardProps) => {
     <div className="border rounded-lg p-4 space-y-4 bg-card">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <div className="w-48 h-48 mx-auto bg-black/5 rounded-lg overflow-hidden flex items-center justify-center">
-            <img 
-              src={contest.photo1_url} 
-              alt="Photo 1" 
-              className="w-auto h-auto max-w-[90%] max-h-[90%] object-contain" 
-            />
+          <div className="w-32 h-32 md:w-48 md:h-48 mx-auto bg-black/5 rounded-lg overflow-hidden flex items-center justify-center">
+            {photo1Url && (
+              <img 
+                src={photo1Url} 
+                alt="Photo 1" 
+                className="w-auto h-auto max-w-[90%] max-h-[90%] object-contain" 
+                onError={(e) => console.error("Error loading image 1:", e)}
+              />
+            )}
           </div>
           <Progress value={photo1Percentage} className="h-2" />
           <p className="text-center text-sm">
@@ -75,12 +108,15 @@ export const ContestCard = ({ contest, onDelete }: ContestCardProps) => {
           </p>
         </div>
         <div className="space-y-2">
-          <div className="w-48 h-48 mx-auto bg-black/5 rounded-lg overflow-hidden flex items-center justify-center">
-            <img 
-              src={contest.photo2_url} 
-              alt="Photo 2" 
-              className="w-auto h-auto max-w-[90%] max-h-[90%] object-contain" 
-            />
+          <div className="w-32 h-32 md:w-48 md:h-48 mx-auto bg-black/5 rounded-lg overflow-hidden flex items-center justify-center">
+            {photo2Url && (
+              <img 
+                src={photo2Url} 
+                alt="Photo 2" 
+                className="w-auto h-auto max-w-[90%] max-h-[90%] object-contain" 
+                onError={(e) => console.error("Error loading image 2:", e)}
+              />
+            )}
           </div>
           <Progress value={photo2Percentage} className="h-2" />
           <p className="text-center text-sm">

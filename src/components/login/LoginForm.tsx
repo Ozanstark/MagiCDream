@@ -74,7 +74,8 @@ export const LoginForm = () => {
                 label: 'text-[#C8C8C9] mb-2',
                 container: 'space-y-4',
                 divider: 'bg-[#403E43]',
-                anchor: 'text-[#9b87f5] hover:text-[#7E69AB] transition-colors',
+                anchor: 'text-[#9b87f5] hover:text-[#7E69AB] transition-colors text-lg',
+                message: 'text-center mt-6',
               }
             }}
             providers={[]}
@@ -86,7 +87,8 @@ export const LoginForm = () => {
                   button_label: "Giriş Yap",
                   loading_button_label: "Giriş yapılıyor...",
                   password_input_placeholder: "Şifreniz",
-                  email_input_placeholder: "E-posta adresiniz"
+                  email_input_placeholder: "E-posta adresiniz",
+                  link_text: "Zaten hesabınız var mı? Giriş yapın"
                 },
                 sign_up: {
                   email_label: "E-posta",
@@ -94,7 +96,15 @@ export const LoginForm = () => {
                   button_label: "Kayıt Ol",
                   loading_button_label: "Kayıt olunuyor...",
                   password_input_placeholder: "Şifreniz",
-                  email_input_placeholder: "E-posta adresiniz"
+                  email_input_placeholder: "E-posta adresiniz",
+                  link_text: "Hesabınız yok mu? Hemen ücretsiz kayıt olun!"
+                },
+                forgotten_password: {
+                  link_text: "Şifrenizi mi unuttunuz?",
+                  button_label: "Şifremi Sıfırla",
+                  loading_button_label: "Şifre sıfırlama bağlantısı gönderiliyor...",
+                  email_label: "E-posta",
+                  password_label: "Şifre",
                 }
               }
             }}

@@ -9,6 +9,8 @@ import GeneratorHeader from "./generator/GeneratorHeader";
 import GeneratorControls from "./generator/GeneratorControls";
 import { useGeneratedImages } from "@/hooks/useGeneratedImages";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import AuthRequiredMessage from "./shared/AuthRequiredMessage";
 
 interface AdvancedSettingsConfig {
   guidance_scale?: number;
@@ -30,14 +32,41 @@ const ImageGenerator = () => {
     width: 512,
     height: 512
   });
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   
   const { toast } = useToast();
   const { checkImageGeneration } = useApiLimits();
   const { generatedImages, setGeneratedImages, loadGeneratedImages } = useGeneratedImages();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    loadGeneratedImages();
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        setIsAuthenticated(!!session);
+        if (!session) {
+          setGeneratedImages([]);
+          setCurrentImage(null);
+        }
+      });
+
+      return () => subscription.unsubscribe();
+    };
+
+    checkAuth();
   }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadGeneratedImages();
+    }
+  }, [isAuthenticated]);
+
+  if (!isAuthenticated) {
+    return <AuthRequiredMessage />;
+  }
 
   const handleImageDelete = (index: number) => {
     setGeneratedImages(prev => {

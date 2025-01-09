@@ -42,7 +42,7 @@ export const LoginForm = () => {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center lg:hidden">
           <h2 className="text-3xl font-bold rainbow-text mb-4">
-            magic-painting-engine-77
+            Ucretsiz Yapay Zeka
           </h2>
           <p className="text-muted-foreground mb-8">
             Yapay zeka destekli içerik üretim platformu

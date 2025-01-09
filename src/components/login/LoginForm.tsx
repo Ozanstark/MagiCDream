@@ -53,7 +53,6 @@ export const LoginForm = () => {
           <h2 className="text-2xl font-semibold mb-6 text-center">Giriş Yap</h2>
           <Auth
             supabaseClient={supabase}
-            providers={["google", "twitter"]}
             appearance={{
               theme: ThemeSupa,
               variables: {

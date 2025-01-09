@@ -28,7 +28,7 @@ export const UserActivityTable = () => {
           amount,
           created_at,
           description,
-          profiles:profiles(subscription_status)
+          profiles!credits_log_user_id_profiles_fkey (subscription_status)
         `)
         .order('created_at', { ascending: false })
         .limit(100);
@@ -38,7 +38,13 @@ export const UserActivityTable = () => {
         throw error;
       }
 
-      return (creditLogs || []) as CreditLog[];
+      // Transform the data to match the CreditLog interface
+      const transformedLogs = creditLogs?.map(log => ({
+        ...log,
+        profiles: log.profiles?.[0] || null // Take the first profile since it's returning an array
+      })) as CreditLog[];
+
+      return transformedLogs || [];
     }
   });
 

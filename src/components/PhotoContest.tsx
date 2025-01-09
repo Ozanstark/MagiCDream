@@ -28,6 +28,7 @@ const PhotoContest = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+      console.log("Fetched contests:", userContests);
       setContests(userContests || []);
     } catch (error) {
       console.error('Error fetching contests:', error);
@@ -41,6 +42,7 @@ const PhotoContest = () => {
 
   const handleCreateContest = async (selectedImages: string[]) => {
     try {
+      console.log("Creating contest with images:", selectedImages);
       const { data: contest, error } = await supabase
         .from('photo_contests')
         .insert({
@@ -53,6 +55,7 @@ const PhotoContest = () => {
 
       if (error) throw error;
 
+      console.log("Created contest:", contest);
       setContests(prev => [contest, ...prev]);
       setIsCreating(false);
       

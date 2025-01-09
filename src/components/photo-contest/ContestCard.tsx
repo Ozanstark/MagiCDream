@@ -35,20 +35,23 @@ export const ContestCard = ({ contest, onDelete }: ContestCardProps) => {
           .from('generated-images')
           .getPublicUrl(contest.photo2_url);
 
-        setPhoto1Url(publicUrl1?.publicUrl || contest.photo1_url);
-        setPhoto2Url(publicUrl2?.publicUrl || contest.photo2_url);
+        const photo1 = publicUrl1?.publicUrl || contest.photo1_url;
+        const photo2 = publicUrl2?.publicUrl || contest.photo2_url;
+
+        console.log("Setting photo URLs:", { photo1, photo2 });
         
-        console.log("Photo URLs loaded:", {
-          photo1: publicUrl1?.publicUrl || contest.photo1_url,
-          photo2: publicUrl2?.publicUrl || contest.photo2_url
-        });
+        setPhoto1Url(photo1);
+        setPhoto2Url(photo2);
       } catch (error) {
         console.error("Error loading image URLs:", error);
       }
     };
 
-    loadImages();
-  }, [contest.photo1_url, contest.photo2_url]);
+    if (contest.photo1_url && contest.photo2_url) {
+      console.log("Loading images for contest:", contest);
+      loadImages();
+    }
+  }, [contest]);
 
   useEffect(() => {
     const fetchVotes = async () => {
@@ -97,7 +100,7 @@ export const ContestCard = ({ contest, onDelete }: ContestCardProps) => {
               <img 
                 src={photo1Url} 
                 alt="Photo 1" 
-                className="w-auto h-auto max-w-[90%] max-h-[90%] object-contain" 
+                className="w-full h-full object-contain" 
                 onError={(e) => console.error("Error loading image 1:", e)}
               />
             )}
@@ -113,7 +116,7 @@ export const ContestCard = ({ contest, onDelete }: ContestCardProps) => {
               <img 
                 src={photo2Url} 
                 alt="Photo 2" 
-                className="w-auto h-auto max-w-[90%] max-h-[90%] object-contain" 
+                className="w-full h-full object-contain" 
                 onError={(e) => console.error("Error loading image 2:", e)}
               />
             )}

@@ -13,6 +13,7 @@ export const ContestCreator = ({ onCreateContest, isCreating, setIsCreating }: C
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
 
   const handleImageUpload = (images: string[]) => {
+    console.log("Selected images in ContestCreator:", images);
     setSelectedImages(images);
   };
 
@@ -22,6 +23,7 @@ export const ContestCreator = ({ onCreateContest, isCreating, setIsCreating }: C
 
   const handleSubmit = () => {
     if (selectedImages.length === 2) {
+      console.log("Submitting images:", selectedImages);
       onCreateContest(selectedImages);
       setSelectedImages([]);
     }

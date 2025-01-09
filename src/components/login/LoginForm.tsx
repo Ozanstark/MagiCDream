@@ -87,7 +87,12 @@ export const LoginForm = () => {
                   loading_button_label: "Giriş yapılıyor...",
                   password_input_placeholder: "Şifreniz",
                   email_input_placeholder: "E-posta adresiniz",
-                  social_provider_text: "Twitter ile devam et"
+                  social_provider_text: "Twitter ile devam et",
+                  magic_link: {
+                    button_label: "E-posta ile giriş yap",
+                    loading_button_label: "Bağlantı gönderiliyor...",
+                    text: "E-posta ile giriş yapmak için tıklayın"
+                  }
                 },
                 sign_up: {
                   email_label: "E-posta",

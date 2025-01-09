@@ -44,7 +44,7 @@ const Login = () => {
           supabaseClient={supabase}
           appearance={{ theme: ThemeSupa }}
           providers={['twitter']}
-          redirectTo="https://magic-painting-engine-77.lovable.app/callback"
+          redirectTo="https://magic-painting-engine-77.lovable.app/"
           theme="light"
           showLinks={false}
           view="sign_in"

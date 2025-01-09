@@ -35,12 +35,12 @@ export const ContestCard = ({ contest, onDelete }: ContestCardProps) => {
           .from('generated-images')
           .getPublicUrl(contest.photo2_url);
 
-        console.log("Raw photo URLs:", {
+        console.log("Photo paths:", {
           photo1: contest.photo1_url,
           photo2: contest.photo2_url
         });
 
-        console.log("Public URLs from Supabase:", {
+        console.log("Public URLs:", {
           photo1: publicUrl1?.publicUrl,
           photo2: publicUrl2?.publicUrl
         });
@@ -48,8 +48,6 @@ export const ContestCard = ({ contest, onDelete }: ContestCardProps) => {
         if (publicUrl1?.publicUrl && publicUrl2?.publicUrl) {
           setPhoto1Url(publicUrl1.publicUrl);
           setPhoto2Url(publicUrl2.publicUrl);
-        } else {
-          console.error("Failed to get public URLs:", { publicUrl1, publicUrl2 });
         }
       } catch (error) {
         console.error("Error loading image URLs:", error);

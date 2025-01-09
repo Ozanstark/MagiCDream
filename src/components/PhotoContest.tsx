@@ -45,17 +45,21 @@ const PhotoContest = () => {
     try {
       console.log("Creating contest with images:", selectedImages);
       
-      // Store the images in Supabase Storage first
+      // Store the images in Supabase Storage
       const uploadPromises = selectedImages.map(async (imageUrl, index) => {
-        const fileName = `contest-${Date.now()}-${index + 1}.jpg`;
-        
         // Convert data URL to Blob
         const response = await fetch(imageUrl);
         const blob = await response.blob();
         
+        // Generate a unique filename with timestamp and extension
+        const fileName = `contest-${Date.now()}-${index + 1}.jpg`;
+        
         const { data, error: uploadError } = await supabase.storage
           .from('generated-images')
-          .upload(fileName, blob);
+          .upload(fileName, blob, {
+            contentType: 'image/jpeg',
+            upsert: false
+          });
 
         if (uploadError) throw uploadError;
         

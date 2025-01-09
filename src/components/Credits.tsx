@@ -7,32 +7,56 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 const Credits = () => {
-  const { credits, isLoading } = useCredits();
+  const { credits, isLoading, refreshCredits } = useCredits();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setIsAuthenticated(!!session);
-
-      supabase.auth.onAuthStateChange((_event, session) => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        
         setIsAuthenticated(!!session);
-      });
+        if (!session) {
+          // Oturum yoksa credits'i sıfırla
+          refreshCredits();
+        }
+      } catch (error) {
+        console.error("Auth check error:", error);
+        setIsAuthenticated(false);
+      }
     };
 
     checkAuth();
-  }, []);
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      setIsAuthenticated(!!session);
+      if (event === 'SIGNED_OUT') {
+        refreshCredits();
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [refreshCredits]);
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+
       toast({
         title: "Başarılı",
         description: "Başarıyla çıkış yapıldı",
       });
+      
+      // Çıkış yapıldıktan sonra ana sayfaya yönlendir
+      navigate("/");
     } catch (error) {
+      console.error("Logout error:", error);
       toast({
         title: "Hata",
         description: "Çıkış yapılırken bir hata oluştu",

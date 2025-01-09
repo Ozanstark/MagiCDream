@@ -35,20 +35,28 @@ export const ContestCard = ({ contest, onDelete }: ContestCardProps) => {
           .from('generated-images')
           .getPublicUrl(contest.photo2_url);
 
-        const photo1 = publicUrl1?.publicUrl || contest.photo1_url;
-        const photo2 = publicUrl2?.publicUrl || contest.photo2_url;
+        console.log("Raw photo URLs:", {
+          photo1: contest.photo1_url,
+          photo2: contest.photo2_url
+        });
 
-        console.log("Setting photo URLs:", { photo1, photo2 });
-        
-        setPhoto1Url(photo1);
-        setPhoto2Url(photo2);
+        console.log("Public URLs from Supabase:", {
+          photo1: publicUrl1?.publicUrl,
+          photo2: publicUrl2?.publicUrl
+        });
+
+        if (publicUrl1?.publicUrl && publicUrl2?.publicUrl) {
+          setPhoto1Url(publicUrl1.publicUrl);
+          setPhoto2Url(publicUrl2.publicUrl);
+        } else {
+          console.error("Failed to get public URLs:", { publicUrl1, publicUrl2 });
+        }
       } catch (error) {
         console.error("Error loading image URLs:", error);
       }
     };
 
     if (contest.photo1_url && contest.photo2_url) {
-      console.log("Loading images for contest:", contest);
       loadImages();
     }
   }, [contest]);
@@ -95,14 +103,19 @@ export const ContestCard = ({ contest, onDelete }: ContestCardProps) => {
     <div className="border rounded-lg p-4 space-y-4 bg-card">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <div className="w-32 h-32 md:w-48 md:h-48 mx-auto bg-black/5 rounded-lg overflow-hidden flex items-center justify-center">
-            {photo1Url && (
+          <div className="w-full h-48 md:h-64 bg-black/5 rounded-lg overflow-hidden flex items-center justify-center">
+            {photo1Url ? (
               <img 
                 src={photo1Url} 
                 alt="Photo 1" 
-                className="w-full h-full object-contain" 
-                onError={(e) => console.error("Error loading image 1:", e)}
+                className="w-full h-full object-cover" 
+                onError={(e) => {
+                  console.error("Error loading image 1:", e);
+                  console.log("Failed URL:", photo1Url);
+                }}
               />
+            ) : (
+              <div className="loading-spinner" />
             )}
           </div>
           <Progress value={photo1Percentage} className="h-2" />
@@ -111,14 +124,19 @@ export const ContestCard = ({ contest, onDelete }: ContestCardProps) => {
           </p>
         </div>
         <div className="space-y-2">
-          <div className="w-32 h-32 md:w-48 md:h-48 mx-auto bg-black/5 rounded-lg overflow-hidden flex items-center justify-center">
-            {photo2Url && (
+          <div className="w-full h-48 md:h-64 bg-black/5 rounded-lg overflow-hidden flex items-center justify-center">
+            {photo2Url ? (
               <img 
                 src={photo2Url} 
                 alt="Photo 2" 
-                className="w-full h-full object-contain" 
-                onError={(e) => console.error("Error loading image 2:", e)}
+                className="w-full h-full object-cover" 
+                onError={(e) => {
+                  console.error("Error loading image 2:", e);
+                  console.log("Failed URL:", photo2Url);
+                }}
               />
+            ) : (
+              <div className="loading-spinner" />
             )}
           </div>
           <Progress value={photo2Percentage} className="h-2" />

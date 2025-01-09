@@ -28,6 +28,7 @@ const PhotoContest = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+      
       console.log("Fetched contests:", userContests);
       setContests(userContests || []);
     } catch (error) {
@@ -43,11 +44,31 @@ const PhotoContest = () => {
   const handleCreateContest = async (selectedImages: string[]) => {
     try {
       console.log("Creating contest with images:", selectedImages);
+      
+      // Store the images in Supabase Storage first
+      const uploadPromises = selectedImages.map(async (imageUrl, index) => {
+        const fileName = `contest-${Date.now()}-${index + 1}.jpg`;
+        
+        // Convert data URL to Blob
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        
+        const { data, error: uploadError } = await supabase.storage
+          .from('generated-images')
+          .upload(fileName, blob);
+
+        if (uploadError) throw uploadError;
+        
+        return fileName;
+      });
+
+      const [photo1Path, photo2Path] = await Promise.all(uploadPromises);
+
       const { data: contest, error } = await supabase
         .from('photo_contests')
         .insert({
-          photo1_url: selectedImages[0],
-          photo2_url: selectedImages[1],
+          photo1_url: photo1Path,
+          photo2_url: photo2Path,
           user_id: (await supabase.auth.getUser()).data.user?.id
         })
         .select('*')
@@ -75,6 +96,15 @@ const PhotoContest = () => {
 
   const handleDeleteContest = async (shareCode: string) => {
     try {
+      const contestToDelete = contests.find(c => c.share_code === shareCode);
+      
+      if (contestToDelete) {
+        // Delete the images from storage
+        await supabase.storage
+          .from('generated-images')
+          .remove([contestToDelete.photo1_url, contestToDelete.photo2_url]);
+      }
+
       const { error } = await supabase
         .from('photo_contests')
         .delete()

@@ -74,7 +74,7 @@ export const LoginForm = () => {
                 label: 'text-[#C8C8C9] mb-2',
                 container: 'space-y-4',
                 divider: 'bg-[#403E43]',
-                anchor: 'text-[#9b87f5] hover:text-[#7E69AB] transition-colors text-lg',
+                anchor: 'text-[#9b87f5] hover:text-[#7E69AB] transition-colors text-lg font-semibold block text-center py-4 px-6 mt-4 border-2 border-[#9b87f5] rounded-lg hover:bg-[#9b87f5]/10',
                 message: 'text-center mt-6',
               }
             }}
